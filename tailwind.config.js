@@ -1,18 +1,14 @@
 // tailwind.config.js
 module.exports = {
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}', // Adjust the path according to your project structure
+  ],
   theme: {
-    extend: {
-      animation: {
-        'gradient-x': 'gradient-x 5s ease infinite',
-      },
-      keyframes: {
-        'gradient-x': {
-          '0%, 100%': { 'background-position': '0% 50%' },
-          '50%': { 'background-position': '100% 50%' },
-        },
-      },
-    },
+    extend: {},
   },
-  variants: {},
-  plugins: [],
-};
+  plugins: [
+    require('tailwindcss/nesting'), // Add this line to include the nesting plugin
+    require('tailwindcss'),
+    require('autoprefixer'),
+  ],
+}
