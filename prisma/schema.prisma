@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Delias {
+  id          Int      @id @default(autoincrement())
+  title       String?
+  size        String?
+  category    String?
+  file        String?
+  artistNotes String?
+  price       Int?
+  isfeatured  Int      @default(0)
+  islive      Int      @default(1)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+}
+
+model Galleries {
+  id          Int      @id @default(autoincrement())
+  title       String?
+  size        String?
+  category    String?
+  file        String?
+  artistNotes String?
+  price       Int?
+  isfeatured  Int      @default(0)
+  islive      Int      @default(1)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now())
+}
+
+model Items {
+  id               Int     @id @default(autoincrement())
+  item_name        String
+  item_description String
+  item_pic         String?
+  item_status      String
+  item_type        String
+  latitude         Float
+  longitude        Float
+  reported_on      String
+  reported_at      String
+  user_id          String
+}
+
+model JB_Pages {
+  id               Int     @id @default(autoincrement())
+  page_name        String
+  page_description String
+  page_pic         String?
+  page_status      String
+  created_on       String
+  user_id          String
+}

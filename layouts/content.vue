@@ -12,20 +12,6 @@
             <div class="flex flex-col">
               <h1 class="text-xl font-bold">John Michael Biddulph</h1>
               <h2 class="text-sm text-slate-500">‹CreativeFrontendDeveloper /›</h2>
-              <nav>
-                <ul :class="{'block': isMenuOpen, 'hidden': !isMenuOpen}" class="md:flex md:items-center md:space-x-4 mt-4 md:mt-0 w-full">
-                  <li v-for="link in links" :key="link.text" class="flex-none mb-6 md:mb-0">
-                    <NuxtLink :href="link.href" :class="['block py-2 px-4 rounded', { 'bg-gray-700': isActive(link.href) }]" @click="closeMenuOnLinkClick">
-                      {{ link.text }}
-                    </NuxtLink>
-                  </li>
-                  <li v-if="user">
-                    <button type="button" @click="logout" class="bg-red-800 rounded text-white px-6 py-2">
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              </nav>
             </div>
           </div>
           <button @click="toggleMenu" class="block md:hidden">
@@ -65,7 +51,7 @@
         </nav>
       </div>
     </header>
-    <main class="flex mx-auto bg-slate-900 border-t border-slate-700 border-white">
+    <main class="flex mx-auto bg-slate-50 border-t border-slate-50">
       <nuxt-page />
     </main>
     <footer class="bg-slate-800 border-t border-slate-700 text-slate-500 text-center p-4">
@@ -79,11 +65,8 @@
 
 const isMenuOpen = ref(false);
 const route = useRoute();
-import { useRoute } from 'vue-router';
-const client = useSupabaseClient();
 const links = ref([]);
 const router = useRouter()
-const user = useSupabaseUser();
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value;
 }
@@ -94,36 +77,17 @@ function closeMenuOnLinkClick() {
   }
 }
 
-const logout = async () => {
-  try {
-    const { error } = await client.auth.signOut()
-    if (error) throw error;
-    router.push("/login");
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 function isActive(path) {
   return route.path === path;
 }
 
 watchEffect(() => {
-  if (user.value) {
-    links.value = [
-      // { text: 'Home', href: '/' },
-      { text: 'Map', href: '/map' },
-      { text: 'Items', href: '/' },
-      { text: 'Add Item', href: '/items/create' },
-    ];
-  } else {
-    links.value = [
-      // { text: 'Home', href: '/' },
-      { text: 'Home', href: '/' },
-      { text: 'Login', href: '/login' },
-      { text: 'Register', href: '/register' },
-    ];
-  }
+  links.value = [
+    // { text: 'Home', href: '/' },
+    { text: '<About />', href: '/map' },
+    { text: '<Login />', href: '/auth/login' },
+    { text: '<Register />', href: '/auth/register' },
+  ];
 });
 </script>
 
@@ -140,7 +104,15 @@ watchEffect(() => {
 body {
   font-family: monospace, sans-serif;
 }
-
+h1 {
+  font-size: 1.6rem;
+}
+h2 {
+  font-size: 1.3rem;
+}
+h3 {
+  font-size: 1.1rem;
+}
 header {
   background-color: #333;
   color: #fff;
