@@ -25,5 +25,12 @@ export default defineNuxtConfig({
     }
   },
 
+  content: {
+    highlight: {
+      theme: 'github-dark', // or any other theme you prefer
+      preload: ['js', 'css', 'html'], // preloading languages for better performance
+    }
+  },
+  
   compatibilityDate: "2024-07-11",
 })

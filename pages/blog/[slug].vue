@@ -3,7 +3,7 @@
     <!-- <ContentDoc /> -->
     <header>
       <p>{{ data.title }}</p>
-      <p>{{ data.author }}</p>
+      <p>{{ data.description }}</p>
       <Meta name="description" :description="description" />
       <Meta name="title" :description="title" />
     </header>
