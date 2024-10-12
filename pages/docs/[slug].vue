@@ -7,7 +7,7 @@
       <Meta name="description" :description="description" />
       <Meta name="title" :description="title" />
     </header>
-    <ContentRenderer :value="data" />
+    <ContentRenderer :value="data" class="p-4" />
   </main>
 </template>
 

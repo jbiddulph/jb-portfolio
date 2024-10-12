@@ -2,10 +2,11 @@
   <main class="prose container mx-auto text-slate-100">
     <ContentList path="/blog" v-slot="{ list }">
       <ul>
-        <li v-for="doc in list" :key="doc._path">
-          <NuxtLink :to="doc._path">
-            <h2>{{ doc.title }}</h2>
-            <p>{{ doc.description }}</p>
+        <li v-for="doc in list" :key="doc._path" class="p-2">
+          <NuxtLink :to="doc._path" class="cursor-pointer">
+            <h4 class="font-bold">{{ doc.title }}</h4>
+            <p class="pb-2"><i>{{ doc.description }}</i></p>
+            <hr class="border-b border-dashed">
           </NuxtLink>
         </li>
       </ul>
