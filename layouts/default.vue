@@ -14,11 +14,11 @@
               <h2 class="text-sm text-slate-500">‹CreativeFrontendDeveloper /›</h2>
               <nav>
                 <ul :class="{'block': isMenuOpen, 'hidden': !isMenuOpen}" class="md:flex md:items-center md:space-x-4 mt-4 md:mt-0 w-full">
-                  <li v-for="link in links" :key="link.text" class="flex-none mb-6 md:mb-0">
+                  <!-- <li v-for="link in links" :key="link.text" class="flex-none mb-6 md:mb-0">
                     <NuxtLink :href="link.href" :class="['block py-2 px-4 rounded', { 'bg-gray-700': isActive(link.href) }]" @click="closeMenuOnLinkClick">
                       {{ link.text }}
                     </NuxtLink>
-                  </li>
+                  </li> -->
                   <li v-if="user">
                     <button type="button" @click="logout" class="bg-red-800 rounded text-white px-6 py-2">
                       Logout
