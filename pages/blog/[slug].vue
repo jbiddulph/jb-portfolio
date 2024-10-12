@@ -2,8 +2,10 @@
   <main class="prose container mx-auto text-slate-900 bg-slate-50">
     <!-- <ContentDoc /> -->
     <header>
-      <p>{{ data.title }}</p>
-      <p>{{ data.description }}</p>
+      <NuxtLink to="/blog">
+        <p>{{ data.title }}</p>
+        <p>{{ data.description }}</p>
+      </NuxtLink>
       <Meta name="description" :description="description" />
       <Meta name="title" :description="title" />
     </header>
