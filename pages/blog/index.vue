@@ -1,7 +1,7 @@
 <template>
   <main class="prose container mx-auto text-slate-600 mt-4">
     <ContentList path="/blog" v-slot="{ list }">
-      <ul class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <ul class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <li v-for="doc in list" :key="doc._path" class="p-2 blog-card bg-white rounded-2xl overflow-hidden mb-4">
           <NuxtLink :to="doc._path" class="cursor-pointer">
             <div class="h-[180px] relative">
