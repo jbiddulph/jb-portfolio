@@ -1,5 +1,5 @@
 <template>
-  <main class="prose container mx-auto text-slate-900 bg-slate-50">
+  <article class="prose container mx-auto text-slate-900 bg-slate-50">
     <!-- <ContentDoc /> -->
     <header>
       <NuxtLink to="/blog">
@@ -9,8 +9,9 @@
       <Meta name="description" :description="description" />
       <Meta name="title" :description="title" />
     </header>
+    <img :src="data.thumbnail" class="w-full h-auto object-cover" alt="">
     <ContentRenderer :value="data" class="p-4" />
-  </main>
+  </article>
 </template>
 
 <script setup lang="ts">
