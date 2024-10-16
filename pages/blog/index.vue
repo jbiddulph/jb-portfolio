@@ -9,7 +9,7 @@
             </div>
             <hr class="border-b border-dashed my-2">
             <div class="blog-card--meta">
-              <h4 class="text-2xl font-semibold">{{ doc.title }}</h4>
+              <h4 class="text-lg font-semibold">{{ doc.title }}</h4>
               <p class="pb-2"><i>{{ doc.description }}</i></p>
               <span>{{ doc.date }}</span>
             </div>
