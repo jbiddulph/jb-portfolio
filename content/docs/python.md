@@ -1,25 +1,61 @@
-Enter your environment:
-source env/bin/activate
+## Setting Up Your Django Environment
 
-pip3 install django
+1. **Enter your environment:**
+    ```sh
+    source env/bin/activate
+    ```
 
-python3 manage.py startproject [projectname]
+2. **Install Django:**
+    ```sh
+    pip3 install django
+    ```
 
-Move env folder inside projectname
+3. **Start a new project:**
+    ```sh
+    python3 manage.py startproject [projectname]
+    ```
 
-open vsCode
+4. **Move `env` folder inside `[projectname]`:**
+    ```sh
+    mv env [projectname]
+    ```
 
-make sure you are in the environment
-source env/bin/activate
-python3 manage.py runserver
+5. **Open VSCode:**
+    ```sh
+    code .
+    ```
 
-Create a new app within project
-python3 manage.py startapp [appname]
-add app to settings.py
+6. **Make sure you are in the environment:**
+    ```sh
+    source env/bin/activate
+    ```
 
-If our app is named projects...
-'projects.apps.ProjectsConfig'
+7. **Run the server:**
+    ```sh
+    python3 manage.py runserver
+    ```
 
-Create models
-python3 manage.py makemigrations
-python3 manage.py migrate
+## Creating a New App
+
+1. **Create a new app within the project:**
+    ```sh
+    python3 manage.py startapp [appname]
+    ```
+
+2. **Add the app to `settings.py`:**
+    ```python
+    # If our app is named projects...
+    'projects.apps.ProjectsConfig'
+    ```
+
+## Creating and Applying Models
+
+1. **Create models:**
+    ```sh
+    python3 manage.py makemigrations
+    ```
+
+2. **Apply migrations:**
+    ```sh
+    python3 manage.py migrate
+    ```
