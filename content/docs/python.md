@@ -59,3 +59,19 @@
     ```sh
     python3 manage.py migrate
     ```
+
+## Creating and Registering Admin Superuser
+
+1. **Create superuser:**
+    ```sh
+    python3 manage.py createsuperuser
+    ```
+
+2. **Register models in the admin.py:**
+    ```python
+    from django.contrib import admin
+    # my model is School so here I go!
+    from .models import School
+
+    admin.site.register(School)
+    ```
