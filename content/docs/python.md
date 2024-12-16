@@ -75,3 +75,10 @@
 
     admin.site.register(School)
     ```
+
+## Running the app and modifying with Tailwind
+
+1. **Start Tailwind:**
+    ```sh
+    python3 manage.py tailwind start
+    ```
