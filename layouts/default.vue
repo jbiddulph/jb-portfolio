@@ -11,7 +11,7 @@
             <!-- <img src="/public/logo.png" alt="Logo" class="w-10 h-10 mr-4" /> -->
             <div class="flex flex-col">
               <h1 class="text-xl font-bold">John Michael Biddulph</h1>
-              <h2 class="text-sm text-slate-500">‹CreativeFrontendDeveloper /›</h2>
+              <h2 class="text-sm text-slate-500">‹Creative<strong>Nuxt</strong>Developer /›</h2>
               <nav>
                 <ul :class="{'block': isMenuOpen, 'hidden': !isMenuOpen}" class="md:flex md:items-center md:space-x-4 mt-4 md:mt-0 w-full">
                   <!-- <li v-for="link in links" :key="link.text" class="flex-none mb-6 md:mb-0">
