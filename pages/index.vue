@@ -41,6 +41,6 @@
 
 <style scoped>
 .container {
-  color: #e1ff00;
+  color: rgb(98, 43, 158);
 }
 </style>
