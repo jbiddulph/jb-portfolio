@@ -15,11 +15,15 @@
           <p><span class="font-bold underline">Why?:</span> I wanted to build something using the OpenAI API and this is what I came up with, allowing people to create a design too and save it.</p>
         </li>
         <li class="mb-6">
-          <h4 class="font-bold underline"><NuxtLink :href="'https://pinspots.co.uk'" target="_blank">‹Pin Spots /›</NuxtLink></h4>
-          <p><span class="font-bold underline">Why?:</span> Just a new idea, it's possibly helpful and useful and because I am always learning and enjoy coding.</p>
+          <h4 class="font-bold underline"><NuxtLink :href="'https://street-party.uk'" target="_blank">‹Street-Party.uk /›</NuxtLink></h4>
+          <p><span class="font-bold underline">Why?:</span> Just a new idea, it's about bringing neighbours together and so they can make contact easy.</p>
         </li>
         <li class="mb-6">
-          <h4 class="font-bold underline"><NuxtLink :href="'https://lookwhatfound.me'" target="_blank">‹LookWhatFound.Me /›</NuxtLink></h4>
+          <h4 class="font-bold underline"><NuxtLink :href="'https://pinspots.co.uk'" target="_blank">‹Pin Spots /›</NuxtLink></h4>
+          <p><span class="font-bold underline">Why?:</span> Just another new idea, it's intended to be helpful and because I am always learning and enjoy coding.</p>
+        </li>
+        <li class="mb-6">
+          <h4 class="font-bold underline"><NuxtLink :href="'https://ukpubs.co.uk'" target="_blank">UKPUBS.co.uk /›</NuxtLink></h4>
           <p><span class="font-bold underline">Why?:</span> A large database of pubs and venues accross the UK. This is about version 6 now, it was originally MyPubSpace, PubMic, PubHub, SplendidSussex, BN-Here. It's evolved from PHP, Laravel/Vue, Python/Nuxt, Nuxt/Supabase/Prisma</p>
         </li>
         <li class="mb-6">
