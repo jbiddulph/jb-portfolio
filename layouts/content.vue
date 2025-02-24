@@ -11,7 +11,7 @@
             <!-- <img src="/public/logo.png" alt="Logo" class="w-10 h-10 mr-4" /> -->
             <div class="flex flex-col">
               <h1 class="text-xl font-bold">John Michael Biddulph</h1>
-              <h2 class="text-sm text-slate-500">‹CreativeFrontendDeveloper /›</h2>
+              <h2 class="text-sm text-slate-500">‹Creative<strong>Nuxt</strong>Developer /›</h2>
             </div>
           </div>
           <button @click="toggleMenu" class="block md:hidden">
