@@ -11,7 +11,8 @@
             <!-- <img src="/public/logo.png" alt="Logo" class="w-10 h-10 mr-4" /> -->
             <div class="flex flex-col">
               <h1 class="text-xl font-bold">John Michael Biddulph</h1>
-              <h2 class="text-sm text-slate-500">‹Creative<strong>Nuxt</strong>Developer /›</h2>
+              <h2 class="text-sm text-slate-500">‹Creative<strong>JavaScript</strong>Developer /›</h2>
+              <h3 class="text-xs text-slate-600">Vue, Nuxt, NextJS, Python, Laravel</h3>
             </div>
           </div>
           <button @click="toggleMenu" class="block md:hidden">
@@ -55,7 +56,7 @@
       <nuxt-page />
     </main>
     <footer class="bg-slate-800 border-t border-slate-700 text-slate-500 text-center p-4">
-      <p class="text-xs">&copy; copyright jbiddulph 2024 </p>
+      <p class="text-xs">&copy; copyright jbiddulph 2025 </p>
     </footer>
   </div>
 </template>
