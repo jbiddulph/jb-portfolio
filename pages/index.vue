@@ -7,27 +7,27 @@
       Projects I've built or worked on:
       <ul class="mt-6">
         <li class="mb-6">
-          <h4 class="font-bold underline"><NuxtLink :href="'https://melvbiddulph.art'" target="_blank">‹Melvyn Biddulph Art /›</NuxtLink></h4>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://melvbiddulph.art'" target="_blank">Melvyn Biddulph Art</NuxtLink></h2>
           <p>Family first, my dad was an artist, a good one but not that well known until his later years.</p>
         </li>
         <li class="mb-6">
-          <h4 class="font-bold underline"><NuxtLink :href="'https://nakedsloth.co.uk'" target="_blank">‹NakedSloth - Rapr /›</NuxtLink></h4>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://nakedsloth.co.uk'" target="_blank">NakedSloth - Rapr</NuxtLink></h2>
           <p><span class="font-bold underline">Why?:</span> I wanted to build something using the OpenAI API and this is what I came up with, allowing people to create a design too and save it.</p>
         </li>
         <li class="mb-6">
-          <h4 class="font-bold underline"><NuxtLink :href="'https://street-party.uk'" target="_blank">‹Street-Party.uk /›</NuxtLink></h4>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://street-party.uk'" target="_blank">Street-Party.uk</NuxtLink></h2>
           <p><span class="font-bold underline">Why?:</span> Just a new idea, it's about bringing neighbours together and so they can make contact easy.</p>
         </li>
         <li class="mb-6">
-          <h4 class="font-bold underline"><NuxtLink :href="'https://pinspots.co.uk'" target="_blank">‹Pin Spots /›</NuxtLink></h4>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://pinspots.co.uk'" target="_blank">Pin Spots</NuxtLink></h2>
           <p><span class="font-bold underline">Why?:</span> Just another new idea, it's intended to be helpful and because I am always learning and enjoy coding.</p>
         </li>
         <li class="mb-6">
-          <h4 class="font-bold underline"><NuxtLink :href="'https://ukpubs.co.uk'" target="_blank">UKPUBS.co.uk /›</NuxtLink></h4>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://ukpubs.co.uk'" target="_blank">UKPUBS.co.uk</NuxtLink></h2>
           <p><span class="font-bold underline">Why?:</span> A large database of pubs and venues accross the UK. This is about version 6 now, it was originally MyPubSpace, PubMic, PubHub, SplendidSussex, BN-Here. It's evolved from PHP, Laravel/Vue, Python/Nuxt, Nuxt/Supabase/Prisma</p>
         </li>
         <li class="mb-6">
-          <h4 class="font-bold underline"><NuxtLink :href="'https://stopcharge.co.uk/map'" target="_blank">stopcharge.co.uk /›</NuxtLink></h4>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://stopcharge.co.uk/map'" target="_blank">stopcharge.co.uk</NuxtLink></h2>
           <p><span class="font-bold underline">Why?:</span> Another idea and use of MapBox and Supabase with Prisma using Nuxt 3 to show all (or most) electric charging points accross the UK and by selectiing 2 points to display the distance in KM or Miles between them</p>
         </li>
       </ul>
