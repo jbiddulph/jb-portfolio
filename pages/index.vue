@@ -4,8 +4,12 @@
       <div class="text-5xl md:text-5xl"><p>John Biddulph a passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.</p> <p class="mt-6">Enjoys building intuitive, responsive applications that provide seamless user experiences.</p></div>
     </div>
     <div class="w-100 md:w-1/3 mt-6 md:mt-0">
-      Projects I've built or worked on:
+      <h3 class="text-2xl">My Projects</h3>
       <ul class="mt-6">
+        <li class="mb-6">
+          <h2 class="font-bold underline"><NuxtLink :href="'https://goschool.uk'" title="Go School UK" target="_blank">Go School UK</NuxtLink></h2>
+          <p>Latest current project: Visualising uk schools data on a map. Helping you find the best school for your children in the area you live in.</p>
+        </li>
         <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://melvbiddulph.art'" title="Melvyn Biddulph Art" target="_blank">Melvyn Biddulph Art</NuxtLink></h2>
           <p>Family first, my dad was an artist, a good one but not that well known until his later years.</p>
