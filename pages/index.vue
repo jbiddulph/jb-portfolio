@@ -8,7 +8,7 @@
       <ul class="mt-6">
         <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://goschool.uk'" title="Go School UK" target="_blank">Go School UK</NuxtLink></h2>
-          <p>Latest current project: Visualising uk schools data on a map. Helping you find the best school for your children in the area you live in.</p>
+          <p>Latest NextJS current project: Visualising uk schools data on a map. Helping you find the best school for your children in the area you live in.</p>
         </li>
         <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://melvbiddulph.art'" title="Melvyn Biddulph Art" target="_blank">Melvyn Biddulph Art</NuxtLink></h2>
