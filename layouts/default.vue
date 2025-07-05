@@ -71,7 +71,7 @@
         </nav>
       </div>
     </header>
-    <main class="flex mx-auto bg-slate-900 border-t border-slate-700 border-white">
+    <main class="flex mx-auto bg-slate-900 border-t border-slate-700 border-slate-500">
       <nuxt-page />
     </main>
     <footer class="bg-slate-800 border-t border-slate-700 text-slate-500 text-center p-4">
