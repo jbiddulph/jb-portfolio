@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto flex mt-6 md:flex-row flex-col p-6 md:p-0">
     <div class="w-100 md:w-2/3 pr-6">
-      <div class="text-5xl md:text-5xl"><p>John Biddulph a passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.</p> <p class="mt-6">Enjoys building intuitive, responsive applications that provide seamless user experiences.</p></div>
+      <div class="text-5xl md:text-5xl"><p>AI-powered development is revolutionizing how we build modern web applications. Vibe coding with AI assistants is transforming the developer experience, accelerating iteration cycles, and democratizing access to complex frameworks like VueJs, Nuxt, React, and Next.js. This shift is enabling developers to focus more on creative problem-solving and user experience while AI handles routine coding tasks.</p> <p class="mt-6">Embracing AI-driven development to create more intuitive, responsive applications with unprecedented efficiency and innovation.</p></div>
     </div>
     <div class="w-100 md:w-1/3 mt-6 md:mt-0">
       <h3 class="text-2xl">My Projects</h3>
