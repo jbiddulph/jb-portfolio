@@ -7,6 +7,11 @@
       <h3 class="text-2xl">My Projects</h3>
       <ul class="mt-6">
         <li class="mb-6">
+          <h2 class="font-bold underline"><NuxtLink :href="'https://prds.netlify.app/'" title="PRD Generator" target="_blank">PRD Generator</NuxtLink></h2>
+          <p>An AI-powered tool that creates comprehensive Product Requirements Documents (PRDs) for web and mobile applications. Simply input your product idea and it generates structured documentation including key features, technical specifications, user flows, and design preferences - providing a clear development roadmap for teams.</p>
+          <p><span class="font-bold underline">Why?:</span> Streamlining the product planning process by automating the creation of professional PRDs, helping teams move from concept to development faster with well-structured documentation.</p>
+        </li>
+        <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://www.goschool.uk'" title="Go School UK" target="_blank">Go School UK</NuxtLink></h2>
           <p>Latest NextJS current project: Visualising uk schools data on a map. Helping you find the best school for your children in the area you live in.</p>
         </li>
