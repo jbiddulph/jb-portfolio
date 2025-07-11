@@ -7,6 +7,11 @@
       <h3 class="text-2xl">My Projects</h3>
       <ul class="mt-6">
         <li class="mb-6">
+          <h2 class="font-bold underline"><NuxtLink :href="'https://stunning-brigadeiros-bf279a.netlify.app/'" title="TaskFlow" target="_blank">TaskFlow</NuxtLink></h2>
+          <p>A comprehensive task management application similar to Jira, designed for efficient project tracking and team collaboration. Features include project boards, task assignment, status tracking, and workflow management to streamline development processes.</p>
+          <p><span class="font-bold underline">Why?:</span> Building a modern, intuitive alternative to traditional project management tools with a focus on developer-friendly workflows and team productivity.</p>
+        </li>
+        <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://prds.netlify.app/'" title="PRD Generator" target="_blank">PRD Generator</NuxtLink></h2>
           <p>An AI-powered tool that creates comprehensive Product Requirements Documents (PRDs) for web and mobile applications. Simply input your product idea and it generates structured documentation including key features, technical specifications, user flows, and design preferences - providing a clear development roadmap for teams.</p>
           <p><span class="font-bold underline">Why?:</span> Streamlining the product planning process by automating the creation of professional PRDs, helping teams move from concept to development faster with well-structured documentation.</p>
