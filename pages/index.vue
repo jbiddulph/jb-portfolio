@@ -7,6 +7,11 @@
       <h3 class="text-2xl">My Projects</h3>
       <ul class="mt-6">
         <li class="mb-6">
+          <h2 class="font-bold underline"><NuxtLink :href="'https://coastrz-26a8db476b11.herokuapp.com/'" title="CoastrZ" target="_blank">CoastrZ</NuxtLink></h2>
+          <p>A web application for discovering and exploring coastal destinations. CoastrZ helps users find beautiful coastlines, beaches, and coastal attractions with detailed information and user reviews.</p>
+          <p><span class="font-bold underline">Why?:</span> Creating a comprehensive platform to help people discover and plan coastal adventures, making it easier to find hidden gems and popular destinations along the coast.</p>
+        </li>
+        <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://stunning-brigadeiros-bf279a.netlify.app/'" title="TaskFlow" target="_blank">TaskFlow</NuxtLink></h2>
           <p>A comprehensive task management application similar to Jira, designed for efficient project tracking and team collaboration. Features include project boards, task assignment, status tracking, and workflow management to streamline development processes.</p>
           <p><span class="font-bold underline">Why?:</span> Building a modern, intuitive alternative to traditional project management tools with a focus on developer-friendly workflows and team productivity.</p>
