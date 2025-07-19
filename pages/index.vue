@@ -8,7 +8,7 @@
       <ul class="mt-6">
         <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://www.coastrz.com'" title="CoastrZ" target="_blank">CoastrZ</NuxtLink></h2>
-          <p>A web application for discovering and exploring coastal destinations. CoastrZ helps users find beautiful coastlines, beaches, and coastal attractions with detailed information and user reviews.</p>
+          <p>My not about coastal holidays. It's about coasters that you put your cups of coffee of tea and you can also have personalised design coaster too</p>
           <p><span class="font-bold underline">Why?:</span> Creating a comprehensive platform to help people discover and plan coastal adventures, making it easier to find hidden gems and popular destinations along the coast.</p>
         </li>
         <li class="mb-6">
