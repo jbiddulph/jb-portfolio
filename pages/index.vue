@@ -8,7 +8,7 @@
       <ul class="mt-6">
         <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://www.coastrz.com'" title="CoastrZ" target="_blank">CoastrZ</NuxtLink></h2>
-          <p>My not about coastal holidays. It's about coasters that you put your cups of coffee of tea and you can also have personalised design coaster too</p>
+          <p>Discover an extensive collection of premium drinks coasters available at coasters.com. From elegant wooden coasters perfect for your morning coffee to stylish ceramic designs ideal for tea time, our range caters to every taste and décor. Whether you're looking for practical everyday coasters to protect your furniture or seeking personalized designs to add a unique touch to your home, coasters.com offers high-quality options that combine functionality with aesthetic appeal. Our custom coaster service allows you to create bespoke designs, making them perfect gifts or branded items for businesses looking to make a lasting impression.</p>
           <p><span class="font-bold underline">Why?:</span> Creating a comprehensive platform to help people discover and plan coastal adventures, making it easier to find hidden gems and popular destinations along the coast.</p>
         </li>
         <li class="mb-6">
