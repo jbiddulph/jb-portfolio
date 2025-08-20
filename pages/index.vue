@@ -16,6 +16,10 @@
           <p><span class="font-bold underline">Why?:</span> Building a modern, intuitive alternative to traditional project management tools with a focus on developer-friendly workflows and team productivity.</p>
         </li>
         <li class="mb-6">
+          <h2 class="font-bold underline"><NuxtLink :href="'https://worthingroads.netlify.app/'" title="Worthing Roads" target="_blank">Worthing Roads</NuxtLink></h2>
+          <p>I built a 2-part quiz to revise for my Worthing District Private Hire License knowledge test.</p>
+        </li>
+        <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://prds.netlify.app/'" title="PRD Generator" target="_blank">PRD Generator</NuxtLink></h2>
           <p>An AI-powered tool that creates comprehensive Product Requirements Documents (PRDs) for web and mobile applications. Simply input your product idea and it generates structured documentation including key features, technical specifications, user flows, and design preferences - providing a clear development roadmap for teams.</p>
           <p><span class="font-bold underline">Why?:</span> Streamlining the product planning process by automating the creation of professional PRDs, helping teams move from concept to development faster with well-structured documentation.</p>
