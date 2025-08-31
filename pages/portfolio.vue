@@ -56,6 +56,13 @@ useHead({
 // Project data extracted and enhanced from the original index.vue
 const projects = [
   {
+    title: 'Task-IT',
+    url: 'https://task-it-9b20e77d6638.herokuapp.com/',
+    description: 'A custom AI-built task management application similar to Jira, showcasing rapid development capabilities. Built and deployed using AI assistance in just 5 hours, demonstrating the power of AI in accelerating development workflows.',
+    why: 'Built to demonstrate the efficiency of AI-assisted development and showcase rapid prototyping capabilities for production-ready applications.',
+    technologies: ['AI-Powered Development', 'Task Management', 'Rapid Prototyping', 'Jira Alternative']
+  },
+  {
     title: 'CoastrZ',
     url: 'https://www.coastrz.com',
     description: 'Discover an extensive collection of premium drinks coasters. From elegant wooden coasters perfect for your morning coffee to stylish ceramic designs ideal for tea time. Features custom coaster service for personalized designs and branded items.',
