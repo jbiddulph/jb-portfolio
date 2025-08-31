@@ -1,28 +1,15 @@
 <template>
   <div class="container mx-auto flex mt-6 md:flex-row flex-col p-6 md:p-0">
     <div class="w-100 md:w-2/3 pr-6">
-      <div class="text-3xl md:text-3xl"><p class="text-sm font-light text-gray-300 mb-4">posted by Jbiddulph on 5th July 2025 at 13:45</p><p>AI-powered development is revolutionizing how we build modern web applications. Vibe coding with AI assistants is transforming the developer experience, accelerating iteration cycles, and democratizing access to complex frameworks like VueJs, Nuxt, React, and Next.js. This shift is enabling developers to focus more on creative problem-solving and user experience while AI handles routine coding tasks.</p> <p class="mt-6">Embracing AI-driven development to create more intuitive, responsive applications with unprecedented efficiency and innovation.</p></div>
+      <div class="text-5xl md:text-5xl"><p>John Biddulph a passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.</p> <p class="mt-6">Enjoys building intuitive, responsive applications that provide seamless user experiences.</p></div>
     </div>
     <div class="w-100 md:w-1/3 mt-6 md:mt-0">
       <h3 class="text-2xl">My Projects</h3>
       <ul class="mt-6">
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://www.coastrz.com'" title="CoastrZ" target="_blank">CoastrZ</NuxtLink></h2>
-          <p>Discover an extensive collection of premium drinks coasters available at coasters.com. From elegant wooden coasters perfect for your morning coffee to stylish ceramic designs ideal for tea time, our range caters to every taste and décor. Whether you're looking for practical everyday coasters to protect your furniture or seeking personalized designs to add a unique touch to your home, coasters.com offers high-quality options that combine functionality with aesthetic appeal. Our custom coaster service allows you to create bespoke designs, making them perfect gifts or branded items for businesses looking to make a lasting impression.</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://stunning-brigadeiros-bf279a.netlify.app/'" title="TaskFlow" target="_blank">TaskFlow</NuxtLink></h2>
-          <p>A comprehensive task management application similar to Jira, designed for efficient project tracking and team collaboration. Features include project boards, task assignment, status tracking, and workflow management to streamline development processes.</p>
-          <p><span class="font-bold underline">Why?:</span> Building a modern, intuitive alternative to traditional project management tools with a focus on developer-friendly workflows and team productivity.</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://worthingroads.netlify.app/'" title="Worthing Roads" target="_blank">Worthing Roads</NuxtLink></h2>
-          <p>I built a 2-part quiz to revise for my Worthing District Private Hire License knowledge test.</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://prds.netlify.app/'" title="PRD Generator" target="_blank">PRD Generator</NuxtLink></h2>
-          <p>An AI-powered tool that creates comprehensive Product Requirements Documents (PRDs) for web and mobile applications. Simply input your product idea and it generates structured documentation including key features, technical specifications, user flows, and design preferences - providing a clear development roadmap for teams.</p>
-          <p><span class="font-bold underline">Why?:</span> Streamlining the product planning process by automating the creation of professional PRDs, helping teams move from concept to development faster with well-structured documentation.</p>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://task-it-9b20e77d6638.herokuapp.com/'" title="Task-IT - AI-Powered Task Management" target="_blank">Task-IT</NuxtLink></h2>
+          <p>Custom AI-built task management application similar to Jira. Built in just 5 hours, showcasing rapid development capabilities with AI assistance.</p>
+          <p><span class="font-bold underline">Why?:</span> Demonstrates the power of AI in accelerating development workflows and building production-ready applications efficiently.</p>
         </li>
         <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://www.goschool.uk'" title="Go School UK" target="_blank">Go School UK</NuxtLink></h2>
@@ -64,6 +51,6 @@
 
 <style scoped>
 .container {
-  color: #5F9ea0;
+  color: rgb(85, 249, 255);
 }
 </style>

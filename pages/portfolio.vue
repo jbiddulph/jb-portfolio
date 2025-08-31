@@ -69,13 +69,6 @@ const projects = [
     technologies: ['E-commerce', 'Custom Design', 'Web Platform']
   },
   {
-    title: 'TaskFlow',
-    url: 'https://stunning-brigadeiros-bf279a.netlify.app/',
-    description: 'A comprehensive task management application similar to Jira, designed for efficient project tracking and team collaboration. Features include project boards, task assignment, status tracking, and workflow management.',
-    why: 'Building a modern, intuitive alternative to traditional project management tools with a focus on developer-friendly workflows and team productivity.',
-    technologies: ['Vue.js', 'Project Management', 'Collaboration Tools']
-  },
-  {
     title: 'Worthing Roads',
     url: 'https://worthingroads.netlify.app/',
     description: 'A 2-part interactive quiz application designed to help with revision for the Worthing District Private Hire License knowledge test. Features comprehensive questions and progress tracking.',
