@@ -69,10 +69,11 @@ const projects = [
     technologies: ['E-commerce', 'Custom Design', 'Web Platform']
   },
   {
-    title: 'Worthing Roads',
+    title: 'Worthing Roads Quiz',
     url: 'https://worthingroads.netlify.app/',
-    description: 'A 2-part interactive quiz application designed to help with revision for the Worthing District Private Hire License knowledge test. Features comprehensive questions and progress tracking.',
-    technologies: ['Vue.js', 'Quiz App', 'Educational Tool']
+    description: 'An interactive 2-part quiz application specifically designed for Worthing District Private Hire License knowledge test preparation. Features comprehensive road knowledge questions, real-time scoring, progress tracking, and detailed explanations to help drivers master local geography and licensing requirements.',
+    why: 'Created to help aspiring private hire drivers in Worthing pass their knowledge test by providing an engaging, interactive study tool with immediate feedback and comprehensive coverage of local roads and regulations.',
+    technologies: ['Vue.js', 'Interactive Quiz', 'Educational Tool', 'Knowledge Test', 'Local Geography']
   },
   {
     title: 'PRD Generator',
