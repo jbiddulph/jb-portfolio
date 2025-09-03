@@ -54,6 +54,20 @@ const projects = [
     technologies: ['AI-Powered Development', 'Task Management', 'Rapid Prototyping', 'Jira Alternative']
   },
   {
+    title: 'Tripz - iOS App',
+    url: 'https://apps.apple.com/gb/app/tripz/id6745882589',
+    description: 'Track your trips with live maps, earnings, and spending. Enjoy dark mode, detailed reports, and full control over your journey with Tripz! A comprehensive income and expenditure logging app for iPhone.',
+    why: 'Created to help users track their trips, earnings, and expenses with an intuitive interface and live mapping features.',
+    technologies: ['iOS', 'Swift', 'Live Maps', 'Finance Tracking', 'Dark Mode']
+  },
+  {
+    title: 'Schools - iOS App',
+    url: 'https://apps.apple.com/gb/app/schools/id6746278412',
+    description: 'Discover, search, and review schools near you. Find the perfect fit, save your favorites, and explore detailed profiles—all in one easy-to-use app! Comprehensive school listings with interactive maps and user reviews.',
+    why: 'Built to help parents and students find the perfect school with detailed profiles, Ofsted ratings, and interactive mapping features.',
+    technologies: ['iOS', 'Swift', 'Education', 'Interactive Maps', 'Supabase', 'User Reviews']
+  },
+  {
     title: 'CoastrZ',
     url: 'https://www.coastrz.com',
     description: 'Discover an extensive collection of premium drinks coasters. From elegant wooden coasters perfect for your morning coffee to stylish ceramic designs ideal for tea time. Features custom coaster service for personalized designs and branded items.',
