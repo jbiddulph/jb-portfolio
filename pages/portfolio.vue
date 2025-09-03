@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
-    <div class="container mx-auto px-6 lg:px-8">
+    <div class="container mx-auto px-6 lg:px-8 max-w-7xl">
       <!-- Header Section -->
       <div class="text-center mb-16">
         <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
@@ -13,7 +13,7 @@
       </div>
 
       <!-- Projects Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
         <ProjectCard 
           v-for="project in projects" 
           :key="project.title"
@@ -21,24 +21,7 @@
         />
       </div>
 
-      <!-- Call to Action -->
-      <div class="text-center mt-16">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-          Interested in Working Together?
-        </h2>
-        <p class="text-gray-600 dark:text-gray-300 mb-8">
-          I'm always excited to collaborate on new projects and innovative ideas.
-        </p>
-        <NuxtLink 
-          href="/contact" 
-          class="inline-flex items-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
-        >
-          Get In Touch
-          <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-          </svg>
-        </NuxtLink>
-      </div>
+
     </div>
   </div>
 </template>
