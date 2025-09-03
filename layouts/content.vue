@@ -24,8 +24,8 @@
         <nav>
           <ul :class="{'block': isMenuOpen, 'hidden': !isMenuOpen}" class="md:flex md:items-center md:space-x-4 mt-4 md:mt-0 w-full">
             <li class="flex-none mb-6 md:mb-0 text-white text-center">
-              <NuxtLink :href="'/docs'" :class="['flex flex-col py-2 px-4 rounded items-center']" @click="closeMenuOnLinkClick">
-                <p>Docs</p>
+              <NuxtLink :href="'https://jbiddulph.com/portfolio'" target="_blank" :class="['flex flex-col py-2 px-4 rounded items-center']" @click="closeMenuOnLinkClick">
+                <p>Portfolio</p>
               </NuxtLink>
             </li>
             <li class="flex-none mb-6 md:mb-0 text-white text-center">
