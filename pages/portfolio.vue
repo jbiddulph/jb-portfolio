@@ -47,6 +47,13 @@ useHead({
 // Project data extracted and enhanced from the original index.vue
 const projects = [
   {
+    title: 'Zap Task',
+    url: 'https://www.zaptask.co.uk',
+    description: 'A simplified Jira task management system designed for streamlined project management and team collaboration. Features intuitive task tracking, project organization, and team workflow management with a clean, user-friendly interface.',
+    why: 'Created to provide a simplified alternative to complex project management tools, making task management accessible and efficient for teams of all sizes.',
+    technologies: ['Task Management', 'Project Management', 'Team Collaboration', 'Workflow Management']
+  },
+  {
     title: 'Task-IT',
     url: 'https://task-it-9b20e77d6638.herokuapp.com/',
     description: 'A custom AI-built task management application similar to Jira, showcasing rapid development capabilities. Built and deployed using AI assistance in just 5 hours, demonstrating the power of AI in accelerating development workflows.',
