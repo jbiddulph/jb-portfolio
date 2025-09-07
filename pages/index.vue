@@ -7,6 +7,11 @@
       <h3 class="text-2xl">My Projects</h3>
       <ul class="mt-6">
         <li class="mb-6">
+          <h2 class="font-bold underline"><NuxtLink :href="'https://www.zaptask.co.uk'" title="Zap Task - Simplified Jira Task Management" target="_blank">Zap Task</NuxtLink></h2>
+          <p>A simplified Jira task management system designed for streamlined project management and team collaboration. Features intuitive task tracking and workflow management with a clean interface.</p>
+          <p><span class="font-bold underline">Why?:</span> Created to provide a simplified alternative to complex project management tools, making task management accessible for teams of all sizes.</p>
+        </li>
+        <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://task-it-9b20e77d6638.herokuapp.com/'" title="Task-IT - AI-Powered Task Management" target="_blank">Task-IT</NuxtLink></h2>
           <p>Custom AI-built task management application similar to Jira. Built in just 5 hours, showcasing rapid development capabilities with AI assistance.</p>
           <p><span class="font-bold underline">Why?:</span> Demonstrates the power of AI in accelerating development workflows and building production-ready applications efficiently.</p>
