@@ -10,6 +10,7 @@
         >
           {{ project.title }}
         </NuxtLink>
+        <span v-if="project.date" class="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">({{ project.date }})</span>
       </h3>
       
       <p class="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
@@ -54,6 +55,7 @@ interface Project {
   description: string;
   why?: string;
   technologies?: string[];
+  date?: string;
 }
 
 defineProps<{

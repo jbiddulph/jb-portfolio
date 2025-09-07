@@ -7,41 +7,41 @@
       <h3 class="text-2xl">My Projects</h3>
       <ul class="mt-6">
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://www.zaptask.co.uk'" title="Zap Task - Simplified Jira Task Management" target="_blank">Zap Task</NuxtLink></h2>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://www.zaptask.co.uk'" title="Zap Task - Simplified Jira Task Management" target="_blank">Zap Task</NuxtLink> <span class="text-sm text-gray-400">(January 2025)</span></h2>
           <p>A simplified Jira task management system designed for streamlined project management and team collaboration. Features intuitive task tracking and workflow management with a clean interface.</p>
           <p><span class="font-bold underline">Why?:</span> Created to provide a simplified alternative to complex project management tools, making task management accessible for teams of all sizes.</p>
         </li>
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://task-it-9b20e77d6638.herokuapp.com/'" title="Task-IT - AI-Powered Task Management" target="_blank">Task-IT</NuxtLink></h2>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://task-it-9b20e77d6638.herokuapp.com/'" title="Task-IT - AI-Powered Task Management" target="_blank">Task-IT</NuxtLink> <span class="text-sm text-gray-400">(December 2024)</span></h2>
           <p>Custom AI-built task management application similar to Jira. Built in just 5 hours, showcasing rapid development capabilities with AI assistance.</p>
           <p><span class="font-bold underline">Why?:</span> Demonstrates the power of AI in accelerating development workflows and building production-ready applications efficiently.</p>
         </li>
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://www.goschool.uk'" title="Go School UK" target="_blank">Go School UK</NuxtLink></h2>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://www.goschool.uk'" title="Go School UK" target="_blank">Go School UK</NuxtLink> <span class="text-sm text-gray-400">(November 2024)</span></h2>
           <p>Latest NextJS current project: Visualising uk schools data on a map. Helping you find the best school for your children in the area you live in.</p>
         </li>
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://melvbiddulph.art'" title="Melvyn Biddulph Art" target="_blank">Melvyn Biddulph Art</NuxtLink></h2>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://melvbiddulph.art'" title="Melvyn Biddulph Art" target="_blank">Melvyn Biddulph Art</NuxtLink> <span class="text-sm text-gray-400">(October 2024)</span></h2>
           <p>Family first, my dad was an artist, a good one but not that well known until his later years.</p>
         </li>
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://nakedsloth.co.uk'" title="NakedSloth - Rapr" target="_blank">NakedSloth - Rapr</NuxtLink></h2>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://nakedsloth.co.uk'" title="NakedSloth - Rapr" target="_blank">NakedSloth - Rapr</NuxtLink> <span class="text-sm text-gray-400">(September 2024)</span></h2>
           <p><span class="font-bold underline">Why?:</span> I wanted to build something using the OpenAI API and this is what I came up with, allowing people to create a design too and save it.</p>
         </li>
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://street-party.uk'" title="Street Party Creator" target="_blank">Street-Party.uk</NuxtLink></h2>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://street-party.uk'" title="Street Party Creator" target="_blank">Street-Party.uk</NuxtLink> <span class="text-sm text-gray-400">(August 2024)</span></h2>
           <p><span class="font-bold underline">Why?:</span> Just a new idea, it's about bringing neighbours together and so they can make contact easy.</p>
         </li>
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://pinspots.co.uk'" title="Pin Spots - Lost and Found" target="_blank">Pin Spots</NuxtLink></h2>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://pinspots.co.uk'" title="Pin Spots - Lost and Found" target="_blank">Pin Spots</NuxtLink> <span class="text-sm text-gray-400">(August 2024)</span></h2>
           <p><span class="font-bold underline">Why?:</span> Just another new idea, it's intended to be helpful and because I am always learning and enjoy coding.</p>
         </li>
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://ukpubs.co.uk'" title="UKPUBS.co.uk - venues and events in and around the UK" target="_blank">UKPUBS.co.uk</NuxtLink></h2>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://ukpubs.co.uk'" title="UKPUBS.co.uk - venues and events in and around the UK" target="_blank">UKPUBS.co.uk</NuxtLink> <span class="text-sm text-gray-400">(July 2024)</span></h2>
           <p><span class="font-bold underline">Why?:</span> A large database of pubs and venues accross the UK. This is about version 6 now, it was originally MyPubSpace, PubMic, PubHub, SplendidSussex, BN-Here. It's evolved from PHP, Laravel/Vue, Python/Nuxt, Nuxt/Supabase/Prisma</p>
         </li>
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://stopcharge.co.uk/map'" title="stopcharge.co.uk" target="_blank">stopcharge.co.uk</NuxtLink></h2>
+          <h2 class="font-bold underline"><NuxtLink :href="'https://stopcharge.co.uk/map'" title="stopcharge.co.uk" target="_blank">stopcharge.co.uk</NuxtLink> <span class="text-sm text-gray-400">(July 2024)</span></h2>
           <p>Where's the nearest car charging point from my location</p>
           <p><span class="font-bold underline">Why?:</span> Another idea and use of MapBox and Supabase with Prisma using Nuxt 3 to show all (or most) electric charging points accross the UK and by selectiing 2 points to display the distance in KM or Miles between them</p>
         </li>
