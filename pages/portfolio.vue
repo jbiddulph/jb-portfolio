@@ -55,14 +55,6 @@ const projects = [
     date: 'January 2025'
   },
   {
-    title: 'Task-IT',
-    url: 'https://task-it-9b20e77d6638.herokuapp.com/',
-    description: 'A custom AI-built task management application similar to Jira, showcasing rapid development capabilities. Built and deployed using AI assistance in just 5 hours, demonstrating the power of AI in accelerating development workflows.',
-    why: 'Built to demonstrate the efficiency of AI-assisted development and showcase rapid prototyping capabilities for production-ready applications.',
-    technologies: ['AI-Powered Development', 'Task Management', 'Rapid Prototyping', 'Jira Alternative'],
-    date: 'December 2024'
-  },
-  {
     title: 'Tripz - iOS App',
     url: 'https://apps.apple.com/gb/app/tripz/id6745882589',
     description: 'Track your trips with live maps, earnings, and spending. Enjoy dark mode, detailed reports, and full control over your journey with Tripz! A comprehensive income and expenditure logging app for iPhone.',
