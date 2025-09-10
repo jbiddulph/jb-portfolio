@@ -12,11 +12,6 @@
           <p><span class="font-bold underline">Why?:</span> Created to provide a simplified alternative to complex project management tools, making task management accessible for teams of all sizes.</p>
         </li>
         <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://task-it-9b20e77d6638.herokuapp.com/'" title="Task-IT - AI-Powered Task Management" target="_blank">Task-IT</NuxtLink> <span class="text-sm text-gray-400">(December 2024)</span></h2>
-          <p>Custom AI-built task management application similar to Jira. Built in just 5 hours, showcasing rapid development capabilities with AI assistance.</p>
-          <p><span class="font-bold underline">Why?:</span> Demonstrates the power of AI in accelerating development workflows and building production-ready applications efficiently.</p>
-        </li>
-        <li class="mb-6">
           <h2 class="font-bold underline"><NuxtLink :href="'https://www.goschool.uk'" title="Go School UK" target="_blank">Go School UK</NuxtLink> <span class="text-sm text-gray-400">(November 2024)</span></h2>
           <p>Latest NextJS current project: Visualising uk schools data on a map. Helping you find the best school for your children in the area you live in.</p>
         </li>
