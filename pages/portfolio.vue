@@ -47,6 +47,14 @@ useHead({
 // Project data extracted and enhanced from the original index.vue
 const projects = [
   {
+    title: 'TalkToMe',
+    url: 'https://talktome-71c18a25ec78.herokuapp.com',
+    description: 'An innovative meeting notes application that records your meetings with a twist. It transcribes your voice and allows you to generate different styles of stories that you can then read, hear, share, or add to your calendar. Transform your meeting recordings into engaging narratives.',
+    why: 'Created to revolutionize how we capture and interact with meeting notes by adding storytelling elements to traditional transcription, making meetings more engaging and memorable.',
+    technologies: ['Voice Transcription', 'AI Story Generation', 'Meeting Notes', 'Calendar Integration', 'Audio Processing'],
+    date: 'September 2025'
+  },
+  {
     title: 'Zap Task',
     url: 'https://www.zaptask.co.uk',
     description: 'A simplified Jira task management system designed for streamlined project management and team collaboration. Features intuitive task tracking, project organization, and team workflow management with a clean, user-friendly interface.',
