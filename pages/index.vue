@@ -12,8 +12,13 @@
             {{ pages?.home || 'Welcome to my portfolio' }}
           </h2>
           <div 
-            class="prose max-w-none"
-            :style="getBodyStyle(siteInfo?.design)"
+            class="prose max-w-none hidden md:block"
+            :style="getSiteDescriptionStyle(siteInfo?.design, 'desktop')"
+            v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
+          ></div>
+          <div 
+            class="prose max-w-none md:hidden"
+            :style="getSiteDescriptionStyle(siteInfo?.design, 'mobile')"
             v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
           ></div>
           <p class="mt-6" :style="getBodyStyle(siteInfo?.design)">
@@ -158,8 +163,13 @@
             {{ pages?.home || 'Welcome to my portfolio' }}
           </h2>
           <div 
-            class="prose max-w-none"
-            :style="getBodyStyle(siteInfo?.design)"
+            class="prose max-w-none hidden md:block"
+            :style="getSiteDescriptionStyle(siteInfo?.design, 'desktop')"
+            v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
+          ></div>
+          <div 
+            class="prose max-w-none md:hidden"
+            :style="getSiteDescriptionStyle(siteInfo?.design, 'mobile')"
             v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
           ></div>
           <p class="mt-6" :style="getBodyStyle(siteInfo?.design)">
@@ -231,7 +241,7 @@
                 <p 
                   class="text-sm mb-3"
                   :style="getBodyStyle(siteInfo?.design)"
-                  v-html="item.project_description"
+                  v-html="truncateDescription(item.project_description)"
                 ></p>
                 
                 <!-- Tags -->
@@ -333,11 +343,8 @@ const fetchSiteInfo = async () => {
 const fetchPortfolio = async () => {
   portfolioLoading.value = true
   try {
-    console.log('Fetching portfolio from /api/portfolio')
     const response = await $fetch('/api/portfolio')
-    console.log('Portfolio API response:', response)
     portfolio.value = response.data || []
-    console.log('Portfolio data set:', portfolio.value)
   } catch (error) {
     console.error('Error fetching portfolio:', error)
     portfolio.value = []
@@ -418,6 +425,18 @@ const getBodyStyle = (design) => {
     color: design?.text_color || '#1f2937',
     fontFamily: getFontFamily(design, 'primary'),
     fontSize: design?.font_size_base || '16px'
+  }
+}
+
+const getSiteDescriptionStyle = (design, device = 'desktop') => {
+  const fontSize = device === 'desktop' 
+    ? (design?.site_description_size_desktop || '1rem')
+    : (design?.site_description_size_mobile || '0.875rem')
+  
+  return {
+    color: design?.text_color || '#1f2937',
+    fontFamily: getFontFamily(design, 'primary'),
+    fontSize: fontSize
   }
 }
 </script>

@@ -50,6 +50,12 @@
                     Edit
                   </button>
                   <button 
+                    @click="copyDesign(design)"
+                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Copy Design
+                  </button>
+                  <button 
                     @click="setActiveDesign(design)"
                     class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
@@ -141,6 +147,37 @@ const toggleDropdown = (designId) => {
 
 const editDesign = (design) => {
   navigateTo(`/admin/designs/${design.id}/edit`)
+}
+
+const copyDesign = async (design) => {
+  try {
+    // Create a copy of the design with a new name
+    const designCopy = {
+      ...design,
+      name: `${design.name} (Copy)`,
+      description: design.description ? `${design.description} (Copy)` : '',
+      is_active: false // New copy is not active by default
+    }
+    
+    // Remove the id so it creates a new record
+    delete designCopy.id
+    delete designCopy.created_at
+    delete designCopy.updated_at
+    
+    const response = await $fetch('/api/admin/designs', {
+      method: 'POST',
+      body: designCopy
+    })
+    
+    if (response.success) {
+      await fetchDesigns()
+      activeDropdown.value = null
+      alert('Design copied successfully!')
+    }
+  } catch (error) {
+    console.error('Error copying design:', error)
+    alert('Error copying design: ' + (error.message || 'Unknown error'))
+  }
 }
 
 const setActiveDesign = async (design) => {
