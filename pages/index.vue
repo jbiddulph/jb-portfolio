@@ -76,22 +76,23 @@
             v-for="item in limitedPortfolio" 
             :key="item.id"
             :to="`/portfolio/${item.id}`"
-            class="block border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+            class="block border rounded-lg hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
             :style="{ 
               borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
               borderRadius: siteInfo?.design?.border_radius || '8px',
               backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
             }"
           >
-            <div class="space-y-3">
-              <div v-if="item.project_image" class="aspect-square">
-                <img 
-                  :src="item.project_image" 
-                  :alt="item.project_name"
-                  class="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-              <div>
+            <!-- Project Image - No padding, full width -->
+            <div v-if="item.project_image" class="aspect-square overflow-hidden">
+              <img 
+                :src="item.project_image" 
+                :alt="item.project_name"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <!-- Project Info -->
+            <div class="p-4 space-y-3">
                 <h4 
                   class="font-semibold mb-2 text-sm"
                   :style="getHeadingStyle(siteInfo?.design, 'h4')"

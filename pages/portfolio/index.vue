@@ -43,26 +43,24 @@
         v-for="item in portfolio" 
         :key="item.id"
         :to="`/portfolio/${item.id}`"
-        class="block group border rounded-lg p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+        class="block group border rounded-lg hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden"
         :style="{ 
           borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
           borderRadius: siteInfo?.design?.border_radius || '8px',
           backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
         }"
       >
-        <!-- Project Image -->
-        <div v-if="item.project_image" class="mb-4">
-          <div class="aspect-square overflow-hidden rounded-lg">
-            <img 
-              :src="item.project_image" 
-              :alt="item.project_name"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          </div>
+        <!-- Project Image - No padding, full width -->
+        <div v-if="item.project_image" class="aspect-square overflow-hidden">
+          <img 
+            :src="item.project_image" 
+            :alt="item.project_name"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
         </div>
 
         <!-- Project Info -->
-        <div class="space-y-3">
+        <div class="p-6 space-y-3">
           <h3 
             class="font-bold text-lg"
             :style="getHeadingStyle(siteInfo?.design, 'h3')"
