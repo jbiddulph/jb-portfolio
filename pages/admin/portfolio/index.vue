@@ -90,10 +90,12 @@
                 Edit
               </NuxtLink>
               <button 
-                @click="deleteProject(item.id)"
-                class="text-red-600 hover:text-red-500 text-sm font-medium"
+                @click.prevent="deleteProject(item.id)"
+                type="button"
+                :disabled="deleting"
+                class="text-red-600 hover:text-red-500 text-sm font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Delete
+                {{ deleting ? 'Deleting...' : 'Delete' }}
               </button>
             </div>
           </div>
@@ -110,6 +112,7 @@ definePageMeta({
 })
 
 const portfolio = ref([])
+const deleting = ref(false)
 
 onMounted(async () => {
   await fetchPortfolio()
@@ -125,14 +128,27 @@ const fetchPortfolio = async () => {
 }
 
 const deleteProject = async (projectId) => {
+  console.log('Attempting to delete project:', projectId)
+  
   if (confirm('Are you sure you want to delete this project?')) {
+    deleting.value = true
     try {
-      await $fetch(`/api/admin/portfolio/${projectId}`, {
+      console.log('Calling delete API for project:', projectId)
+      const response = await $fetch(`/api/admin/portfolio/${projectId}`, {
         method: 'DELETE'
       })
+      console.log('Delete response:', response)
+      
+      // Show success message
+      alert('Project deleted successfully!')
+      
+      // Refresh the portfolio list
       await fetchPortfolio()
     } catch (error) {
       console.error('Error deleting project:', error)
+      alert('Error deleting project: ' + (error.message || 'Unknown error'))
+    } finally {
+      deleting.value = false
     }
   }
 }

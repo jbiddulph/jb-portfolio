@@ -244,6 +244,59 @@
             />
           </div>
         </div>
+
+        <!-- Site Name & Description Text Sizes -->
+        <div class="mt-6">
+          <h3 class="text-md font-medium text-gray-900 mb-4">Site Name & Description Text Sizes</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <h4 class="text-sm font-medium text-gray-700">Desktop Sizes</h4>
+              <div>
+                <label for="site_name_size_desktop" class="block text-sm font-medium text-gray-700">Site Name (Desktop)</label>
+                <input
+                  v-model="form.site_name_size_desktop"
+                  type="text"
+                  id="site_name_size_desktop"
+                  placeholder="1.5rem"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label for="site_description_size_desktop" class="block text-sm font-medium text-gray-700">Site Description (Desktop)</label>
+                <input
+                  v-model="form.site_description_size_desktop"
+                  type="text"
+                  id="site_description_size_desktop"
+                  placeholder="1rem"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+            <div class="space-y-4">
+              <h4 class="text-sm font-medium text-gray-700">Mobile Sizes</h4>
+              <div>
+                <label for="site_name_size_mobile" class="block text-sm font-medium text-gray-700">Site Name (Mobile)</label>
+                <input
+                  v-model="form.site_name_size_mobile"
+                  type="text"
+                  id="site_name_size_mobile"
+                  placeholder="1.25rem"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label for="site_description_size_mobile" class="block text-sm font-medium text-gray-700">Site Description (Mobile)</label>
+                <input
+                  v-model="form.site_description_size_mobile"
+                  type="text"
+                  id="site_description_size_mobile"
+                  placeholder="0.875rem"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="bg-white shadow rounded-lg p-6">
@@ -278,6 +331,43 @@
               placeholder="1rem"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
+          </div>
+        </div>
+
+        <!-- Layout Options -->
+        <div class="mt-6">
+          <h3 class="text-md font-medium text-gray-900 mb-4">Layout Options</h3>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">Page Layout</label>
+            <div class="space-y-2">
+              <div class="flex items-center">
+                <input
+                  v-model="form.layout_columns"
+                  type="radio"
+                  id="layout_1_column"
+                  value="1"
+                  class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                />
+                <label for="layout_1_column" class="ml-2 text-sm text-gray-700">
+                  1 Column Layout - Portfolio section below description
+                </label>
+              </div>
+              <div class="flex items-center">
+                <input
+                  v-model="form.layout_columns"
+                  type="radio"
+                  id="layout_2_column"
+                  value="2"
+                  class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                />
+                <label for="layout_2_column" class="ml-2 text-sm text-gray-700">
+                  2 Column Layout - Portfolio section on the right (default)
+                </label>
+              </div>
+            </div>
+            <p class="mt-2 text-sm text-gray-500">
+              Choose between 1 column (stacked) or 2 column (side-by-side) layout for the home page.
+            </p>
           </div>
         </div>
       </div>

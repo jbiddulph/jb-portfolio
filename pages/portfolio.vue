@@ -1,162 +1,251 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white py-12 flex flex-col items-center justify-center">
-    <div class="container mx-auto px-6 lg:px-8 max-w-7xl w-full">
-      <!-- Header Section -->
-      <div class="text-center mb-16">
-        <div class="mb-4">
-          <NuxtLink 
-            href="/" 
-            class="text-2xl font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-200"
-          >
-            John Biddulph
-          </NuxtLink>
-        </div>
-        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
-          My Portfolio
-        </h1>
-        <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-          A collection of projects showcasing my journey in web development, from AI-powered applications 
-          to comprehensive management tools and innovative web solutions.
+  <div class="mx-auto px-4 sm:px-6 lg:px-8 py-12" :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }">
+    <!-- Page Header -->
+    <div class="text-center mb-12">
+      <h1 
+        class="text-4xl font-bold mb-4"
+        :style="getHeadingStyle(siteInfo?.design, 'h1')"
+      >
+        {{ pages?.portfolio || 'My Portfolio' }}
+      </h1>
+      <p 
+        class="text-lg max-w-2xl mx-auto"
+        :style="getBodyStyle(siteInfo?.design)"
+      >
+        A collection of my recent projects and work
+      </p>
+    </div>
+
+    <!-- Portfolio Loading State -->
+    <div v-if="portfolioLoading" class="text-center py-12">
+      <div class="flex justify-center items-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2" :style="{ borderColor: siteInfo?.design?.primary_color || '#3b82f6' }"></div>
+        <span class="ml-4" :style="getBodyStyle(siteInfo?.design)">Loading portfolio...</span>
+      </div>
+    </div>
+
+    <!-- No Projects State -->
+    <div v-else-if="portfolio.length === 0" class="text-center py-12">
+      <div class="max-w-md mx-auto">
+        <svg class="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No projects available</h3>
+        <p :style="getBodyStyle(siteInfo?.design)" class="text-gray-500">
+          Check back later for new projects and updates.
         </p>
       </div>
+    </div>
 
-      <!-- Projects Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-        <ProjectCard 
-          v-for="project in projects" 
-          :key="project.title"
-          :project="project"
-        />
+    <!-- Portfolio Grid - 4 Columns -->
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div 
+        v-for="item in portfolio" 
+        :key="item.id"
+        class="group border rounded-lg p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+        :style="{ 
+          borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
+          borderRadius: siteInfo?.design?.border_radius || '8px'
+        }"
+      >
+        <!-- Project Image -->
+        <div v-if="item.project_image" class="mb-4">
+          <div class="aspect-square overflow-hidden rounded-lg">
+            <img 
+              :src="item.project_image" 
+              :alt="item.project_name"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        </div>
+
+        <!-- Project Info -->
+        <div class="space-y-3">
+          <h3 
+            class="font-bold text-lg"
+            :style="getHeadingStyle(siteInfo?.design, 'h3')"
+          >
+            {{ item.project_name }}
+          </h3>
+          
+          <p 
+            class="text-sm leading-relaxed"
+            :style="getBodyStyle(siteInfo?.design)"
+            v-html="truncateDescription(item.project_description)"
+          ></p>
+          
+          <!-- Tags -->
+          <div v-if="item.project_tags" class="flex flex-wrap gap-2">
+            <span 
+              v-for="tag in getTags(item.project_tags)" 
+              :key="tag"
+              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+              :style="{ 
+                backgroundColor: siteInfo?.design?.accent_color || '#3b82f6',
+                color: '#ffffff'
+              }"
+            >
+              {{ tag.trim() }}
+            </span>
+          </div>
+
+          <!-- Project Meta -->
+          <div class="flex items-center justify-between pt-3 border-t" :style="{ borderColor: siteInfo?.design?.primary_color || '#e5e7eb' }">
+            <span 
+              class="text-xs"
+              :style="getBodyStyle(siteInfo?.design)"
+            >
+              {{ formatDate(item.project_date) }}
+            </span>
+            <a 
+              v-if="item.project_link"
+              :href="item.project_link" 
+              target="_blank"
+              class="inline-flex items-center text-sm font-medium hover:underline"
+              :style="{ 
+                color: siteInfo?.design?.primary_color || '#2563eb',
+                fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
+              }"
+            >
+              View Project
+              <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
       </div>
+    </div>
 
-
+    <!-- Back to Home Link -->
+    <div class="text-center mt-12">
+      <NuxtLink 
+        to="/"
+        class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-md border transition-colors"
+        :style="{ 
+          borderColor: siteInfo?.design?.primary_color || '#2563eb',
+          color: siteInfo?.design?.primary_color || '#2563eb'
+        }"
+      >
+        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Home
+      </NuxtLink>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// SEO and meta
-useHead({
-  title: 'Portfolio | Jbiddulph',
-  meta: [
-    { name: 'description', content: 'Explore my portfolio of web development projects including AI-powered applications, management tools, and innovative web solutions.' },
-    { name: 'keywords', content: 'portfolio, web development, Nuxt.js, Vue.js, JavaScript, TypeScript, projects' }
-  ]
-});
+import { ref, onMounted, computed } from 'vue'
+import { useSupabaseClient, useSupabaseUser } from '#imports'
 
-// Project data extracted and enhanced from the original index.vue
-const projects = [
-  {
-    title: 'TalkToMe',
-    url: 'https://talktome-71c18a25ec78.herokuapp.com',
-    description: 'An innovative meeting notes application that records your meetings with a twist. It transcribes your voice and allows you to generate different styles of stories that you can then read, hear, share, or add to your calendar. Transform your meeting recordings into engaging narratives.',
-    why: 'Created to revolutionize how we capture and interact with meeting notes by adding storytelling elements to traditional transcription, making meetings more engaging and memorable.',
-    technologies: ['Voice Transcription', 'AI Story Generation', 'Meeting Notes', 'Calendar Integration', 'Audio Processing'],
-    date: 'September 2025'
-  },
-  {
-    title: 'Zap Task',
-    url: 'https://www.zaptask.co.uk',
-    description: 'A simplified Jira task management system designed for streamlined project management and team collaboration. Features intuitive task tracking, project organization, and team workflow management with a clean, user-friendly interface.',
-    why: 'Created to provide a simplified alternative to complex project management tools, making task management accessible and efficient for teams of all sizes.',
-    technologies: ['Task Management', 'Project Management', 'Team Collaboration', 'Workflow Management'],
-    date: 'January 2025'
-  },
-  {
-    title: 'Tripz - iOS App',
-    url: 'https://apps.apple.com/gb/app/tripz/id6745882589',
-    description: 'Track your trips with live maps, earnings, and spending. Enjoy dark mode, detailed reports, and full control over your journey with Tripz! A comprehensive income and expenditure logging app for iPhone.',
-    why: 'Created to help users track their trips, earnings, and expenses with an intuitive interface and live mapping features.',
-    technologies: ['iOS', 'Swift', 'Live Maps', 'Finance Tracking', 'Dark Mode'],
-    date: 'November 2024'
-  },
-  {
-    title: 'Schools - iOS App',
-    url: 'https://apps.apple.com/gb/app/schools/id6746278412',
-    description: 'Discover, search, and review schools near you. Find the perfect fit, save your favorites, and explore detailed profiles—all in one easy-to-use app! Comprehensive school listings with interactive maps and user reviews.',
-    why: 'Built to help parents and students find the perfect school with detailed profiles, Ofsted ratings, and interactive mapping features.',
-    technologies: ['iOS', 'Swift', 'Education', 'Interactive Maps', 'Supabase', 'User Reviews'],
-    date: 'November 2024'
-  },
-  {
-    title: 'CoastrZ',
-    url: 'https://www.coastrz.com',
-    description: 'Discover an extensive collection of premium drinks coasters. From elegant wooden coasters perfect for your morning coffee to stylish ceramic designs ideal for tea time. Features custom coaster service for personalized designs and branded items.',
-    technologies: ['E-commerce', 'Custom Design', 'Web Platform'],
-    date: 'October 2024'
-  },
-  {
-    title: 'Worthing Roads',
-    url: 'https://worthingroads.netlify.app/',
-    description: 'A 2-part interactive quiz application designed to help with revision for the Worthing District Private Hire License knowledge test. Features comprehensive questions and progress tracking.',
-    technologies: ['Vue.js', 'Quiz App', 'Educational Tool'],
-    date: 'October 2024'
-  },
-  {
-    title: 'PRD Generator',
-    url: 'https://prds.netlify.app/',
-    description: 'An AI-powered tool that creates comprehensive Product Requirements Documents (PRDs) for web and mobile applications. Input your product idea and generate structured documentation including features, specifications, and user flows.',
-    why: 'Streamlining the product planning process by automating the creation of professional PRDs, helping teams move from concept to development faster.',
-    technologies: ['AI/ML', 'Documentation', 'Product Planning', 'Automation'],
-    date: 'September 2024'
-  },
-  {
-    title: 'Go School UK',
-    url: 'https://www.goschool.uk',
-    description: 'A Next.js application for visualizing UK schools data on an interactive map. Helps parents find the best schools for their children in their local area with comprehensive filtering and search capabilities.',
-    technologies: ['Next.js', 'Maps', 'Data Visualization', 'Education'],
-    date: 'September 2024'
-  },
-  {
-    title: 'Melvyn Biddulph Art',
-    url: 'https://melvbiddulph.art',
-    description: 'A tribute website showcasing the artistic works of Melvyn Biddulph, an artist who gained recognition in his later years. Features a gallery of his paintings and artistic journey.',
-    technologies: ['Art Gallery', 'Portfolio', 'Tribute Site'],
-    date: 'August 2024'
-  },
-  {
-    title: 'NakedSloth - Rapr',
-    url: 'https://nakedsloth.co.uk',
-    description: 'An innovative application built using the OpenAI API that allows users to create custom designs and save them. Features AI-powered design generation and user creativity tools.',
-    why: 'Wanted to build something using the OpenAI API and create a platform for design creation and saving.',
-    technologies: ['OpenAI API', 'AI Design', 'Creative Tools'],
-    date: 'August 2024'
-  },
-  {
-    title: 'Street Party Creator',
-    url: 'https://street-party.uk',
-    description: 'A community-focused platform designed to bring neighbors together by making it easy for them to organize street parties and local events. Facilitates easy contact and event coordination.',
-    why: 'Bringing neighbours together and making community contact easy.',
-    technologies: ['Community Platform', 'Event Management', 'Social Networking'],
-    date: 'August 2024'
-  },
-  {
-    title: 'Pin Spots - Lost and Found',
-    url: 'https://pinspots.co.uk',
-    description: 'A helpful platform for lost and found items, allowing users to report and search for missing belongings in their local area. Features location-based search and community assistance.',
-    why: 'Created to be helpful for the community and as a continuous learning project.',
-    technologies: ['Location Services', 'Community Help', 'Search Platform'],
-    date: 'July 2024'
-  },
-  {
-    title: 'UKPUBS.co.uk',
-    url: 'https://ukpubs.co.uk',
-    description: 'A comprehensive database of pubs and venues across the UK. This is version 6 of the platform, evolved through multiple iterations and technologies. Features venue discovery, events, and location-based search.',
-    why: 'A large database of pubs and venues across the UK. Evolved from PHP, Laravel/Vue, Python/Nuxt, to current Nuxt/Supabase/Prisma stack.',
-    technologies: ['Nuxt.js', 'Supabase', 'Prisma', 'Database', 'Location Services'],
-    date: 'July 2024'
-  },
-  {
-    title: 'StopCharge.co.uk',
-    url: 'https://stopcharge.co.uk/map',
-    description: 'Find the nearest car charging points from your location. Features an interactive map showing electric charging points across the UK with distance calculations between selected points.',
-    why: 'Using MapBox and Supabase with Prisma and Nuxt 3 to show electric charging points across the UK with distance calculations.',
-    technologies: ['Nuxt 3', 'MapBox', 'Supabase', 'Prisma', 'Geolocation'],
-    date: 'July 2024'
+const client = useSupabaseClient()
+const user = useSupabaseUser()
+
+// Reactive data
+const siteInfo = ref(null)
+const portfolio = ref([])
+const pages = ref(null)
+const portfolioLoading = ref(true)
+
+// Fetch all data on mount
+onMounted(async () => {
+  await Promise.all([
+    fetchSiteInfo(),
+    fetchPortfolio(),
+    fetchPages()
+  ])
+  portfolioLoading.value = false
+})
+
+const fetchSiteInfo = async () => {
+  try {
+    const response = await $fetch('/api/site-info')
+    siteInfo.value = response.data
+  } catch (error) {
+    console.error('Error fetching site info:', error)
   }
-];
-</script>
+}
 
-<style scoped>
-/* Additional custom styles if needed */
-</style>
+const fetchPortfolio = async () => {
+  try {
+    console.log('Fetching portfolio from /api/portfolio')
+    const response = await $fetch('/api/portfolio')
+    console.log('Portfolio API response:', response)
+    portfolio.value = response.data || []
+    console.log('Portfolio data set:', portfolio.value)
+  } catch (error) {
+    console.error('Error fetching portfolio:', error)
+    portfolio.value = []
+  }
+}
+
+const fetchPages = async () => {
+  try {
+    const response = await $fetch('/api/pages')
+    pages.value = response.data
+  } catch (error) {
+    console.error('Error fetching pages:', error)
+  }
+}
+
+// Utility functions
+const getTags = (tagsString) => {
+  if (!tagsString) return []
+  return tagsString.split(',').filter(tag => tag.trim())
+}
+
+const truncateDescription = (description) => {
+  if (!description) return ''
+  // Remove HTML tags and truncate to 60 characters
+  const textOnly = description.replace(/<[^>]*>/g, '')
+  return textOnly.length > 60 ? textOnly.substring(0, 60) + '...' : textOnly
+}
+
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+const getFontFamily = (design, fontType = 'primary') => {
+  if (!design) return 'inherit'
+  
+  let fontFamily = fontType === 'heading' ? design.heading_font : design.font_family
+  
+  // Use Google Fonts if available
+  if (design.google_fonts) {
+    try {
+      const googleFonts = JSON.parse(design.google_fonts)
+      if (fontType === 'heading' && googleFonts.heading) {
+        fontFamily = `"${googleFonts.heading}", ${design.heading_font}`
+      } else if (googleFonts.primary) {
+        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
+      }
+    } catch (e) {
+      console.error('Error parsing Google Fonts:', e)
+    }
+  }
+  
+  return fontFamily
+}
+
+const getHeadingStyle = (design, level = 'h1') => {
+  return {
+    color: design?.text_color || '#1f2937',
+    fontFamily: getFontFamily(design, 'heading'),
+    fontSize: design?.[`font_size_${level}`] || '1.5rem'
+  }
+}
+
+const getBodyStyle = (design) => {
+  return {
+    color: design?.text_color || '#1f2937',
+    fontFamily: getFontFamily(design, 'primary'),
+    fontSize: design?.font_size_base || '16px'
+  }
+}
+</script>

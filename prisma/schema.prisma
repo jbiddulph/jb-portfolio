@@ -132,11 +132,18 @@ model jbiddulph_designs {
   font_size_h5    String?
   font_size_h6    String?
   
+  // Site Name & Description Sizes
+  site_name_size_desktop String?
+  site_name_size_mobile  String?
+  site_description_size_desktop String?
+  site_description_size_mobile  String?
+  
   // Layout
   container_width String?
   sidebar_width   String?
   header_height   String?
   footer_height   String?
+  layout_columns  String? @default("2") // "1" or "2"
   
   // Spacing
   margin_small    String?

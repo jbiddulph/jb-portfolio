@@ -27,15 +27,28 @@
             />
             <div>
               <h1 
-                class="font-bold"
-                :style="getHeadingStyle(siteInfo?.design)"
+                class="font-bold hidden md:block"
+                :style="getSiteNameStyle(siteInfo?.design, 'desktop')"
+              >
+                {{ siteInfo?.site_name || 'John Biddulph Portfolio' }}
+              </h1>
+              <h1 
+                class="font-bold md:hidden"
+                :style="getSiteNameStyle(siteInfo?.design, 'mobile')"
               >
                 {{ siteInfo?.site_name || 'John Biddulph Portfolio' }}
               </h1>
               <p 
                 v-if="siteInfo?.site_slogan"
-                class="text-sm opacity-75"
-                :style="getBodyStyle(siteInfo?.design)"
+                class="hidden md:block opacity-75"
+                :style="getSiteDescriptionStyle(siteInfo?.design, 'desktop')"
+              >
+                {{ siteInfo.site_slogan }}
+              </p>
+              <p 
+                v-if="siteInfo?.site_slogan"
+                class="md:hidden opacity-75"
+                :style="getSiteDescriptionStyle(siteInfo?.design, 'mobile')"
               >
                 {{ siteInfo.site_slogan }}
               </p>
@@ -371,13 +384,39 @@ const getBodyStyle = (design) => {
   }
 }
 
+const getSiteNameStyle = (design, device = 'desktop') => {
+  const fontSize = device === 'desktop' 
+    ? (design?.site_name_size_desktop || '1.5rem')
+    : (design?.site_name_size_mobile || '1.25rem')
+  
+  return {
+    color: design?.text_color || '#1f2937',
+    fontFamily: getFontFamily(design, 'heading'),
+    fontSize: fontSize
+  }
+}
+
+const getSiteDescriptionStyle = (design, device = 'desktop') => {
+  const fontSize = device === 'desktop' 
+    ? (design?.site_description_size_desktop || '1rem')
+    : (design?.site_description_size_mobile || '0.875rem')
+  
+  return {
+    color: design?.text_color || '#1f2937',
+    fontFamily: getFontFamily(design, 'primary'),
+    fontSize: fontSize
+  }
+}
+
 const signOut = async () => {
   await client.auth.signOut()
   await navigateTo('/login')
 }
 
 const toggleMobileMenu = () => {
+  console.log('Mobile menu toggle clicked, current state:', mobileMenuOpen.value)
   mobileMenuOpen.value = !mobileMenuOpen.value
+  console.log('Mobile menu new state:', mobileMenuOpen.value)
 }
 
 const loadGoogleFontsAndCSS = () => {

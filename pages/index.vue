@@ -1,6 +1,153 @@
 <template>
   <div class="mx-auto px-4 sm:px-6 lg:px-8 py-12" :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+    <!-- Dynamic Layout: 1 column or 2 column -->
+    <div v-if="isOneColumnLayout" class="space-y-12">
+      <!-- 1 Column Layout: About Section Full Width -->
+      <div>
+        <div class="mb-8">
+          <h2 
+            class="font-bold mb-4"
+            :style="getHeadingStyle(siteInfo?.design, 'h2')"
+          >
+            {{ pages?.home || 'Welcome to my portfolio' }}
+          </h2>
+          <div 
+            class="prose max-w-none"
+            :style="getBodyStyle(siteInfo?.design)"
+            v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
+          ></div>
+          <p class="mt-6" :style="getBodyStyle(siteInfo?.design)">
+            Enjoys building intuitive, responsive applications that provide seamless user experiences.
+          </p>
+        </div>
+
+        <!-- Hero Image -->
+        <div v-if="siteInfo?.site_image" class="mb-8">
+          <img 
+            :src="siteInfo.site_image" 
+            :alt="siteInfo.site_name"
+            class="w-full h-64 object-cover rounded-lg shadow-lg"
+            :style="{ borderRadius: siteInfo?.design?.border_radius || '8px' }"
+          />
+        </div>
+      </div>
+
+      <!-- 1 Column Layout: Portfolio Section Below (4 columns) -->
+      <div>
+        <h3 
+          class="font-bold mb-6"
+          :style="getHeadingStyle(siteInfo?.design, 'h3')"
+        >
+          {{ pages?.portfolio || 'My Projects' }}
+        </h3>
+        
+        <!-- Portfolio Loading State -->
+        <div v-if="portfolioLoading" class="text-center py-8">
+          <div class="flex justify-center items-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2" :style="{ borderColor: siteInfo?.design?.primary_color || '#3b82f6' }"></div>
+            <span class="ml-2" :style="getBodyStyle(siteInfo?.design)">Loading projects...</span>
+          </div>
+        </div>
+
+        <!-- No Projects State -->
+        <div v-else-if="portfolio.length === 0" class="text-center py-8">
+          <p :style="getBodyStyle(siteInfo?.design)">
+            No projects available yet.
+          </p>
+        </div>
+
+        <!-- Portfolio Items - 4 Column Grid -->
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div 
+            v-for="item in limitedPortfolio" 
+            :key="item.id"
+            class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+            :style="{ 
+              borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
+              borderRadius: siteInfo?.design?.border_radius || '8px'
+            }"
+          >
+            <div class="space-y-3">
+              <div v-if="item.project_image" class="aspect-square">
+                <img 
+                  :src="item.project_image" 
+                  :alt="item.project_name"
+                  class="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+              <div>
+                <h4 
+                  class="font-semibold mb-2 text-sm"
+                  :style="getHeadingStyle(siteInfo?.design, 'h4')"
+                >
+                  {{ item.project_name }}
+                </h4>
+                <p 
+                  class="text-xs mb-3 line-clamp-3"
+                  :style="getBodyStyle(siteInfo?.design)"
+                  v-html="truncateDescription(item.project_description)"
+                ></p>
+                
+                <!-- Tags -->
+                <div v-if="item.project_tags" class="mb-3">
+                  <div class="flex flex-wrap gap-1">
+                    <span 
+                      v-for="tag in getTags(item.project_tags)" 
+                      :key="tag"
+                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                      :style="{ 
+                        backgroundColor: siteInfo?.design?.accent_color || '#3b82f6',
+                        color: '#ffffff'
+                      }"
+                    >
+                      {{ tag.trim() }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span 
+                    class="text-xs"
+                    :style="getBodyStyle(siteInfo?.design)"
+                  >
+                    {{ formatDate(item.project_date) }}
+                  </span>
+                  <a 
+                    v-if="item.project_link"
+                    :href="item.project_link" 
+                    target="_blank"
+                    class="text-xs font-medium hover:underline"
+                    :style="{ 
+                      color: siteInfo?.design?.primary_color || '#2563eb',
+                      fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
+                    }"
+                  >
+                    View →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- View More Projects Link -->
+        <div v-if="portfolio.length > 4" class="text-center mt-8">
+          <NuxtLink 
+            to="/portfolio"
+            class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-md transition-colors"
+            :style="{ 
+              backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
+              color: '#ffffff'
+            }"
+          >
+            View More Projects ({{ portfolio.length - 4 }} more)
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 Column Layout: Original Layout -->
+    <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-12">
       <!-- About Section -->
       <div class="lg:col-span-2">
         <div class="mb-8">
@@ -40,15 +187,25 @@
           {{ pages?.portfolio || 'My Projects' }}
         </h3>
         
-        <div v-if="portfolio.length === 0" class="text-center py-8">
+        <!-- Portfolio Loading State -->
+        <div v-if="portfolioLoading" class="text-center py-8">
+          <div class="flex justify-center items-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2" :style="{ borderColor: siteInfo?.design?.primary_color || '#3b82f6' }"></div>
+            <span class="ml-2" :style="getBodyStyle(siteInfo?.design)">Loading projects...</span>
+          </div>
+        </div>
+
+        <!-- No Projects State -->
+        <div v-else-if="portfolio.length === 0" class="text-center py-8">
           <p :style="getBodyStyle(siteInfo?.design)">
             No projects available yet.
           </p>
         </div>
 
+        <!-- Portfolio Items -->
         <div v-else class="space-y-6">
           <div 
-            v-for="item in portfolio" 
+            v-for="item in limitedPortfolio" 
             :key="item.id"
             class="border rounded-lg p-6 hover:shadow-md transition-shadow"
             :style="{ 
@@ -118,6 +275,20 @@
             </div>
           </div>
         </div>
+
+        <!-- View More Projects Link -->
+        <div v-if="portfolio.length > 4" class="text-center mt-8">
+          <NuxtLink 
+            to="/portfolio"
+            class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-md transition-colors"
+            :style="{ 
+              backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
+              color: '#ffffff'
+            }"
+          >
+            View More Projects ({{ portfolio.length - 4 }} more)
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </div>
@@ -129,6 +300,16 @@ const siteInfo = ref(null)
 const portfolio = ref([])
 const pages = ref(null)
 const loading = ref(true)
+const portfolioLoading = ref(true)
+
+// Computed properties
+const isOneColumnLayout = computed(() => {
+  return siteInfo.value?.design?.layout_columns === '1'
+})
+
+const limitedPortfolio = computed(() => {
+  return portfolio.value.slice(0, 4)
+})
 
 // Fetch all data on mount
 onMounted(async () => {
@@ -150,11 +331,18 @@ const fetchSiteInfo = async () => {
 }
 
 const fetchPortfolio = async () => {
+  portfolioLoading.value = true
   try {
+    console.log('Fetching portfolio from /api/portfolio')
     const response = await $fetch('/api/portfolio')
+    console.log('Portfolio API response:', response)
     portfolio.value = response.data || []
+    console.log('Portfolio data set:', portfolio.value)
   } catch (error) {
     console.error('Error fetching portfolio:', error)
+    portfolio.value = []
+  } finally {
+    portfolioLoading.value = false
   }
 }
 
@@ -171,6 +359,13 @@ const fetchPages = async () => {
 const getTags = (tagsString) => {
   if (!tagsString) return []
   return tagsString.split(',').filter(tag => tag.trim())
+}
+
+const truncateDescription = (description) => {
+  if (!description) return ''
+  // Remove HTML tags and truncate to 60 characters
+  const textOnly = description.replace(/<[^>]*>/g, '')
+  return textOnly.length > 60 ? textOnly.substring(0, 60) + '...' : textOnly
 }
 
 const formatDate = (dateString) => {
