@@ -56,9 +56,18 @@
 
         <!-- No Projects State -->
         <div v-else-if="portfolio.length === 0" class="text-center py-8">
-          <p :style="getBodyStyle(siteInfo?.design)">
-            No projects available yet.
-          </p>
+          <div class="space-y-3">
+            <p :style="getBodyStyle(siteInfo?.design)">
+              No projects available yet.
+            </p>
+            <button 
+              @click="fetchPortfolio()"
+              class="px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 transition-opacity"
+              :style="{ backgroundColor: siteInfo?.design?.primary_color || '#3b82f6' }"
+            >
+              Retry Loading Projects
+            </button>
+          </div>
         </div>
 
         <!-- Portfolio Items - 4 Column Grid -->
@@ -219,9 +228,18 @@
 
         <!-- No Projects State -->
         <div v-else-if="portfolio.length === 0" class="text-center py-8">
-          <p :style="getBodyStyle(siteInfo?.design)">
-            No projects available yet.
-          </p>
+          <div class="space-y-3">
+            <p :style="getBodyStyle(siteInfo?.design)">
+              No projects available yet.
+            </p>
+            <button 
+              @click="fetchPortfolio()"
+              class="px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 transition-opacity"
+              :style="{ backgroundColor: siteInfo?.design?.primary_color || '#3b82f6' }"
+            >
+              Retry Loading Projects
+            </button>
+          </div>
         </div>
 
         <!-- Portfolio Items -->
@@ -335,6 +353,7 @@ const portfolio = ref([])
 const pages = ref(null)
 const loading = ref(true)
 const portfolioLoading = ref(true)
+const portfolioLoadTimeout = ref(false)
 
 // Computed properties
 const isOneColumnLayout = computed(() => {
@@ -364,14 +383,44 @@ const fetchSiteInfo = async () => {
   }
 }
 
-const fetchPortfolio = async () => {
+const fetchPortfolio = async (retryCount = 0) => {
   portfolioLoading.value = true
+  const maxRetries = 3
+  const timeoutMs = 10000 // 10 seconds
+  
   try {
-    const response = await $fetch('/api/portfolio')
-    portfolio.value = response.data || []
+    // Create a timeout promise
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
+    })
+    
+    // Race between fetch and timeout
+    const response = await Promise.race([
+      $fetch('/api/portfolio'),
+      timeoutPromise
+    ])
+    
+    if (response.success && response.data) {
+      portfolio.value = response.data
+      console.log('Portfolio loaded successfully:', response.data.length, 'items')
+    } else {
+      portfolio.value = []
+      console.warn('Portfolio API returned no data')
+    }
   } catch (error) {
-    console.error('Error fetching portfolio:', error)
-    portfolio.value = []
+    console.error('Error fetching portfolio (attempt', retryCount + 1, '):', error)
+    
+    // Retry logic
+    if (retryCount < maxRetries) {
+      console.log('Retrying portfolio fetch in 2 seconds...')
+      setTimeout(() => {
+        fetchPortfolio(retryCount + 1)
+      }, 2000)
+      return // Don't set loading to false yet
+    } else {
+      console.error('Max retries reached for portfolio fetch')
+      portfolio.value = []
+    }
   } finally {
     portfolioLoading.value = false
   }
