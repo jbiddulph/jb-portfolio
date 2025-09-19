@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '~/lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -15,9 +13,10 @@ export default defineEventHandler(async (event) => {
       data: links
     }
   } catch (error) {
+    console.error('Links API error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch links'
+      statusMessage: `Failed to fetch links: ${error.message || 'Unknown error'}`
     })
   }
 })

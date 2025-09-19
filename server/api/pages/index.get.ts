@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '~/lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -11,9 +9,10 @@ export default defineEventHandler(async (event) => {
       data: pages
     }
   } catch (error) {
+    console.error('Pages API error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch pages'
+      statusMessage: `Failed to fetch pages: ${error.message || 'Unknown error'}`
     })
   }
 })

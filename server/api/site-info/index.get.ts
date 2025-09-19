@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '~/lib/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -15,9 +13,10 @@ export default defineEventHandler(async (event) => {
       data: siteInfo
     }
   } catch (error) {
+    console.error('Site info API error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch site info'
+      statusMessage: `Failed to fetch site info: ${error.message || 'Unknown error'}`
     })
   }
 })
