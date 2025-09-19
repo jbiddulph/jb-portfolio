@@ -158,12 +158,23 @@ const user = ref(null)
 // User design management
 const { userDesignId } = useUserDesign()
 
-// Securely fetch user data
+// Securely fetch user data (only if session exists)
 const fetchUser = async () => {
   try {
+    // First check if there's an active session
+    const { data: { session } } = await client.auth.getSession()
+    if (!session) {
+      // No session, user is not logged in (this is normal for public pages)
+      user.value = null
+      return
+    }
+    
+    // If session exists, get the authenticated user
     const { data: { user: authenticatedUser }, error } = await client.auth.getUser()
     if (!error && authenticatedUser) {
       user.value = authenticatedUser
+    } else {
+      user.value = null
     }
   } catch (error) {
     console.error('Error fetching user:', error)
