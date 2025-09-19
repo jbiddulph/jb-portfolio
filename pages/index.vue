@@ -153,7 +153,6 @@
                   </span>
                 </div>
               </div>
-            </div>
           </NuxtLink>
         </div>
 
