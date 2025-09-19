@@ -61,29 +61,46 @@
 
           <div>
             <label for="project_image" class="block text-sm font-medium text-gray-700">Project Image</label>
-            <div class="mt-1 flex items-center space-x-4">
-              <input
-                v-model="form.project_image"
-                type="url"
-                id="project_image"
-                class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="https://example.com/image.jpg"
-              />
-              <input
-                ref="projectImageInput"
-                type="file"
-                accept="image/*"
-                class="hidden"
-                @change="handleProjectImageUpload"
-              />
-              <button
-                type="button"
-                @click="() => projectImageInput?.click()"
-                :disabled="uploading"
-                class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
-              >
-                {{ uploading ? 'Uploading...' : 'Upload' }}
-              </button>
+            <div class="mt-1 space-y-3">
+              <div class="flex items-center space-x-4">
+                <input
+                  v-model="form.project_image"
+                  type="url"
+                  id="project_image"
+                  class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="https://example.com/image.jpg"
+                />
+                <input
+                  ref="projectImageInput"
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  @change="handleProjectImageUpload"
+                />
+                <button
+                  type="button"
+                  @click="() => projectImageInput?.click()"
+                  :disabled="uploading"
+                  class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {{ uploading ? 'Uploading...' : 'Upload' }}
+                </button>
+              </div>
+              
+              <!-- Upload Progress -->
+              <div v-if="uploading" class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-indigo-600 h-2 rounded-full animate-pulse" style="width: 100%"></div>
+              </div>
+              
+              <!-- Upload Error -->
+              <div v-if="uploadError" class="text-red-600 text-sm bg-red-50 p-2 rounded">
+                {{ uploadError }}
+              </div>
+              
+              <!-- Upload Success -->
+              <div v-if="uploadSuccess" class="text-green-600 text-sm bg-green-50 p-2 rounded">
+                Image uploaded successfully!
+              </div>
             </div>
             <p class="mt-1 text-sm text-gray-500">Optional: Upload an image or enter URL of your project</p>
           </div>
@@ -101,16 +118,22 @@
           </div>
 
           <!-- Image Preview -->
-          <div v-if="form.project_image" class="mt-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Image Preview</label>
+          <div v-if="form.project_image" class="mt-6">
+            <label class="block text-sm font-medium text-gray-700 mb-3">Image Preview</label>
             <div class="border rounded-lg p-4 bg-gray-50">
-              <img 
-                :src="form.project_image" 
-                :alt="form.project_name"
-                class="max-w-xs h-32 object-cover rounded-lg"
-                @error="imageError = true"
-              />
-              <p v-if="imageError" class="text-red-500 text-sm mt-2">Failed to load image</p>
+              <div class="flex items-start space-x-4">
+                <img 
+                  :src="form.project_image" 
+                  :alt="form.project_name"
+                  class="w-32 h-32 object-cover rounded-lg border"
+                  @error="imageError = true"
+                />
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-900 mb-1">Current Image</p>
+                  <p class="text-xs text-gray-500 mb-2 break-all">{{ form.project_image }}</p>
+                  <p v-if="imageError" class="text-red-500 text-sm">Failed to load image</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -149,6 +172,7 @@ const loading = ref(false)
 const { uploading, uploadError, uploadPortfolioImage } = useFileUpload()
 const projectImageInput = ref(null)
 const imageError = ref(false)
+const uploadSuccess = ref(false)
 
 const form = reactive({
   project_name: '',
@@ -181,13 +205,25 @@ const handleProjectImageUpload = async (event) => {
   const file = event.target.files?.[0]
   if (!file) return
   
+  // Reset states
+  uploadSuccess.value = false
+  imageError.value = false
+  
   try {
     const result = await uploadPortfolioImage(file)
     form.project_image = result.url
     imageError.value = false
+    uploadSuccess.value = true
+    
+    // Clear success message after 3 seconds
+    setTimeout(() => {
+      uploadSuccess.value = false
+    }, 3000)
+    
   } catch (error) {
     console.error('Error uploading project image:', error)
     imageError.value = true
+    uploadSuccess.value = false
   }
 }
 

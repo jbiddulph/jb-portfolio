@@ -39,13 +39,15 @@
 
     <!-- Portfolio Grid - 4 Columns -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      <div 
+      <NuxtLink 
         v-for="item in portfolio" 
         :key="item.id"
-        class="group border rounded-lg p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+        :to="`/portfolio/${item.id}`"
+        class="block group border rounded-lg p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
         :style="{ 
           borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-          borderRadius: siteInfo?.design?.border_radius || '8px'
+          borderRadius: siteInfo?.design?.border_radius || '8px',
+          backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
         }"
       >
         <!-- Project Image -->
@@ -107,14 +109,24 @@
                 fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
               }"
             >
-              View Project
+              Link
               <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
               </svg>
             </a>
+            <span 
+              v-else
+              class="inline-flex items-center text-sm font-medium opacity-50"
+              :style="{ 
+                color: siteInfo?.design?.primary_color || '#2563eb',
+                fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
+              }"
+            >
+              No Link
+            </span>
           </div>
         </div>
-      </div>
+      </NuxtLink>
     </div>
 
     <!-- Back to Home Link -->

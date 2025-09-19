@@ -63,13 +63,15 @@
 
         <!-- Portfolio Items - 4 Column Grid -->
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div 
+          <NuxtLink 
             v-for="item in limitedPortfolio" 
             :key="item.id"
-            class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+            :to="`/portfolio/${item.id}`"
+            class="block border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
             :style="{ 
               borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-              borderRadius: siteInfo?.design?.border_radius || '8px'
+              borderRadius: siteInfo?.design?.border_radius || '8px',
+              backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
             }"
           >
             <div class="space-y-3">
@@ -127,12 +129,22 @@
                       fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
                     }"
                   >
-                    View →
+                    Link →
                   </a>
+                  <span 
+                    v-else
+                    class="text-xs font-medium opacity-50"
+                    :style="{ 
+                      color: siteInfo?.design?.primary_color || '#2563eb',
+                      fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
+                    }"
+                  >
+                    No Link
+                  </span>
                 </div>
               </div>
             </div>
-          </div>
+          </NuxtLink>
         </div>
 
         <!-- View More Projects Link -->
@@ -214,13 +226,15 @@
 
         <!-- Portfolio Items -->
         <div v-else class="space-y-6">
-          <div 
+          <NuxtLink 
             v-for="item in limitedPortfolio" 
             :key="item.id"
-            class="border rounded-lg p-6 hover:shadow-md transition-shadow"
+            :to="`/portfolio/${item.id}`"
+            class="block border rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
             :style="{ 
               borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-              borderRadius: siteInfo?.design?.border_radius || '8px'
+              borderRadius: siteInfo?.design?.border_radius || '8px',
+              backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
             }"
           >
             <div class="flex items-start space-x-4">
@@ -278,12 +292,22 @@
                       fontFamily: getFontFamily(siteInfo?.design, 'primary')
                     }"
                   >
-                    View Project →
+                    Link →
                   </a>
+                  <span 
+                    v-else
+                    class="text-xs font-medium opacity-50"
+                    :style="{ 
+                      color: siteInfo?.design?.primary_color || '#2563eb',
+                      fontFamily: getFontFamily(siteInfo?.design, 'primary')
+                    }"
+                  >
+                    No Link
+                  </span>
                 </div>
               </div>
             </div>
-          </div>
+          </NuxtLink>
         </div>
 
         <!-- View More Projects Link -->

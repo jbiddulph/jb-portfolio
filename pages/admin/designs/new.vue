@@ -82,6 +82,15 @@
               class="mt-1 block w-full h-10 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
+          <div>
+            <label for="portfolio_card_background_color" class="block text-sm font-medium text-gray-700">Portfolio Card Background</label>
+            <input
+              v-model="form.portfolio_card_background_color"
+              type="color"
+              id="portfolio_card_background_color"
+              class="mt-1 block w-full h-10 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
         </div>
       </div>
 
@@ -443,6 +452,7 @@ const form = reactive({
   accent_color: '#3b82f6',
   background_color: '#ffffff',
   text_color: '#1f2937',
+  portfolio_card_background_color: '#ffffff',
   font_family: 'Inter, sans-serif',
   heading_font: 'Inter, sans-serif',
   body_font: 'Inter, sans-serif',

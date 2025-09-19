@@ -2,10 +2,26 @@ import { createClient } from '@supabase/supabase-js'
 
 export default defineEventHandler(async (event) => {
   try {
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+    // Check environment variables
+    const supabaseUrl = process.env.SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY
+    
+    if (!supabaseUrl) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'SUPABASE_URL is required'
+      })
+    }
+    
+    if (!supabaseKey) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'SUPABASE_KEY or SUPABASE_SERVICE_ROLE_KEY is required'
+      })
+    }
+    
+    // For server-side storage operations, we need the service role key
+    const supabase = createClient(supabaseUrl, supabaseKey)
     
     // Get the form data
     const formData = await readMultipartFormData(event)
@@ -17,8 +33,17 @@ export default defineEventHandler(async (event) => {
       })
     }
     
-    const file = formData[0]
-    const { folder } = await readBody(event)
+    const file = formData.find(f => f.name === 'file')
+    const folderField = formData.find(f => f.name === 'folder')
+    
+    if (!file || !folderField) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Missing file or folder parameter'
+      })
+    }
+    
+    const folder = folderField.data.toString()
     
     if (!file.data || !file.name) {
       throw createError({

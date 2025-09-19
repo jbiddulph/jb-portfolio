@@ -119,6 +119,7 @@ model jbiddulph_designs {
   accent_color    String?
   background_color String?
   text_color      String?
+  portfolio_card_background_color String?
   
   // Typography
   font_family     String?

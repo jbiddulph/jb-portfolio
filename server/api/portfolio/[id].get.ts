@@ -5,31 +5,26 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
   try {
     const id = parseInt(getRouterParam(event, 'id'))
-    console.log('Fetching design with ID:', id)
     
-    const design = await prisma.jbiddulph_designs.findUnique({
+    const project = await prisma.jbiddulph_portfolio.findUnique({
       where: { id }
     })
     
-    console.log('Design found:', design)
-    
-    if (!design) {
-      console.log('Design not found for ID:', id)
+    if (!project) {
       throw createError({
         statusCode: 404,
-        statusMessage: 'Design not found'
+        statusMessage: 'Project not found'
       })
     }
     
     return {
       success: true,
-      data: design
+      data: project
     }
   } catch (error) {
-    console.error('Error fetching design:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch design'
+      statusMessage: 'Failed to fetch project'
     })
   }
 })

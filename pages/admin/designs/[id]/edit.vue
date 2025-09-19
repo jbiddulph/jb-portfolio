@@ -82,6 +82,15 @@
               class="mt-1 block w-full h-10 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
+          <div>
+            <label for="portfolio_card_background_color" class="block text-sm font-medium text-gray-700">Portfolio Card Background</label>
+            <input
+              v-model="form.portfolio_card_background_color"
+              type="color"
+              id="portfolio_card_background_color"
+              class="mt-1 block w-full h-10 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
         </div>
       </div>
 
@@ -452,6 +461,7 @@ const form = reactive({
   accent_color: '#3b82f6',
   background_color: '#ffffff',
   text_color: '#1f2937',
+  portfolio_card_background_color: '#ffffff',
   font_family: 'Inter, sans-serif',
   heading_font: 'Inter, sans-serif',
   body_font: 'Inter, sans-serif',
@@ -490,9 +500,14 @@ onMounted(async () => {
 
 const fetchDesign = async () => {
   try {
+    console.log('Fetching design with ID:', route.params.id)
     const response = await $fetch(`/api/admin/designs/${route.params.id}`)
+    console.log('Design API response:', response)
+    
     if (response.data) {
+      console.log('Assigning design data to form:', response.data)
       Object.assign(form, response.data)
+      console.log('Form after assignment:', form)
       
       // Parse Google Fonts if they exist
       if (form.google_fonts) {
@@ -505,9 +520,12 @@ const fetchDesign = async () => {
           console.error('Error parsing Google Fonts:', e)
         }
       }
+    } else {
+      console.log('No design data in response')
     }
   } catch (error) {
     console.error('Error fetching design:', error)
+    console.error('Error details:', error.message)
   }
 }
 
@@ -548,16 +566,25 @@ const updateDesign = async () => {
   loading.value = true
   
   try {
+    console.log('Updating design with ID:', route.params.id)
+    console.log('Form data being sent:', form)
+    
     const response = await $fetch(`/api/admin/designs/${route.params.id}`, {
       method: 'PUT',
       body: form
     })
     
+    console.log('Update response:', response)
+    
     if (response.success) {
+      console.log('Design updated successfully')
       await router.push('/admin/designs')
+    } else {
+      console.log('Update failed:', response)
     }
   } catch (error) {
     console.error('Error updating design:', error)
+    console.error('Error details:', error.message)
   } finally {
     loading.value = false
   }
