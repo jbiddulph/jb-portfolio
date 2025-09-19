@@ -1,56 +1,279 @@
 <template>
-  <div class="container mx-auto flex mt-6 md:flex-row flex-col p-6 md:p-0">
-    <div class="w-100 md:w-2/3 pr-6">
-      <div class="text-5xl md:text-5xl"><p>John Biddulph a passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.</p> <p class="mt-6">Enjoys building intuitive, responsive applications that provide seamless user experiences.</p></div>
-    </div>
-    <div class="w-100 md:w-1/3 mt-6 md:mt-0">
-      <h3 class="text-2xl">My Projects</h3>
-      <ul class="mt-6">
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://www.zaptask.co.uk'" title="Zap Task - Simplified Jira Task Management" target="_blank">Zap Task</NuxtLink> <span class="text-sm text-gray-400">(January 2025)</span></h2>
-          <p>A simplified Jira task management system designed for streamlined project management and team collaboration. Features intuitive task tracking and workflow management with a clean interface.</p>
-          <p><span class="font-bold underline">Why?:</span> Created to provide a simplified alternative to complex project management tools, making task management accessible for teams of all sizes.</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://www.goschool.uk'" title="Go School UK" target="_blank">Go School UK</NuxtLink> <span class="text-sm text-gray-400">(November 2024)</span></h2>
-          <p>Latest NextJS current project: Visualising uk schools data on a map. Helping you find the best school for your children in the area you live in.</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://melvbiddulph.art'" title="Melvyn Biddulph Art" target="_blank">Melvyn Biddulph Art</NuxtLink> <span class="text-sm text-gray-400">(October 2024)</span></h2>
-          <p>Family first, my dad was an artist, a good one but not that well known until his later years.</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://nakedsloth.co.uk'" title="NakedSloth - Rapr" target="_blank">NakedSloth - Rapr</NuxtLink> <span class="text-sm text-gray-400">(September 2024)</span></h2>
-          <p><span class="font-bold underline">Why?:</span> I wanted to build something using the OpenAI API and this is what I came up with, allowing people to create a design too and save it.</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://street-party.uk'" title="Street Party Creator" target="_blank">Street-Party.uk</NuxtLink> <span class="text-sm text-gray-400">(August 2024)</span></h2>
-          <p><span class="font-bold underline">Why?:</span> Just a new idea, it's about bringing neighbours together and so they can make contact easy.</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://pinspots.co.uk'" title="Pin Spots - Lost and Found" target="_blank">Pin Spots</NuxtLink> <span class="text-sm text-gray-400">(August 2024)</span></h2>
-          <p><span class="font-bold underline">Why?:</span> Just another new idea, it's intended to be helpful and because I am always learning and enjoy coding.</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://ukpubs.co.uk'" title="UKPUBS.co.uk - venues and events in and around the UK" target="_blank">UKPUBS.co.uk</NuxtLink> <span class="text-sm text-gray-400">(July 2024)</span></h2>
-          <p><span class="font-bold underline">Why?:</span> A large database of pubs and venues accross the UK. This is about version 6 now, it was originally MyPubSpace, PubMic, PubHub, SplendidSussex, BN-Here. It's evolved from PHP, Laravel/Vue, Python/Nuxt, Nuxt/Supabase/Prisma</p>
-        </li>
-        <li class="mb-6">
-          <h2 class="font-bold underline"><NuxtLink :href="'https://stopcharge.co.uk/map'" title="stopcharge.co.uk" target="_blank">stopcharge.co.uk</NuxtLink> <span class="text-sm text-gray-400">(July 2024)</span></h2>
-          <p>Where's the nearest car charging point from my location</p>
-          <p><span class="font-bold underline">Why?:</span> Another idea and use of MapBox and Supabase with Prisma using Nuxt 3 to show all (or most) electric charging points accross the UK and by selectiing 2 points to display the distance in KM or Miles between them</p>
-        </li>
-      </ul>
+  <div class="mx-auto px-4 sm:px-6 lg:px-8 py-12" :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <!-- About Section -->
+      <div class="lg:col-span-2">
+        <div class="mb-8">
+          <h2 
+            class="font-bold mb-4"
+            :style="getHeadingStyle(siteInfo?.design, 'h2')"
+          >
+            {{ pages?.home || 'Welcome to my portfolio' }}
+          </h2>
+          <div 
+            class="prose max-w-none"
+            :style="getBodyStyle(siteInfo?.design)"
+            v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
+          ></div>
+          <p class="mt-6" :style="getBodyStyle(siteInfo?.design)">
+            Enjoys building intuitive, responsive applications that provide seamless user experiences.
+          </p>
+        </div>
+
+        <!-- Hero Image -->
+        <div v-if="siteInfo?.site_image" class="mb-8">
+          <img 
+            :src="siteInfo.site_image" 
+            :alt="siteInfo.site_name"
+            class="w-full h-64 object-cover rounded-lg shadow-lg"
+            :style="{ borderRadius: siteInfo?.design?.border_radius || '8px' }"
+          />
+        </div>
+      </div>
+
+      <!-- Portfolio Section -->
+      <div>
+        <h3 
+          class="font-bold mb-6"
+          :style="getHeadingStyle(siteInfo?.design, 'h3')"
+        >
+          {{ pages?.portfolio || 'My Projects' }}
+        </h3>
+        
+        <div v-if="portfolio.length === 0" class="text-center py-8">
+          <p :style="getBodyStyle(siteInfo?.design)">
+            No projects available yet.
+          </p>
+        </div>
+
+        <div v-else class="space-y-6">
+          <div 
+            v-for="item in portfolio" 
+            :key="item.id"
+            class="border rounded-lg p-6 hover:shadow-md transition-shadow"
+            :style="{ 
+              borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
+              borderRadius: siteInfo?.design?.border_radius || '8px'
+            }"
+          >
+            <div class="flex items-start space-x-4">
+              <div v-if="item.project_image" class="flex-shrink-0">
+                <img 
+                  :src="item.project_image" 
+                  :alt="item.project_name"
+                  class="h-16 w-16 rounded-lg object-cover"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 
+                  class="font-semibold mb-2"
+                  :style="getHeadingStyle(siteInfo?.design, 'h4')"
+                >
+                  {{ item.project_name }}
+                </h4>
+                <p 
+                  class="text-sm mb-3"
+                  :style="getBodyStyle(siteInfo?.design)"
+                  v-html="item.project_description"
+                ></p>
+                
+                <!-- Tags -->
+                <div v-if="item.project_tags" class="mb-3">
+                  <div class="flex flex-wrap gap-1">
+                    <span 
+                      v-for="tag in getTags(item.project_tags)" 
+                      :key="tag"
+                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                      :style="{ 
+                        backgroundColor: siteInfo?.design?.accent_color || '#3b82f6',
+                        color: '#ffffff'
+                      }"
+                    >
+                      {{ tag.trim() }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                  <span 
+                    class="text-xs"
+                    :style="getBodyStyle(siteInfo?.design)"
+                  >
+                    {{ formatDate(item.project_date) }}
+                  </span>
+                  <a 
+                    v-if="item.project_link"
+                    :href="item.project_link" 
+                    target="_blank"
+                    class="text-xs font-medium hover:underline"
+                    :style="{ 
+                      color: siteInfo?.design?.primary_color || '#2563eb',
+                      fontFamily: getFontFamily(siteInfo?.design, 'primary')
+                    }"
+                  >
+                    View Project →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+// Reactive data
+const siteInfo = ref(null)
+const portfolio = ref([])
+const pages = ref(null)
+const loading = ref(true)
 
+// Fetch all data on mount
+onMounted(async () => {
+  await Promise.all([
+    fetchSiteInfo(),
+    fetchPortfolio(),
+    fetchPages()
+  ])
+  loading.value = false
+})
+
+const fetchSiteInfo = async () => {
+  try {
+    const response = await $fetch('/api/site-info')
+    siteInfo.value = response.data
+  } catch (error) {
+    console.error('Error fetching site info:', error)
+  }
+}
+
+const fetchPortfolio = async () => {
+  try {
+    const response = await $fetch('/api/portfolio')
+    portfolio.value = response.data || []
+  } catch (error) {
+    console.error('Error fetching portfolio:', error)
+  }
+}
+
+const fetchPages = async () => {
+  try {
+    const response = await $fetch('/api/pages')
+    pages.value = response.data
+  } catch (error) {
+    console.error('Error fetching pages:', error)
+  }
+}
+
+// Utility functions
+const getTags = (tagsString) => {
+  if (!tagsString) return []
+  return tagsString.split(',').filter(tag => tag.trim())
+}
+
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+const getFontFamily = (design, fontType = 'primary') => {
+  if (!design) return 'inherit'
+  
+  let fontFamily = fontType === 'heading' ? design.heading_font : design.font_family
+  
+  // Use Google Fonts if available
+  if (design.google_fonts) {
+    try {
+      const googleFonts = JSON.parse(design.google_fonts)
+      if (fontType === 'heading' && googleFonts.heading) {
+        fontFamily = `"${googleFonts.heading}", ${design.heading_font}`
+      } else if (googleFonts.primary) {
+        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
+      }
+    } catch (e) {
+      console.error('Error parsing Google Fonts:', e)
+    }
+  }
+  
+  return fontFamily
+}
+
+const getHeadingStyle = (design, level = 'h1') => {
+  const fontSizeMap = {
+    h1: design?.font_size_h1 || '1.5rem',
+    h2: design?.font_size_h2 || '2rem',
+    h3: design?.font_size_h3 || '1.5rem',
+    h4: design?.font_size_h4 || '1.25rem'
+  }
+  
+  return {
+    color: design?.text_color || '#1f2937',
+    fontFamily: getFontFamily(design, 'heading'),
+    fontSize: fontSizeMap[level]
+  }
+}
+
+const getBodyStyle = (design) => {
+  return {
+    color: design?.text_color || '#1f2937',
+    fontFamily: getFontFamily(design, 'primary'),
+    fontSize: design?.font_size_base || '16px'
+  }
+}
 </script>
 
 <style scoped>
-.container {
-  color: rgb(85, 249, 255);
+/* Dynamic styling will be applied via computed styles */
+.prose {
+  line-height: 1.6;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose ul, .prose ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.25rem;
+}
+
+.prose a {
+  text-decoration: underline;
+}
+
+.prose blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+}
+
+.prose code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+}
+
+.prose pre {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
 }
 </style>

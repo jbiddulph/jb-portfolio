@@ -1,181 +1,418 @@
 <!-- layouts/default.vue -->
 <template>
-  <div>
-    <div v-if="hasLoaded">
-      <Loaded />
-    </div>
-    <header class="text-white bg-slate-900">
-      <div class="container mx-auto flex justify-between items-center p-4 flex-col md:flex-row">
-        <div class="flex flex-row justify-between w-full">
-          <div class="flex items-center">
-            <!-- <img src="/public/logo.png" alt="Logo" class="w-10 h-10 mr-4" /> -->
-            <div class="flex flex-col">
-              <h1 class="text-xl font-bold">John Michael Biddulph</h1>
-              <h2 class="text-sm text-slate-500">‹Creative<strong>JavaScript</strong>Developer /›</h2>
-              <h3 class="text-xs text-slate-600">Vue, Nuxt, NextJS, Python, Laravel</h3>
-              <nav>
-                <ul :class="{'block': isMenuOpen, 'hidden': !isMenuOpen}" class="md:flex md:items-center md:space-x-4 mt-4 md:mt-0 w-full">
-                  <!-- <li v-for="link in links" :key="link.text" class="flex-none mb-6 md:mb-0">
-                    <NuxtLink :href="link.href" :class="['block py-2 px-4 rounded', { 'bg-gray-700': isActive(link.href) }]" @click="closeMenuOnLinkClick">
-                      {{ link.text }}
-                    </NuxtLink>
-                  </li> -->
-                  <li v-if="user">
-                    <button type="button" @click="logout" class="bg-red-800 rounded text-white px-6 py-2" aria-label="Logout">
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+  <div 
+    class="min-h-screen"
+    :style="dynamicStyles"
+  >
+    <!-- Header -->
+    <header 
+      class="shadow-sm border-b"
+      :style="{ 
+        backgroundColor: siteInfo?.design?.background_color || '#ffffff',
+        height: siteInfo?.design?.header_height || '80px',
+        borderColor: siteInfo?.design?.primary_color || '#e5e7eb'
+      }"
+    >
+      <div 
+        class="mx-auto px-4 sm:px-6 lg:px-8"
+        :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }"
+      >
+        <div class="flex justify-between items-center h-full">
+          <div class="flex items-center space-x-4">
+            <img 
+              v-if="siteInfo?.site_avatar" 
+              :src="siteInfo.site_avatar" 
+              :alt="siteInfo.site_name"
+              class="h-10 w-10 rounded-full object-cover"
+            />
+            <div>
+              <h1 
+                class="font-bold"
+                :style="getHeadingStyle(siteInfo?.design)"
+              >
+                {{ siteInfo?.site_name || 'John Biddulph Portfolio' }}
+              </h1>
+              <p 
+                v-if="siteInfo?.site_slogan"
+                class="text-sm opacity-75"
+                :style="getBodyStyle(siteInfo?.design)"
+              >
+                {{ siteInfo.site_slogan }}
+              </p>
             </div>
           </div>
-          <button @click="toggleMenu" class="block md:hidden" aria-label="Toggle menu">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
-        </div>
-        <nav>
-          <ul :class="{'block': isMenuOpen, 'hidden': !isMenuOpen}" class="md:flex md:items-center md:space-x-4 mt-4 md:mt-0 w-full">
-            <li class="flex-none mb-6 md:mb-0 text-white text-center">
-              <NuxtLink :href="'https://jbiddulph.com/portfolio'" target="_blank" :class="['flex flex-col py-2 px-4 rounded items-center']" @click="closeMenuOnLinkClick">
-                <p>Portfolio</p>
-              </NuxtLink>
-            </li>
-            <li class="flex-none mb-6 md:mb-0 text-white text-center">
-              <NuxtLink :href="'https://talktome-71c18a25ec78.herokuapp.com'" target="_blank" :class="['flex flex-col py-2 px-4 rounded items-center bg-blue-600 hover:bg-blue-700 transition-colors']" @click="closeMenuOnLinkClick">
-                <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
+          
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center space-x-6">
+            <!-- Social Links -->
+            <div v-if="links.length > 0" class="flex items-center space-x-4">
+              <a 
+                v-for="link in links" 
+                :key="link.id"
+                :href="link.link_url" 
+                target="_blank"
+                class="text-sm font-medium hover:underline transition-colors"
+                :style="{ 
+                  color: siteInfo?.design?.primary_color || '#2563eb',
+                  fontFamily: getFontFamily(siteInfo?.design, 'primary')
+                }"
+              >
+                {{ link.link_name }}
+              </a>
+            </div>
+            
+            <!-- Auth Links -->
+            <div v-if="user" class="flex items-center space-x-4">
+              <NuxtLink 
+                to="/admin" 
+                class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                :style="{ 
+                  backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
+                  color: '#ffffff'
+                }"
+              >
+                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
-                <p>TalkToMe</p>
-                <p class="text-xs text-blue-200">Latest Project</p>
+                Dashboard
               </NuxtLink>
-            </li>
-            <li class="flex-none mb-6 md:mb-0 text-white text-center">
-              <NuxtLink :href="'http://www.github.com'" target="_blank" :class="['flex flex-col py-2 px-4 rounded items-center']" @click="closeMenuOnLinkClick">
-                <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 20 20"><path fill="currentColor" d="M13.18 11.309c-.718 0-1.3.807-1.3 1.799c0 .994.582 1.801 1.3 1.801s1.3-.807 1.3-1.801c-.001-.992-.582-1.799-1.3-1.799m4.526-4.683c.149-.365.155-2.439-.635-4.426c0 0-1.811.199-4.551 2.08c-.575-.16-1.548-.238-2.519-.238c-.973 0-1.945.078-2.52.238C4.74 2.399 2.929 2.2 2.929 2.2c-.789 1.987-.781 4.061-.634 4.426C1.367 7.634.8 8.845.8 10.497c0 7.186 5.963 7.301 7.467 7.301l1.734.002l1.732-.002c1.506 0 7.467-.115 7.467-7.301c0-1.652-.566-2.863-1.494-3.871m-7.678 10.289h-.056c-3.771 0-6.709-.449-6.709-4.115c0-.879.31-1.693 1.047-2.369C5.537 9.304 7.615 9.9 9.972 9.9h.056c2.357 0 4.436-.596 5.664.531c.735.676 1.045 1.49 1.045 2.369c0 3.666-2.937 4.115-6.709 4.115m-3.207-5.606c-.718 0-1.3.807-1.3 1.799c0 .994.582 1.801 1.3 1.801c.719 0 1.301-.807 1.301-1.801c0-.992-.582-1.799-1.301-1.799"/></svg>
-                <p>GitHub</p>
-              </NuxtLink>
-            </li>
-            <li class="flex-none mb-6 md:mb-0 text-white text-center">
-              <NuxtLink :href="'https://www.linkedin.com/in/john-biddulph-36b99116/'" target="_blank" :class="['flex flex-col py-2 px-4 rounded items-center']" @click="closeMenuOnLinkClick">
-                <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 20 20"><path fill="currentColor" d="M10 .4C4.698.4.4 4.698.4 10s4.298 9.6 9.6 9.6s9.6-4.298 9.6-9.6S15.302.4 10 .4M7.65 13.979H5.706V7.723H7.65zm-.984-7.024c-.614 0-1.011-.435-1.011-.973c0-.549.409-.971 1.036-.971s1.011.422 1.023.971c0 .538-.396.973-1.048.973m8.084 7.024h-1.944v-3.467c0-.807-.282-1.355-.985-1.355c-.537 0-.856.371-.997.728c-.052.127-.065.307-.065.486v3.607H8.814v-4.26c0-.781-.025-1.434-.051-1.996h1.689l.089.869h.039c.256-.408.883-1.01 1.932-1.01c1.279 0 2.238.857 2.238 2.699z"/></svg>
-                <p>LinkedIn</p>
-              </NuxtLink>
-            </li>
-            <li class="flex-none mb-6 md:mb-0 text-white text-center">
-              <NuxtLink :href="'https://www.facebook.com/johnbiddulph'" target="_blank" :class="['flex flex-col py-2 px-4 rounded items-center']" @click="closeMenuOnLinkClick">
-                <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 20 20"><path fill="currentColor" d="M10 .4C4.698.4.4 4.698.4 10s4.298 9.6 9.6 9.6s9.6-4.298 9.6-9.6S15.302.4 10 .4m2.274 6.634h-1.443c-.171 0-.361.225-.361.524V8.6h1.805l-.273 1.486H10.47v4.461H8.767v-4.461H7.222V8.6h1.545v-.874c0-1.254.87-2.273 2.064-2.273h1.443z"/></svg>
-                <p>Facebook</p>
-              </NuxtLink>
-            </li>
-            <li class="flex-none mb-6 md:mb-0 text-white text-center">
-              <NuxtLink :href="'https://www.instagram.com/jbiddulph/?hl=en'" target="_blank" :class="['flex flex-col py-2 px-4 rounded items-center']" @click="closeMenuOnLinkClick">
-                <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 20 20"><path fill="currentColor" d="M13 10a3 3 0 1 1-6 0c0-.171.018-.338.049-.5H6v3.997c0 .278.225.503.503.503h6.995a.503.503 0 0 0 .502-.503V9.5h-1.049c.031.162.049.329.049.5m-3 2a2 2 0 1 0-.001-4.001A2 2 0 0 0 10 12m2.4-4.1h1.199a.301.301 0 0 0 .301-.3V6.401a.301.301 0 0 0-.301-.301H12.4a.301.301 0 0 0-.301.301V7.6c.001.165.136.3.301.3M10 .4A9.6 9.6 0 0 0 .4 10a9.6 9.6 0 0 0 9.6 9.6a9.6 9.6 0 0 0 9.6-9.6A9.6 9.6 0 0 0 10 .4m5 13.489C15 14.5 14.5 15 13.889 15H6.111C5.5 15 5 14.5 5 13.889V6.111C5 5.5 5.5 5 6.111 5h7.778C14.5 5 15 5.5 15 6.111z"/></svg>
-                <p>Instagram</p>
-              </NuxtLink>
-            </li>
-            <li class="flex-none mb-6 md:mb-0 text-white text-center">
-              <NuxtLink :href="'/JohnBiddulphResume.pdf'" target="_blank" :class="['flex flex-col py-2 px-4 rounded items-center']" @click="closeMenuOnLinkClick">
-                <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" viewBox="0 0 512 512"><path fill="currentColor" d="M488.877 52.447H302.306V5.92h-34.779L0 52.563v406.99l265.957 46.527h36.349v-46.353h174.59c9.887-.465 20.879.291 29.37-5.757c6.804-10.41 5.06-23.438 5.641-35.186V75.012c1.221-13.26-9.77-23.903-23.03-22.565m-294.862 282.59c-9.712 5.06-24.252-.233-35.767.581c-7.735-38.5-16.75-76.768-23.67-115.443c-6.805 37.57-15.645 74.79-23.438 112.128c-11.166-.581-22.39-1.28-33.615-2.035c-9.655-51.18-20.995-102.01-30.01-153.305c9.945-.465 19.948-.872 29.893-1.221c5.99 37.047 12.795 73.919 18.03 111.024c8.2-38.036 16.574-76.071 24.717-114.106c11.05-.64 22.1-1.105 33.15-1.687c7.735 39.257 15.644 78.455 24.019 117.537c6.572-40.361 13.841-80.607 20.879-120.91c11.631-.407 23.263-1.047 34.836-1.745c-13.143 56.355-24.659 113.176-39.024 169.182m290.212 97.069H302.306v-36.527h151.21v-23.263h-151.21v-29.079h151.21v-23.263h-151.21v-29.08h151.21v-23.262h-151.21v-29.08h151.21V215.29h-151.21v-29.08h151.21v-23.263h-151.21v-29.079h151.21v-23.263h-151.21v-30.71h181.921Z"/></svg>
-                <p>CV</p>
-              </NuxtLink>
-            </li>
-          </ul>
-        </nav>
+              <button 
+                @click="signOut"
+                class="px-3 py-2 text-sm font-medium rounded-md border transition-colors"
+                :style="{ 
+                  borderColor: siteInfo?.design?.primary_color || '#2563eb',
+                  color: siteInfo?.design?.primary_color || '#2563eb'
+                }"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <div class="md:hidden">
+            <button 
+              @click="toggleMobileMenu"
+              data-mobile-menu-button
+              class="p-2 rounded-md transition-colors"
+              :style="{ 
+                color: siteInfo?.design?.text_color || '#1f2937'
+              }"
+              aria-label="Toggle menu"
+            >
+              <svg 
+                v-if="!mobileMenuOpen" 
+                class="h-6 w-6" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+              <svg 
+                v-else 
+                class="h-6 w-6" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
-    <main class="flex mx-auto bg-slate-900 border-t border-slate-700 border-slate-500">
+
+    <!-- Mobile Menu -->
+    <div 
+      v-if="mobileMenuOpen" 
+      data-mobile-menu
+      class="md:hidden border-b"
+      :style="{ 
+        backgroundColor: siteInfo?.design?.background_color || '#ffffff',
+        borderColor: siteInfo?.design?.primary_color || '#e5e7eb'
+      }"
+    >
+      <div 
+        class="mx-auto px-4 sm:px-6 lg:px-8 py-4"
+        :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }"
+      >
+        <div class="space-y-4">
+          <!-- Social Links -->
+          <div v-if="links.length > 0">
+            <h3 
+              class="text-sm font-medium mb-2"
+              :style="getHeadingStyle(siteInfo?.design, 'h3')"
+            >
+              Links
+            </h3>
+            <div class="flex flex-wrap gap-4">
+              <a 
+                v-for="link in links" 
+                :key="link.id"
+                :href="link.link_url" 
+                target="_blank"
+                class="text-sm font-medium hover:underline transition-colors"
+                :style="{ 
+                  color: siteInfo?.design?.primary_color || '#2563eb',
+                  fontFamily: getFontFamily(siteInfo?.design, 'primary')
+                }"
+              >
+                {{ link.link_name }}
+              </a>
+            </div>
+          </div>
+          
+          <!-- Auth Links -->
+          <div v-if="user" class="pt-4 border-t" :style="{ borderColor: siteInfo?.design?.primary_color || '#e5e7eb' }">
+            <h3 
+              class="text-sm font-medium mb-2"
+              :style="getHeadingStyle(siteInfo?.design, 'h3')"
+            >
+              Admin
+            </h3>
+            <div class="space-y-2">
+              <NuxtLink 
+                to="/admin" 
+                class="block w-full text-left px-3 py-2 text-sm font-medium rounded-md transition-colors"
+                :style="{ 
+                  backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
+                  color: '#ffffff'
+                }"
+              >
+                <svg class="inline mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Dashboard
+              </NuxtLink>
+              <button 
+                @click="signOut"
+                class="block w-full text-left px-3 py-2 text-sm font-medium rounded-md border transition-colors"
+                :style="{ 
+                  borderColor: siteInfo?.design?.primary_color || '#2563eb',
+                  color: siteInfo?.design?.primary_color || '#2563eb'
+                }"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1">
       <nuxt-page />
     </main>
-    <footer class="bg-slate-800 border-t border-slate-700 text-slate-500 text-center p-4">
-      <p class="text-xs">&copy; copyright jbiddulph 2025 </p>
+
+    <!-- Footer -->
+    <footer 
+      class="border-t mt-12"
+      :style="{ 
+        backgroundColor: siteInfo?.design?.background_color || '#ffffff',
+        borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
+        height: siteInfo?.design?.footer_height || '120px'
+      }"
+    >
+      <div 
+        class="mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }"
+      >
+        <div class="flex justify-between items-center">
+          <p 
+            class="text-sm"
+            :style="getBodyStyle(siteInfo?.design)"
+          >
+            {{ siteInfo?.site_footer || '© 2025 John Biddulph. All rights reserved.' }}
+          </p>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
 
-<script setup>
-// const appStore = useAppStore();
+<script setup lang="ts">
+const client = useSupabaseClient()
+const user = useSupabaseUser()
 
-const isMenuOpen = ref(false);
-const route = useRoute();
-import { useRoute } from 'vue-router';
-const client = useSupabaseClient();
-const links = ref([]);
-const router = useRouter()
-const user = useSupabaseUser();
-function toggleMenu() {
-  isMenuOpen.value = !isMenuOpen.value;
-}
+// Reactive data
+const siteInfo = ref(null)
+const links = ref([])
+const loading = ref(true)
+const mobileMenuOpen = ref(false)
 
-function closeMenuOnLinkClick() {
-  if (window.innerWidth < 768) {
-    isMenuOpen.value = false;
+// Fetch all data on mount
+onMounted(async () => {
+  await Promise.all([
+    fetchSiteInfo(),
+    fetchLinks()
+  ])
+  loading.value = false
+  
+  // Load Google Fonts and custom CSS
+  loadGoogleFontsAndCSS()
+  
+  // Close mobile menu when clicking outside
+  const handleClickOutside = (event) => {
+    const mobileMenu = document.querySelector('[data-mobile-menu]')
+    const mobileMenuButton = document.querySelector('[data-mobile-menu-button]')
+    
+    if (mobileMenuOpen.value && 
+        mobileMenu && 
+        !mobileMenu.contains(event.target) && 
+        !mobileMenuButton?.contains(event.target)) {
+      mobileMenuOpen.value = false
+    }
   }
-}
+  
+  document.addEventListener('click', handleClickOutside)
+  
+  onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside)
+  })
+})
 
-const logout = async () => {
+const fetchSiteInfo = async () => {
   try {
-    const { error } = await client.auth.signOut()
-    if (error) throw error;
-    router.push("/login");
+    const response = await $fetch('/api/site-info')
+    siteInfo.value = response.data
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching site info:', error)
   }
 }
 
-function isActive(path) {
-  return route.path === path;
+const fetchLinks = async () => {
+  try {
+    const response = await $fetch('/api/links')
+    links.value = response.data || []
+  } catch (error) {
+    console.error('Error fetching links:', error)
+  }
 }
 
-watchEffect(() => {
-  if (user.value) {
-    links.value = [
-      // { text: 'Home', href: '/' },
-      { text: 'Map', href: '/map' },
-      { text: 'Items', href: '/' },
-      { text: 'Add Item', href: '/items/create' },
-    ];
-  } else {
-    links.value = [
-      // { text: 'Home', href: '/' },
-      { text: 'Home', href: '/' },
-      { text: 'Login', href: '/login' },
-      { text: 'Register', href: '/register' },
-    ];
+// Computed styles based on design system
+const dynamicStyles = computed(() => {
+  if (!siteInfo.value?.design) return {}
+  
+  const design = siteInfo.value.design
+  let fontFamily = design.font_family
+  
+  // Use Google Fonts if available
+  if (design.google_fonts) {
+    try {
+      const googleFonts = JSON.parse(design.google_fonts)
+      if (googleFonts.primary) {
+        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
+      }
+    } catch (e) {
+      console.error('Error parsing Google Fonts:', e)
+    }
   }
-});
+  
+  return {
+    backgroundColor: design.background_color,
+    color: design.text_color,
+    fontFamily: fontFamily,
+    '--primary-color': design.primary_color,
+    '--secondary-color': design.secondary_color,
+    '--accent-color': design.accent_color,
+    '--text-color': design.text_color,
+    '--background-color': design.background_color
+  }
+})
+
+// Utility functions
+const getFontFamily = (design, fontType = 'primary') => {
+  if (!design) return 'inherit'
+  
+  let fontFamily = fontType === 'heading' ? design.heading_font : design.font_family
+  
+  // Use Google Fonts if available
+  if (design.google_fonts) {
+    try {
+      const googleFonts = JSON.parse(design.google_fonts)
+      if (fontType === 'heading' && googleFonts.heading) {
+        fontFamily = `"${googleFonts.heading}", ${design.heading_font}`
+      } else if (googleFonts.primary) {
+        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
+      }
+    } catch (e) {
+      console.error('Error parsing Google Fonts:', e)
+    }
+  }
+  
+  return fontFamily
+}
+
+const getHeadingStyle = (design, level = 'h1') => {
+  const fontSizeMap = {
+    h1: design?.font_size_h1 || '1.5rem',
+    h2: design?.font_size_h2 || '2rem',
+    h3: design?.font_size_h3 || '1.5rem',
+    h4: design?.font_size_h4 || '1.25rem'
+  }
+  
+  return {
+    color: design?.text_color || '#1f2937',
+    fontFamily: getFontFamily(design, 'heading'),
+    fontSize: fontSizeMap[level]
+  }
+}
+
+const getBodyStyle = (design) => {
+  return {
+    color: design?.text_color || '#1f2937',
+    fontFamily: getFontFamily(design, 'primary'),
+    fontSize: design?.font_size_base || '16px'
+  }
+}
+
+const signOut = async () => {
+  await client.auth.signOut()
+  await navigateTo('/login')
+}
+
+const toggleMobileMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value
+}
+
+const loadGoogleFontsAndCSS = () => {
+  if (process.client && siteInfo.value?.design?.google_fonts) {
+    try {
+      const googleFonts = JSON.parse(siteInfo.value.design.google_fonts)
+      const fonts = []
+      
+      if (googleFonts.primary) {
+        fonts.push(googleFonts.primary)
+      }
+      if (googleFonts.heading && googleFonts.heading !== googleFonts.primary) {
+        fonts.push(googleFonts.heading)
+      }
+      
+      if (fonts.length > 0) {
+        const fontLink = document.createElement('link')
+        fontLink.href = `https://fonts.googleapis.com/css2?${fonts.map(font => `family=${font.replace(/\s+/g, '+')}:wght@300;400;500;600;700`).join('&')}&display=swap`
+        fontLink.rel = 'stylesheet'
+        document.head.appendChild(fontLink)
+      }
+    } catch (e) {
+      console.error('Error loading Google Fonts:', e)
+    }
+  }
+  
+  // Add custom CSS if provided
+  if (process.client && siteInfo.value?.design?.custom_css) {
+    const style = document.createElement('style')
+    style.textContent = siteInfo.value.design.custom_css
+    document.head.appendChild(style)
+  }
+}
 </script>
 
-<style>
-.bg-gradient {
-  background: linear-gradient(180deg, #ff00ff, #2e00d4);
-  background-size: 200% 200%;
-}
-.bg-gradient-foot {
-  background: linear-gradient(180deg, #ff00ff, #2e00d4);
-  background-size: 200% 200%;
-}
-/* Add your theme styles here */
-body {
-  font-family: monospace, sans-serif;
-}
-
-header {
-  background-color: #333;
-  color: #fff;
-  padding: 1rem;
-  text-align: center;
-}
-
-footer {
-  background-color: #333;
-  color: #fff;
-  padding: 1rem;
-  text-align: center;
-}
-
-main {
-  min-height: calc(100vh - 156px); /* Adjust this value according to your header and footer height */
-}
+<style scoped>
+/* Dynamic styling will be applied via computed styles */
 </style>

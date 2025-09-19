@@ -48,7 +48,7 @@ const signIn = async () => {
     console.log("Data: ", data);
     console.log("Form: ", form);
     if (error) throw error
-    router.push("/")
+    router.push("/admin")
   } catch (error) {
     errorMsg.value = error.message
   }

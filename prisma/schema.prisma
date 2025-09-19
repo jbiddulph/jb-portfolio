@@ -58,3 +58,110 @@ model JB_Pages {
   created_on       String
   user_id          String
 }
+
+// JBiddulph Website Design System Tables
+model jbiddulph_info {
+  id              Int     @id @default(autoincrement())
+  site_name       String
+  site_slogan     String?
+  site_description String?
+  site_date       DateTime @default(now())
+  site_footer     String?
+  site_image      String?
+  site_avatar     String?
+  design_id       Int?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  
+  // Relationships
+  design          jbiddulph_designs? @relation(fields: [design_id], references: [id])
+}
+
+model jbiddulph_pages {
+  id              Int     @id @default(autoincrement())
+  home            String?
+  cv              String?
+  portfolio       String?
+  documentation   String?
+  blog            String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}
+
+model jbiddulph_portfolio {
+  id                    Int     @id @default(autoincrement())
+  project_name          String
+  project_date          DateTime
+  project_link          String?
+  project_image         String?
+  project_description   String?
+  project_tags          String?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+}
+
+model jbiddulph_links {
+  id              Int     @id @default(autoincrement())
+  link_name       String
+  link_url        String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}
+
+model jbiddulph_designs {
+  id              Int     @id @default(autoincrement())
+  name            String
+  description     String?
+  
+  // Design System Properties
+  primary_color   String?
+  secondary_color String?
+  accent_color    String?
+  background_color String?
+  text_color      String?
+  
+  // Typography
+  font_family     String?
+  heading_font    String?
+  body_font       String?
+  font_size_base  String?
+  font_size_h1    String?
+  font_size_h2    String?
+  font_size_h3    String?
+  font_size_h4    String?
+  font_size_h5    String?
+  font_size_h6    String?
+  
+  // Layout
+  container_width String?
+  sidebar_width   String?
+  header_height   String?
+  footer_height   String?
+  
+  // Spacing
+  margin_small    String?
+  margin_medium   String?
+  margin_large    String?
+  padding_small   String?
+  padding_medium  String?
+  padding_large   String?
+  
+  // Border & Effects
+  border_radius   String?
+  shadow_small    String?
+  shadow_medium   String?
+  shadow_large    String?
+  
+  // CSS Custom Properties (for advanced styling)
+  custom_css      String?
+  
+  // Google Fonts
+  google_fonts    String?
+  
+  is_active       Boolean @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  
+  // Relationships
+  info            jbiddulph_info[]
+}
