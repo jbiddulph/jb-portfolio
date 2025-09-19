@@ -200,6 +200,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+
 // Reactive data
 const siteInfo = ref(null)
 const project = ref(null)
@@ -208,26 +210,64 @@ const error = ref(null)
 
 const route = useRoute()
 
+// User design management
+const { userDesignId } = useUserDesign()
+
 // Fetch data on mount
 onMounted(async () => {
   await Promise.all([
     fetchSiteInfo(),
     fetchProject()
   ])
+  
+  // Listen for theme changes
+  window.addEventListener('theme-changed', handleThemeChange)
 })
+
+onUnmounted(() => {
+  window.removeEventListener('theme-changed', handleThemeChange)
+})
+
+const handleThemeChange = async (event) => {
+  console.log('Portfolio details: Theme change event received:', event.detail)
+  
+  // Always use user's preferred design (including default)
+  await fetchUserDesign()
+}
 
 const fetchSiteInfo = async () => {
   try {
     const response = await $fetch('/api/site-info')
     siteInfo.value = response.data
+    
+    // If user has a preferred design, fetch and apply it
+    if (userDesignId.value) {
+      await fetchUserDesign()
+    }
   } catch (error) {
     console.error('Error fetching site info:', error)
   }
 }
 
+const fetchUserDesign = async () => {
+  if (!userDesignId.value) return
+  
+  try {
+    const response = await $fetch(`/api/designs/${userDesignId.value}`)
+    if (response.success && siteInfo.value) {
+      // Override the design with user's preferred design
+      siteInfo.value.design = response.data
+    }
+  } catch (error) {
+    console.error('Error fetching user design:', error)
+  }
+}
+
 const fetchProject = async () => {
   try {
+    console.log('Fetching project with ID:', route.params.id)
     const response = await $fetch(`/api/portfolio/${route.params.id}`)
+    console.log('Project response:', response)
     
     if (response.success && response.data) {
       project.value = response.data
@@ -236,7 +276,8 @@ const fetchProject = async () => {
     }
   } catch (error) {
     console.error('Error fetching project:', error)
-    error.value = 'Failed to load project details'
+    console.error('Error details:', error.message, error.statusCode)
+    error.value = `Failed to load project details: ${error.message || 'Unknown error'}`
   } finally {
     loading.value = false
   }

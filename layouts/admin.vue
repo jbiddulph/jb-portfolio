@@ -113,8 +113,28 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+
 const client = useSupabaseClient()
-const user = useSupabaseUser()
+const user = ref(null)
+
+// Get authenticated user data securely
+const fetchUser = async () => {
+  try {
+    const { data: { user: authenticatedUser }, error } = await client.auth.getUser()
+    if (!error && authenticatedUser) {
+      user.value = authenticatedUser
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error)
+    user.value = null
+  }
+}
+
+// Fetch user on mount
+onMounted(() => {
+  fetchUser()
+})
 
 const signOut = async () => {
   await client.auth.signOut()

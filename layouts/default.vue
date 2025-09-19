@@ -235,13 +235,24 @@
         class="mx-auto px-4 sm:px-6 lg:px-8 py-8"
         :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }"
       >
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
           <p 
-            class="text-sm"
+            class="text-sm text-center sm:text-left"
             :style="getBodyStyle(siteInfo?.design)"
           >
             {{ siteInfo?.site_footer || '© 2025 John Biddulph. All rights reserved.' }}
           </p>
+          
+          <!-- Design Switcher -->
+          <div class="flex items-center space-x-2">
+            <span 
+              class="text-xs"
+              :style="getBodyStyle(siteInfo?.design)"
+            >
+              Theme:
+            </span>
+            <DesignSwitcher @design-changed="handleDesignChange" />
+          </div>
         </div>
       </div>
     </footer>
@@ -249,18 +260,37 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+
 const client = useSupabaseClient()
-const user = useSupabaseUser()
+const user = ref(null)
 
 // Reactive data
-const siteInfo = ref(null)
-const links = ref([])
+const siteInfo = ref<any>(null)
+const links = ref<any[]>([])
 const loading = ref(true)
 const mobileMenuOpen = ref(false)
+
+// User design management
+const { userDesignId, getEffectiveDesignId } = useUserDesign()
+
+// Securely fetch user data
+const fetchUser = async () => {
+  try {
+    const { data: { user: authenticatedUser }, error } = await client.auth.getUser()
+    if (!error && authenticatedUser) {
+      user.value = authenticatedUser
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error)
+    user.value = null
+  }
+}
 
 // Fetch all data on mount
 onMounted(async () => {
   await Promise.all([
+    fetchUser(),
     fetchSiteInfo(),
     fetchLinks()
   ])
@@ -284,8 +314,12 @@ onMounted(async () => {
   
   document.addEventListener('click', handleClickOutside)
   
+  // Listen for theme changes from design switcher
+  window.addEventListener('theme-changed', handleThemeChange)
+  
   onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside)
+    window.removeEventListener('theme-changed', handleThemeChange)
   })
 })
 
@@ -293,9 +327,67 @@ const fetchSiteInfo = async () => {
   try {
     const response = await $fetch('/api/site-info')
     siteInfo.value = response.data
+    
+    // Always fetch and apply user's preferred design (including default)
+    if (userDesignId.value) {
+      await fetchUserDesign()
+    }
   } catch (error) {
     console.error('Error fetching site info:', error)
   }
+}
+
+const fetchUserDesign = async () => {
+  if (!userDesignId.value) return
+  
+  try {
+    const response = await $fetch(`/api/designs/${userDesignId.value}`)
+    if (response.success && siteInfo.value) {
+      // Override the design with user's preferred design
+      siteInfo.value.design = response.data
+      loadGoogleFontsAndCSS()
+    }
+  } catch (error) {
+    console.error('Error fetching user design:', error)
+  }
+}
+
+const handleDesignChange = async (designId: number | string) => {
+  // Clean up old styles first
+  cleanupOldStyles()
+  
+  if (designId && typeof designId === 'number') {
+    await fetchUserDesign()
+  } else {
+    // Reset to default design (ID 3)
+    await fetchUserDesign()
+  }
+}
+
+const cleanupOldStyles = () => {
+  if (process.client) {
+    // Remove old Google Font links
+    const oldFontLinks = document.querySelectorAll('link[href*="fonts.googleapis.com"]')
+    oldFontLinks.forEach(link => link.remove())
+    
+    // Remove old custom CSS
+    const oldCustomCSS = document.querySelector('#custom-design-css')
+    if (oldCustomCSS) {
+      oldCustomCSS.remove()
+    }
+  }
+}
+
+const handleThemeChange = async (event) => {
+  console.log('Theme change event received:', event.detail)
+  // Clean up old styles first
+  cleanupOldStyles()
+  
+  // Small delay to ensure cleanup is complete
+  await new Promise(resolve => setTimeout(resolve, 100))
+  
+  // Reload the theme (always use user's preferred design)
+  await fetchUserDesign()
 }
 
 const fetchLinks = async () => {
@@ -446,6 +538,7 @@ const loadGoogleFontsAndCSS = () => {
   // Add custom CSS if provided
   if (process.client && siteInfo.value?.design?.custom_css) {
     const style = document.createElement('style')
+    style.id = 'custom-design-css'
     style.textContent = siteInfo.value.design.custom_css
     document.head.appendChild(style)
   }

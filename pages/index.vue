@@ -347,6 +347,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+
 // Reactive data
 const siteInfo = ref(null)
 const portfolio = ref([])
@@ -354,6 +356,9 @@ const pages = ref(null)
 const loading = ref(true)
 const portfolioLoading = ref(true)
 const portfolioLoadTimeout = ref(false)
+
+// User design management
+const { userDesignId, getEffectiveDesignId } = useUserDesign()
 
 // Computed properties
 const isOneColumnLayout = computed(() => {
@@ -372,14 +377,47 @@ onMounted(async () => {
     fetchPages()
   ])
   loading.value = false
+  
+  // Listen for theme changes
+  window.addEventListener('theme-changed', handleThemeChange)
 })
+
+onUnmounted(() => {
+  window.removeEventListener('theme-changed', handleThemeChange)
+})
+
+const handleThemeChange = async (event) => {
+  console.log('Home page: Theme change event received:', event.detail)
+  
+  // Always use user's preferred design (including default)
+  await fetchUserDesign()
+}
 
 const fetchSiteInfo = async () => {
   try {
     const response = await $fetch('/api/site-info')
     siteInfo.value = response.data
+    
+    // If user has a preferred design, fetch and apply it
+    if (userDesignId.value) {
+      await fetchUserDesign()
+    }
   } catch (error) {
     console.error('Error fetching site info:', error)
+  }
+}
+
+const fetchUserDesign = async () => {
+  if (!userDesignId.value) return
+  
+  try {
+    const response = await $fetch(`/api/designs/${userDesignId.value}`)
+    if (response.success && siteInfo.value) {
+      // Override the design with user's preferred design
+      siteInfo.value.design = response.data
+    }
+  } catch (error) {
+    console.error('Error fetching user design:', error)
   }
 }
 

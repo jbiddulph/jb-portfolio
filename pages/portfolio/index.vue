@@ -149,11 +149,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useSupabaseClient, useSupabaseUser } from '#imports'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useSupabaseClient } from '#imports'
 
 const client = useSupabaseClient()
-const user = useSupabaseUser()
+const user = ref(null)
+
+// User design management
+const { userDesignId } = useUserDesign()
+
+// Securely fetch user data
+const fetchUser = async () => {
+  try {
+    const { data: { user: authenticatedUser }, error } = await client.auth.getUser()
+    if (!error && authenticatedUser) {
+      user.value = authenticatedUser
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error)
+    user.value = null
+  }
+}
 
 // Reactive data
 const siteInfo = ref(null)
@@ -164,19 +180,53 @@ const portfolioLoading = ref(true)
 // Fetch all data on mount
 onMounted(async () => {
   await Promise.all([
+    fetchUser(),
     fetchSiteInfo(),
     fetchPortfolio(),
     fetchPages()
   ])
   portfolioLoading.value = false
+  
+  // Listen for theme changes
+  window.addEventListener('theme-changed', handleThemeChange)
 })
+
+onUnmounted(() => {
+  window.removeEventListener('theme-changed', handleThemeChange)
+})
+
+const handleThemeChange = async (event) => {
+  console.log('Portfolio index: Theme change event received:', event.detail)
+  
+  // Always use user's preferred design (including default)
+  await fetchUserDesign()
+}
 
 const fetchSiteInfo = async () => {
   try {
     const response = await $fetch('/api/site-info')
     siteInfo.value = response.data
+    
+    // Always fetch and apply user's preferred design (including default)
+    if (userDesignId.value) {
+      await fetchUserDesign()
+    }
   } catch (error) {
     console.error('Error fetching site info:', error)
+  }
+}
+
+const fetchUserDesign = async () => {
+  if (!userDesignId.value) return
+  
+  try {
+    const response = await $fetch(`/api/designs/${userDesignId.value}`)
+    if (response.success && siteInfo.value) {
+      // Override the design with user's preferred design
+      siteInfo.value.design = response.data
+    }
+  } catch (error) {
+    console.error('Error fetching user design:', error)
   }
 }
 
