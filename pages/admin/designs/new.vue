@@ -471,6 +471,10 @@ const form = reactive({
   shadow_medium: '0 4px 6px rgba(0, 0, 0, 0.1)',
   shadow_large: '0 10px 25px rgba(0, 0, 0, 0.1)',
   layout_columns: '2',
+  site_name_size_desktop: '1.5rem',
+  site_name_size_mobile: '1.25rem',
+  site_description_size_desktop: '1rem',
+  site_description_size_mobile: '0.875rem',
   custom_css: '',
   google_fonts: '',
 })

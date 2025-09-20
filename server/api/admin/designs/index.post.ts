@@ -37,6 +37,13 @@ export default defineEventHandler(async (event) => {
         shadow_small: body.shadow_small,
         shadow_medium: body.shadow_medium,
         shadow_large: body.shadow_large,
+        site_name_size_desktop: body.site_name_size_desktop,
+        site_name_size_mobile: body.site_name_size_mobile,
+        site_description_size_desktop: body.site_description_size_desktop,
+        site_description_size_mobile: body.site_description_size_mobile,
+        layout_columns: body.layout_columns,
+        google_fonts: body.google_fonts,
+        portfolio_card_background_color: body.portfolio_card_background_color,
         custom_css: body.custom_css,
         is_active: false
       }
