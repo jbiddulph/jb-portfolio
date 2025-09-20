@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
         shadow_medium: body.shadow_medium,
         shadow_large: body.shadow_large,
         custom_css: body.custom_css,
-        is_active: body.is_active || false
+        is_active: false
       }
     })
     

@@ -150,7 +150,17 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useSupabaseClient } from '#imports'
 
-const client = useSupabaseClient()
+const getSupabaseClient = () => {
+  if (process.client) {
+    try {
+      return useSupabaseClient()
+    } catch (error) {
+      console.warn('Failed to initialize Supabase client:', error)
+      return null
+    }
+  }
+  return null
+}
 const user = ref(null)
 
 // User design management
@@ -158,6 +168,13 @@ const { userDesignId } = useUserDesign()
 
 // Securely fetch user data (only if session exists)
 const fetchUser = async () => {
+  const client = getSupabaseClient()
+  if (!client) {
+    console.log('Supabase client not available (SSR)')
+    user.value = null
+    return
+  }
+  
   try {
     // First check if there's an active session
     const { data: { session } } = await client.auth.getSession()
@@ -205,6 +222,9 @@ onUnmounted(() => {
 })
 
 const handleThemeChange = async (event) => {
+  // Only handle theme changes on client side
+  if (!process.client) return
+  
   console.log('Portfolio index: Theme change event received:', event.detail)
   
   // Always use user's preferred design (including default)
@@ -217,7 +237,8 @@ const fetchSiteInfo = async () => {
     siteInfo.value = response.data
     
     // Always fetch and apply user's preferred design (including default)
-    if (userDesignId.value) {
+    // Only on client side to avoid SSR issues
+    if (process.client && userDesignId.value) {
       await fetchUserDesign()
     }
   } catch (error) {
@@ -226,7 +247,7 @@ const fetchSiteInfo = async () => {
 }
 
 const fetchUserDesign = async () => {
-  if (!userDesignId.value) return
+  if (!process.client || !userDesignId.value) return
   
   try {
     const response = await $fetch(`/api/designs/${userDesignId.value}`)

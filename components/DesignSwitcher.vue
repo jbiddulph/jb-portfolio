@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+// Use the user design composable directly
 const { 
   availableDesigns, 
   loading, 
@@ -32,10 +33,15 @@ const {
 
 const selectedDesignId = ref<number | string>('')
 
+// SSR-safe process.client check
+const isClient = computed(() => process.client)
+
 // Initialize selected design from user preference
 onMounted(async () => {
-  await fetchAvailableDesigns()
-  selectedDesignId.value = userDesignId.value || ''
+  if (process.client) {
+    await fetchAvailableDesigns()
+    selectedDesignId.value = userDesignId.value || ''
+  }
 })
 
 // Watch for changes in user design preference
@@ -44,6 +50,9 @@ watch(userDesignId, (newId) => {
 })
 
 const handleDesignChange = () => {
+  // Only handle design changes on client side
+  if (!process.client) return
+  
   if (selectedDesignId.value === '') {
     clearUserDesign()
     emit('design-changed', null)
@@ -51,6 +60,11 @@ const handleDesignChange = () => {
     saveUserDesign(selectedDesignId.value as number)
     emit('design-changed', selectedDesignId.value)
   }
+  
+  // Refresh the page to ensure all styles are properly applied
+  setTimeout(() => {
+    window.location.reload()
+  }, 100) // Small delay to ensure the cookie is set
 }
 
 const emit = defineEmits<{

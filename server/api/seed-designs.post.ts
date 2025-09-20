@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
         shadow_medium: '0 4px 6px rgba(0, 0, 0, 0.1)',
         shadow_large: '0 10px 25px rgba(0, 0, 0, 0.1)',
         custom_css: '',
-        is_active: true
+        is_active: false
       }
     })
 
@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
         site_slogan: 'Full Stack Developer & Designer',
         site_description: 'A modern portfolio showcasing my development and design work',
         site_footer: '© 2025 John Biddulph. All rights reserved.',
-        design_id: defaultDesign.id
+        design_id: null
       }
     })
 

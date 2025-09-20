@@ -104,15 +104,16 @@
           </div>
 
           <!-- Mobile Menu Button -->
-          <div class="md:hidden">
+          <div class="md:hidden relative">
             <button 
-              @click="toggleMobileMenu"
+              @click.prevent="toggleMobileMenu"
               data-mobile-menu-button
               class="p-2 rounded-md transition-colors"
               :style="{ 
                 color: siteInfo?.design?.text_color || '#1f2937'
               }"
               aria-label="Toggle menu"
+              type="button"
             >
               <svg 
                 v-if="!mobileMenuOpen" 
@@ -132,6 +133,10 @@
               >
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
+              <!-- Debug indicator -->
+              <div v-if="isClient" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                {{ mobileMenuOpen ? 'X' : 'M' }}
+              </div>
             </button>
           </div>
         </div>
@@ -148,6 +153,10 @@
         borderColor: siteInfo?.design?.primary_color || '#e5e7eb'
       }"
     >
+      <!-- Debug info -->
+      <div v-if="isClient" class="bg-yellow-100 p-2 text-xs">
+        DEBUG: Mobile menu is open (mobileMenuOpen: {{ mobileMenuOpen }})
+      </div>
       <div 
         class="mx-auto px-4 sm:px-6 lg:px-8 py-4"
         :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }"
@@ -260,9 +269,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 
-const client = useSupabaseClient()
+const getSupabaseClient = () => {
+  if (process.client) {
+    try {
+      return useSupabaseClient()
+    } catch (error) {
+      console.warn('Failed to initialize Supabase client:', error)
+      return null
+    }
+  }
+  return null
+}
 const user = ref(null)
 
 // Reactive data
@@ -271,11 +290,32 @@ const links = ref<any[]>([])
 const loading = ref(true)
 const mobileMenuOpen = ref(false)
 
-// User design management
-const { userDesignId, getEffectiveDesignId } = useUserDesign()
+// SSR-safe process.client check
+const isClient = computed(() => process.client)
+
+// User design management - safe for SSR
+let userDesignId = ref<number | null>(null)
+let getEffectiveDesignId = (adminDesignId: number | null) => adminDesignId || 3
+
+try {
+  if (process.client) {
+    const userDesign = useUserDesign()
+    userDesignId.value = userDesign.userDesignId.value
+    getEffectiveDesignId = userDesign.getEffectiveDesignId
+  }
+} catch (error) {
+  console.warn('Failed to initialize user design composable:', error)
+}
 
 // Securely fetch user data (only if session exists)
 const fetchUser = async () => {
+  const client = getSupabaseClient()
+  if (!client) {
+    console.log('Supabase client not available (SSR)')
+    user.value = null
+    return
+  }
+  
   try {
     // First check if there's an active session
     const { data: { session } } = await client.auth.getSession()
@@ -300,11 +340,14 @@ const fetchUser = async () => {
 
 // Fetch all data on mount
 onMounted(async () => {
-  await Promise.all([
-    fetchUser(),
-    fetchSiteInfo(),
-    fetchLinks()
-  ])
+  const promises = [fetchSiteInfo(), fetchLinks()]
+  
+  // Only fetch user data on client side
+  if (process.client) {
+    promises.push(fetchUser())
+  }
+  
+  await Promise.all(promises)
   loading.value = false
   
   // Load Google Fonts and custom CSS
@@ -340,7 +383,8 @@ const fetchSiteInfo = async () => {
     siteInfo.value = response.data
     
     // Always fetch and apply user's preferred design (including default)
-    if (userDesignId.value) {
+    // Only on client side to avoid SSR issues
+    if (process.client && userDesignId.value) {
       await fetchUserDesign()
     }
   } catch (error) {
@@ -349,7 +393,7 @@ const fetchSiteInfo = async () => {
 }
 
 const fetchUserDesign = async () => {
-  if (!userDesignId.value) return
+  if (!process.client || !userDesignId.value) return
   
   try {
     const response = await $fetch(`/api/designs/${userDesignId.value}`)
@@ -364,6 +408,9 @@ const fetchUserDesign = async () => {
 }
 
 const handleDesignChange = async (designId: number | string) => {
+  // Only handle design changes on client side
+  if (!process.client) return
+  
   // Clean up old styles first
   cleanupOldStyles()
   
@@ -390,6 +437,9 @@ const cleanupOldStyles = () => {
 }
 
 const handleThemeChange = async (event) => {
+  // Only handle theme changes on client side
+  if (!process.client) return
+  
   console.log('Theme change event received:', event.detail)
   // Clean up old styles first
   cleanupOldStyles()
@@ -512,6 +562,12 @@ const getSiteDescriptionStyle = (design, device = 'desktop') => {
 }
 
 const signOut = async () => {
+  const client = getSupabaseClient()
+  if (!client) {
+    console.error('Supabase client not available for sign out')
+    return
+  }
+  
   await client.auth.signOut()
   await navigateTo('/login')
 }
@@ -520,7 +576,24 @@ const toggleMobileMenu = () => {
   console.log('Mobile menu toggle clicked, current state:', mobileMenuOpen.value)
   mobileMenuOpen.value = !mobileMenuOpen.value
   console.log('Mobile menu new state:', mobileMenuOpen.value)
+  
+  // Force reactivity update
+  if (process.client) {
+    console.log('Mobile menu DOM element:', document.querySelector('[data-mobile-menu]'))
+  }
 }
+
+// Watch for mobile menu state changes
+watch(mobileMenuOpen, (newValue, oldValue) => {
+  console.log('Mobile menu state changed from', oldValue, 'to', newValue)
+  if (process.client) {
+    const mobileMenu = document.querySelector('[data-mobile-menu]')
+    console.log('Mobile menu element found:', !!mobileMenu)
+    if (mobileMenu) {
+      console.log('Mobile menu visibility:', window.getComputedStyle(mobileMenu).display)
+    }
+  }
+})
 
 const loadGoogleFontsAndCSS = () => {
   if (process.client && siteInfo.value?.design?.google_fonts) {

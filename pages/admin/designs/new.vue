@@ -397,17 +397,6 @@
 
       <div class="bg-white shadow rounded-lg p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">Settings</h2>
-        <div class="flex items-center">
-          <input
-            v-model="form.is_active"
-            type="checkbox"
-            id="is_active"
-            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          />
-          <label for="is_active" class="ml-2 block text-sm text-gray-900">
-            Set as active design
-          </label>
-        </div>
       </div>
 
       <div class="flex justify-end space-x-3">
@@ -484,7 +473,6 @@ const form = reactive({
   layout_columns: '2',
   custom_css: '',
   google_fonts: '',
-  is_active: false
 })
 
 onMounted(async () => {

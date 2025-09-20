@@ -387,6 +387,9 @@ onUnmounted(() => {
 })
 
 const handleThemeChange = async (event) => {
+  // Only handle theme changes on client side
+  if (!process.client) return
+  
   console.log('Home page: Theme change event received:', event.detail)
   
   // Always use user's preferred design (including default)
@@ -399,7 +402,8 @@ const fetchSiteInfo = async () => {
     siteInfo.value = response.data
     
     // If user has a preferred design, fetch and apply it
-    if (userDesignId.value) {
+    // Only on client side to avoid SSR issues
+    if (process.client && userDesignId.value) {
       await fetchUserDesign()
     }
   } catch (error) {
@@ -408,7 +412,7 @@ const fetchSiteInfo = async () => {
 }
 
 const fetchUserDesign = async () => {
-  if (!userDesignId.value) return
+  if (!process.client || !userDesignId.value) return
   
   try {
     const response = await $fetch(`/api/designs/${userDesignId.value}`)

@@ -43,21 +43,8 @@ export default defineEventHandler(async (event) => {
       console.log('Created new site info:', siteInfo)
     }
 
-    // Sync design active status
-    if (body.design_id) {
-      // Set all designs to inactive first
-      await prisma.jbiddulph_designs.updateMany({
-        data: { is_active: false }
-      })
-      
-      // Set the selected design as active
-      await prisma.jbiddulph_designs.update({
-        where: { id: body.design_id },
-        data: { is_active: true }
-      })
-      
-      console.log('Synced design active status for design_id:', body.design_id)
-    }
+    // Note: Design selection is now purely user-driven via frontend theme switcher
+    // No need to sync is_active status in admin
     
     return {
       success: true,

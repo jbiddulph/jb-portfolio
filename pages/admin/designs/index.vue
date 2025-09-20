@@ -23,12 +23,6 @@
         <div class="flex justify-between items-start mb-4">
           <h3 class="text-lg font-semibold text-gray-900">{{ design.name }}</h3>
           <div class="flex items-center space-x-2">
-            <span 
-              v-if="design.is_active"
-              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-            >
-              Active
-            </span>
             <div class="relative">
               <button 
                 @click="toggleDropdown(design.id)"
@@ -54,12 +48,6 @@
                     class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Copy Design
-                  </button>
-                  <button 
-                    @click="setActiveDesign(design)"
-                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Set as Active
                   </button>
                   <button 
                     @click="deleteDesign(design.id)"
@@ -180,36 +168,6 @@ const copyDesign = async (design) => {
   }
 }
 
-const setActiveDesign = async (design) => {
-  try {
-    // First, set all designs to inactive
-    await Promise.all(
-      designs.value.map(d => 
-        $fetch(`/api/admin/designs/${d.id}`, {
-          method: 'PUT',
-          body: { is_active: false }
-        })
-      )
-    )
-    
-    // Then set the selected design as active
-    await $fetch(`/api/admin/designs/${design.id}`, {
-      method: 'PUT',
-      body: { is_active: true }
-    })
-    
-    // Update site info to use this design
-    await $fetch('/api/admin/site-info', {
-      method: 'PUT',
-      body: { design_id: design.id }
-    })
-    
-    await fetchDesigns()
-    activeDropdown.value = null
-  } catch (error) {
-    console.error('Error setting active design:', error)
-  }
-}
 
 const deleteDesign = async (designId) => {
   if (confirm('Are you sure you want to delete this design?')) {
