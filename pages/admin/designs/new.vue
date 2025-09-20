@@ -427,7 +427,7 @@ definePageMeta({
 const router = useRouter()
 const loading = ref(false)
 const availableFonts = ref([])
-const selectedFonts = ref(false)
+const selectedFonts = computed(() => googleFonts.primary || googleFonts.heading)
 const googleFonts = reactive({
   primary: '',
   heading: ''
