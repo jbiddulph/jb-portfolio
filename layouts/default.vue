@@ -133,10 +133,6 @@
               >
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
-              <!-- Debug indicator -->
-              <div v-if="isClient" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                {{ mobileMenuOpen ? 'X' : 'M' }}
-              </div>
             </button>
           </div>
         </div>
@@ -153,10 +149,6 @@
         borderColor: siteInfo?.design?.primary_color || '#e5e7eb'
       }"
     >
-      <!-- Debug info -->
-      <div v-if="isClient" class="bg-yellow-100 p-2 text-xs">
-        DEBUG: Mobile menu is open (mobileMenuOpen: {{ mobileMenuOpen }})
-      </div>
       <div 
         class="mx-auto px-4 sm:px-6 lg:px-8 py-4"
         :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }"
@@ -573,26 +565,12 @@ const signOut = async () => {
 }
 
 const toggleMobileMenu = () => {
-  console.log('Mobile menu toggle clicked, current state:', mobileMenuOpen.value)
   mobileMenuOpen.value = !mobileMenuOpen.value
-  console.log('Mobile menu new state:', mobileMenuOpen.value)
-  
-  // Force reactivity update
-  if (process.client) {
-    console.log('Mobile menu DOM element:', document.querySelector('[data-mobile-menu]'))
-  }
 }
 
 // Watch for mobile menu state changes
 watch(mobileMenuOpen, (newValue, oldValue) => {
-  console.log('Mobile menu state changed from', oldValue, 'to', newValue)
-  if (process.client) {
-    const mobileMenu = document.querySelector('[data-mobile-menu]')
-    console.log('Mobile menu element found:', !!mobileMenu)
-    if (mobileMenu) {
-      console.log('Mobile menu visibility:', window.getComputedStyle(mobileMenu).display)
-    }
-  }
+  // Mobile menu state change handled by Vue reactivity
 })
 
 const loadGoogleFontsAndCSS = () => {
