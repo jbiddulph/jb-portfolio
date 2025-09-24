@@ -27,27 +27,27 @@
             />
             <div>
               <h1 
-                class="font-bold hidden md:block"
+                class="font-bold hidden md:block mt-2"
                 :style="getSiteNameStyle(siteInfo?.design, 'desktop')"
               >
                 {{ siteInfo?.site_name || 'John Biddulph Portfolio' }}
               </h1>
               <h1 
-                class="font-bold md:hidden"
+                class="font-bold md:hidden mt-2"
                 :style="getSiteNameStyle(siteInfo?.design, 'mobile')"
               >
                 {{ siteInfo?.site_name || 'John Biddulph Portfolio' }}
               </h1>
               <p 
                 v-if="siteInfo?.site_slogan"
-                class="hidden md:block opacity-75"
+                class="hidden md:block opacity-75 leading-tight"
                 :style="getSiteDescriptionStyle(siteInfo?.design, 'desktop')"
               >
                 {{ siteInfo.site_slogan }}
               </p>
               <p 
                 v-if="siteInfo?.site_slogan"
-                class="md:hidden opacity-75"
+                class="md:hidden opacity-75 leading-tight"
                 :style="getSiteDescriptionStyle(siteInfo?.design, 'mobile')"
               >
                 {{ siteInfo.site_slogan }}
