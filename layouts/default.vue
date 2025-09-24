@@ -6,11 +6,13 @@
   >
     <!-- Header -->
     <header 
-      class="shadow-sm border-b"
+      class="shadow-sm"
       :style="{ 
         backgroundColor: siteInfo?.design?.background_color || '#ffffff',
         height: siteInfo?.design?.header_height || '80px',
-        ...getBorderStyle(siteInfo?.design)
+        borderBottomWidth: siteInfo?.design?.border_thickness || '1px',
+        borderBottomStyle: siteInfo?.design?.border_style || 'solid',
+        borderBottomColor: siteInfo?.design?.primary_color || '#e5e7eb'
       }"
     >
       <div 
@@ -229,11 +231,13 @@
 
     <!-- Footer -->
     <footer 
-      class="border-t mt-12"
+      class="mt-12"
       :style="{ 
         backgroundColor: siteInfo?.design?.background_color || '#ffffff',
         height: siteInfo?.design?.footer_height || '120px',
-        ...getBorderStyle(siteInfo?.design)
+        borderTopWidth: siteInfo?.design?.border_thickness || '1px',
+        borderTopStyle: siteInfo?.design?.border_style || 'solid',
+        borderTopColor: siteInfo?.design?.primary_color || '#e5e7eb'
       }"
     >
       <div 
