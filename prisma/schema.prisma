@@ -156,6 +156,8 @@ model jbiddulph_designs {
   
   // Border & Effects
   border_radius   String?
+  border_thickness String?
+  border_style    String?
   shadow_small    String?
   shadow_medium   String?
   shadow_large    String?

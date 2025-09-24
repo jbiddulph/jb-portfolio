@@ -34,6 +34,8 @@ export default defineEventHandler(async (event) => {
         padding_medium: body.padding_medium,
         padding_large: body.padding_large,
         border_radius: body.border_radius,
+        border_thickness: body.border_thickness,
+        border_style: body.border_style,
         shadow_small: body.shadow_small,
         shadow_medium: body.shadow_medium,
         shadow_large: body.shadow_large,

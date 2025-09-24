@@ -333,6 +333,34 @@
             />
           </div>
           <div>
+            <label for="border_thickness" class="block text-sm font-medium text-gray-700">Border Thickness</label>
+            <input
+              v-model="form.border_thickness"
+              type="text"
+              id="border_thickness"
+              placeholder="1px"
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+          <div>
+            <label for="border_style" class="block text-sm font-medium text-gray-700">Border Style</label>
+            <select
+              v-model="form.border_style"
+              id="border_style"
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="solid">Solid</option>
+              <option value="dashed">Dashed</option>
+              <option value="dotted">Dotted</option>
+              <option value="double">Double</option>
+              <option value="groove">Groove</option>
+              <option value="ridge">Ridge</option>
+              <option value="inset">Inset</option>
+              <option value="outset">Outset</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+          <div>
             <label for="margin_medium" class="block text-sm font-medium text-gray-700">Medium Margin</label>
             <input
               v-model="form.margin_medium"
@@ -474,6 +502,8 @@ const form = reactive({
   padding_medium: '1rem',
   padding_large: '2rem',
   border_radius: '8px',
+  border_thickness: '1px',
+  border_style: 'solid',
   shadow_small: '0 1px 3px rgba(0, 0, 0, 0.1)',
   shadow_medium: '0 4px 6px rgba(0, 0, 0, 0.1)',
   shadow_large: '0 10px 25px rgba(0, 0, 0, 0.1)',
