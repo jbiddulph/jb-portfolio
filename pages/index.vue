@@ -78,7 +78,7 @@
             :to="`/portfolio/${item.id}`"
             class="block border rounded-lg hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
             :style="{ 
-              borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
+              ...getBorderStyle(siteInfo?.design),
               borderRadius: siteInfo?.design?.border_radius || '8px',
               backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
             }"
@@ -250,7 +250,7 @@
             :to="`/portfolio/${item.id}`"
             class="block border rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
             :style="{ 
-              borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
+              ...getBorderStyle(siteInfo?.design),
               borderRadius: siteInfo?.design?.border_radius || '8px',
               backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
             }"
@@ -552,6 +552,18 @@ const getSiteDescriptionStyle = (design, device = 'desktop') => {
     color: design?.text_color || '#1f2937',
     fontFamily: getFontFamily(design, 'primary'),
     fontSize: fontSize
+  }
+}
+
+const getBorderStyle = (design) => {
+  const thickness = design?.border_thickness || '1px'
+  const style = design?.border_style || 'solid'
+  const color = design?.primary_color || '#e5e7eb'
+  
+  return {
+    borderWidth: thickness,
+    borderStyle: style,
+    borderColor: color
   }
 }
 </script>

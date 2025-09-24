@@ -73,7 +73,7 @@
           to="/portfolio"
           class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors border"
           :style="{ 
-            borderColor: siteInfo?.design?.primary_color || '#2563eb',
+            ...getBorderStyle(siteInfo?.design),
             color: siteInfo?.design?.primary_color || '#2563eb'
           }"
         >
@@ -342,6 +342,18 @@ const getBodyStyle = (design) => {
     color: design?.text_color || '#1f2937',
     fontFamily: getFontFamily(design, 'primary'),
     fontSize: design?.font_size_base || '16px'
+  }
+}
+
+const getBorderStyle = (design) => {
+  const thickness = design?.border_thickness || '1px'
+  const style = design?.border_style || 'solid'
+  const color = design?.primary_color || '#e5e7eb'
+  
+  return {
+    borderWidth: thickness,
+    borderStyle: style,
+    borderColor: color
   }
 }
 </script>

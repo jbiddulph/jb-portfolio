@@ -10,7 +10,7 @@
       :style="{ 
         backgroundColor: siteInfo?.design?.background_color || '#ffffff',
         height: siteInfo?.design?.header_height || '80px',
-        borderColor: siteInfo?.design?.primary_color || '#e5e7eb'
+        ...getBorderStyle(siteInfo?.design)
       }"
     >
       <div 
@@ -26,18 +26,22 @@
               class="h-10 w-10 rounded-full object-cover"
             />
             <div>
-              <h1 
-                class="font-bold hidden md:block mt-2"
-                :style="getSiteNameStyle(siteInfo?.design, 'desktop')"
-              >
-                {{ siteInfo?.site_name || 'John Biddulph Portfolio' }}
-              </h1>
-              <h1 
-                class="font-bold md:hidden mt-2"
-                :style="getSiteNameStyle(siteInfo?.design, 'mobile')"
-              >
-                {{ siteInfo?.site_name || 'John Biddulph Portfolio' }}
-              </h1>
+              <NuxtLink to="/">
+                <h1 
+                  class="font-bold hidden md:block mt-2 hover:opacity-80 transition-opacity cursor-pointer"
+                  :style="getSiteNameStyle(siteInfo?.design, 'desktop')"
+                >
+                  {{ siteInfo?.site_name || 'John Biddulph Portfolio' }}
+                </h1>
+              </NuxtLink>
+              <NuxtLink to="/">
+                <h1 
+                  class="font-bold md:hidden mt-2 hover:opacity-80 transition-opacity cursor-pointer"
+                  :style="getSiteNameStyle(siteInfo?.design, 'mobile')"
+                >
+                  {{ siteInfo?.site_name || 'John Biddulph Portfolio' }}
+                </h1>
+              </NuxtLink>
               <p 
                 v-if="siteInfo?.site_slogan"
                 class="hidden md:block opacity-75 leading-tight"
@@ -228,8 +232,8 @@
       class="border-t mt-12"
       :style="{ 
         backgroundColor: siteInfo?.design?.background_color || '#ffffff',
-        borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-        height: siteInfo?.design?.footer_height || '120px'
+        height: siteInfo?.design?.footer_height || '120px',
+        ...getBorderStyle(siteInfo?.design)
       }"
     >
       <div 
@@ -550,6 +554,18 @@ const getSiteDescriptionStyle = (design, device = 'desktop') => {
     color: design?.text_color || '#1f2937',
     fontFamily: getFontFamily(design, 'primary'),
     fontSize: fontSize
+  }
+}
+
+const getBorderStyle = (design) => {
+  const thickness = design?.border_thickness || '1px'
+  const style = design?.border_style || 'solid'
+  const color = design?.primary_color || '#e5e7eb'
+  
+  return {
+    borderWidth: thickness,
+    borderStyle: style,
+    borderColor: color
   }
 }
 

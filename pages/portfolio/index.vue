@@ -45,7 +45,7 @@
         :to="`/portfolio/${item.id}`"
         class="block group border rounded-lg hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden"
         :style="{ 
-          borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
+          ...getBorderStyle(siteInfo?.design),
           borderRadius: siteInfo?.design?.border_radius || '8px',
           backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
         }"
@@ -338,6 +338,18 @@ const getBodyStyle = (design) => {
     color: design?.text_color || '#1f2937',
     fontFamily: getFontFamily(design, 'primary'),
     fontSize: design?.font_size_base || '16px'
+  }
+}
+
+const getBorderStyle = (design) => {
+  const thickness = design?.border_thickness || '1px'
+  const style = design?.border_style || 'solid'
+  const color = design?.primary_color || '#e5e7eb'
+  
+  return {
+    borderWidth: thickness,
+    borderStyle: style,
+    borderColor: color
   }
 }
 </script>
