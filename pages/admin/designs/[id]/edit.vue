@@ -103,17 +103,18 @@
           <div class="space-y-3">
             <div class="flex items-center space-x-2">
               <input
-                v-model="selectedFonts"
+                v-model="enableGoogleFonts"
                 type="checkbox"
                 id="enable_google_fonts"
                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                @change="updateFontFamily"
               />
               <label for="enable_google_fonts" class="text-sm text-gray-700">
                 Enable Google Fonts
               </label>
             </div>
             
-            <div v-if="selectedFonts" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div v-if="enableGoogleFonts" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Primary Font</label>
                 <select
@@ -436,7 +437,8 @@ const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
 const availableFonts = ref([])
-const selectedFonts = computed(() => googleFonts.primary || googleFonts.heading)
+const enableGoogleFonts = ref(false)
+const selectedFonts = computed(() => enableGoogleFonts.value && (googleFonts.primary || googleFonts.heading))
 const googleFonts = reactive({
   primary: '',
   heading: ''
@@ -507,7 +509,12 @@ const fetchDesign = async () => {
           const parsedFonts = JSON.parse(form.google_fonts)
           googleFonts.primary = parsedFonts.primary || ''
           googleFonts.heading = parsedFonts.heading || ''
-          selectedFonts.value = true
+          enableGoogleFonts.value = true
+          
+          // Load fonts for preview
+          if (googleFonts.primary) {
+            loadGoogleFontsForPreview([googleFonts.primary, googleFonts.heading].filter(Boolean))
+          }
         } catch (e) {
           console.error('Error parsing Google Fonts:', e)
         }
@@ -533,7 +540,7 @@ const fetchGoogleFonts = async () => {
 }
 
 const updateFontFamily = () => {
-  if (selectedFonts.value && googleFonts.primary) {
+  if (enableGoogleFonts.value && googleFonts.primary) {
     const fonts = {
       primary: googleFonts.primary,
       heading: googleFonts.heading || googleFonts.primary
@@ -544,9 +551,34 @@ const updateFontFamily = () => {
     form.font_family = `${googleFonts.primary}, sans-serif`
     form.heading_font = `${googleFonts.heading || googleFonts.primary}, sans-serif`
     form.body_font = `${googleFonts.primary}, sans-serif`
+    
+    // Load Google Fonts for preview
+    loadGoogleFontsForPreview([googleFonts.primary, googleFonts.heading].filter(Boolean))
   } else {
     form.google_fonts = ''
+    // Reset to default fonts
+    form.font_family = 'Inter, sans-serif'
+    form.heading_font = 'Inter, sans-serif'
+    form.body_font = 'Inter, sans-serif'
   }
+}
+
+const loadGoogleFontsForPreview = (fontFamilies) => {
+  if (typeof window === 'undefined') return
+  
+  // Remove existing Google Fonts
+  const existingLinks = document.querySelectorAll('link[href*="fonts.googleapis.com"]')
+  existingLinks.forEach(link => link.remove())
+  
+  // Load new fonts
+  fontFamilies.forEach(fontFamily => {
+    if (fontFamily && fontFamily !== 'Inter') {
+      const link = document.createElement('link')
+      link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap`
+      link.rel = 'stylesheet'
+      document.head.appendChild(link)
+    }
+  })
 }
 
 const getGoogleFontCSS = (fontFamily) => {
