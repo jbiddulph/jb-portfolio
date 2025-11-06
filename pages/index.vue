@@ -37,6 +37,101 @@
         </div>
       </div>
 
+      <!-- 1 Column Layout: Video Showcase Section -->
+      <div v-if="videos.length > 0" class="mb-12">
+        <h3 
+          class="font-bold mb-6"
+          :style="getHeadingStyle(siteInfo?.design, 'h3')"
+        >
+          Video Showcases
+        </h3>
+        
+        <!-- Videos Grid: 2 rows x 3 columns -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div 
+            v-for="video in paginatedVideos" 
+            :key="video.id"
+            class="border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+            :style="{ 
+              ...getBorderStyle(siteInfo?.design),
+              borderRadius: siteInfo?.design?.border_radius || '8px',
+              backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
+            }"
+          >
+            <!-- YouTube Video Embed -->
+            <div v-if="getYouTubeEmbedUrl(video.youtube_url)" class="aspect-video">
+              <iframe
+                :src="getYouTubeEmbedUrl(video.youtube_url)"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                class="w-full h-full"
+              ></iframe>
+            </div>
+            <!-- Video Info -->
+            <div class="p-4">
+              <h4 
+                class="font-semibold mb-2"
+                :style="getHeadingStyle(siteInfo?.design, 'h4')"
+              >
+                {{ video.title }}
+              </h4>
+              <p 
+                v-if="video.description"
+                class="text-sm mb-3 line-clamp-2"
+                :style="getBodyStyle(siteInfo?.design)"
+              >
+                {{ video.description }}
+              </p>
+              <a 
+                v-if="video.link"
+                :href="video.link" 
+                target="_blank"
+                class="text-xs font-medium hover:underline inline-block"
+                :style="{ 
+                  color: siteInfo?.design?.primary_color || '#2563eb',
+                  fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
+                }"
+              >
+                View Project →
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pagination Controls -->
+        <div v-if="hasMoreVideos" class="flex justify-center items-center gap-4 mt-6">
+          <button
+            @click="previousVideoPage"
+            :disabled="currentVideoPage === 1"
+            class="px-4 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            :style="{ 
+              backgroundColor: currentVideoPage === 1 ? '#9ca3af' : (siteInfo?.design?.primary_color || '#2563eb'),
+              color: '#ffffff'
+            }"
+          >
+            Previous
+          </button>
+          <span 
+            class="text-sm"
+            :style="getBodyStyle(siteInfo?.design)"
+          >
+            Page {{ currentVideoPage }} of {{ totalVideoPages }}
+          </span>
+          <button
+            @click="nextVideoPage"
+            :disabled="currentVideoPage === totalVideoPages"
+            class="px-4 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            :style="{ 
+              backgroundColor: currentVideoPage === totalVideoPages ? '#9ca3af' : (siteInfo?.design?.primary_color || '#2563eb'),
+              color: '#ffffff'
+            }"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
       <!-- 1 Column Layout: Portfolio Section Below (4 columns) -->
       <div>
         <h3 
@@ -209,6 +304,101 @@
         </div>
       </div>
 
+      <!-- Video Showcase Section -->
+      <div v-if="videos.length > 0" class="mb-12">
+        <h3 
+          class="font-bold mb-6"
+          :style="getHeadingStyle(siteInfo?.design, 'h3')"
+        >
+          Video Showcases
+        </h3>
+        
+        <!-- Videos Grid: 2 rows x 3 columns -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div 
+            v-for="video in paginatedVideos" 
+            :key="video.id"
+            class="border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+            :style="{ 
+              ...getBorderStyle(siteInfo?.design),
+              borderRadius: siteInfo?.design?.border_radius || '8px',
+              backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
+            }"
+          >
+            <!-- YouTube Video Embed -->
+            <div v-if="getYouTubeEmbedUrl(video.youtube_url)" class="aspect-video">
+              <iframe
+                :src="getYouTubeEmbedUrl(video.youtube_url)"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                class="w-full h-full"
+              ></iframe>
+            </div>
+            <!-- Video Info -->
+            <div class="p-4">
+              <h4 
+                class="font-semibold mb-2"
+                :style="getHeadingStyle(siteInfo?.design, 'h4')"
+              >
+                {{ video.title }}
+              </h4>
+              <p 
+                v-if="video.description"
+                class="text-sm mb-3 line-clamp-2"
+                :style="getBodyStyle(siteInfo?.design)"
+              >
+                {{ video.description }}
+              </p>
+              <a 
+                v-if="video.link"
+                :href="video.link" 
+                target="_blank"
+                class="text-xs font-medium hover:underline inline-block"
+                :style="{ 
+                  color: siteInfo?.design?.primary_color || '#2563eb',
+                  fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
+                }"
+              >
+                View Project →
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pagination Controls -->
+        <div v-if="hasMoreVideos" class="flex justify-center items-center gap-4 mt-6">
+          <button
+            @click="previousVideoPage"
+            :disabled="currentVideoPage === 1"
+            class="px-4 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            :style="{ 
+              backgroundColor: currentVideoPage === 1 ? '#9ca3af' : (siteInfo?.design?.primary_color || '#2563eb'),
+              color: '#ffffff'
+            }"
+          >
+            Previous
+          </button>
+          <span 
+            class="text-sm"
+            :style="getBodyStyle(siteInfo?.design)"
+          >
+            Page {{ currentVideoPage }} of {{ totalVideoPages }}
+          </span>
+          <button
+            @click="nextVideoPage"
+            :disabled="currentVideoPage === totalVideoPages"
+            class="px-4 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            :style="{ 
+              backgroundColor: currentVideoPage === totalVideoPages ? '#9ca3af' : (siteInfo?.design?.primary_color || '#2563eb'),
+              color: '#ffffff'
+            }"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
       <!-- Portfolio Section -->
       <div>
         <h3 
@@ -353,9 +543,12 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 const siteInfo = ref(null)
 const portfolio = ref([])
 const pages = ref(null)
+const videos = ref([])
 const loading = ref(true)
 const portfolioLoading = ref(true)
 const portfolioLoadTimeout = ref(false)
+const currentVideoPage = ref(1)
+const videosPerPage = 6
 
 // User design management
 const { userDesignId, getEffectiveDesignId } = useUserDesign()
@@ -369,12 +562,28 @@ const limitedPortfolio = computed(() => {
   return portfolio.value.slice(0, 4)
 })
 
+// Video pagination
+const paginatedVideos = computed(() => {
+  const start = (currentVideoPage.value - 1) * videosPerPage
+  const end = start + videosPerPage
+  return videos.value.slice(start, end)
+})
+
+const totalVideoPages = computed(() => {
+  return Math.ceil(videos.value.length / videosPerPage)
+})
+
+const hasMoreVideos = computed(() => {
+  return videos.value.length > videosPerPage
+})
+
 // Fetch all data on mount
 onMounted(async () => {
   await Promise.all([
     fetchSiteInfo(),
     fetchPortfolio(),
-    fetchPages()
+    fetchPages(),
+    fetchVideos()
   ])
   loading.value = false
   
@@ -475,6 +684,48 @@ const fetchPages = async () => {
   } catch (error) {
     console.error('Error fetching pages:', error)
   }
+}
+
+const fetchVideos = async () => {
+  try {
+    const response = await $fetch('/api/videos')
+    if (response.success && response.data) {
+      videos.value = response.data
+      console.log('Videos loaded successfully:', response.data.length, 'items')
+    } else {
+      videos.value = []
+      console.warn('Videos API returned no data')
+    }
+  } catch (error) {
+    console.error('Error fetching videos:', error)
+    videos.value = []
+  }
+}
+
+const nextVideoPage = () => {
+  if (currentVideoPage.value < totalVideoPages.value) {
+    currentVideoPage.value++
+  }
+}
+
+const previousVideoPage = () => {
+  if (currentVideoPage.value > 1) {
+    currentVideoPage.value--
+  }
+}
+
+// Extract YouTube video ID from URL
+const getYouTubeVideoId = (url) => {
+  if (!url) return null
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+  const match = url.match(regExp)
+  return (match && match[2].length === 11) ? match[2] : null
+}
+
+// Get YouTube embed URL
+const getYouTubeEmbedUrl = (url) => {
+  const videoId = getYouTubeVideoId(url)
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : null
 }
 
 // Utility functions

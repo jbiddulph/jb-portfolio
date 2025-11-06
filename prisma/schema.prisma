@@ -108,6 +108,16 @@ model jbiddulph_links {
   updated_at      DateTime @updatedAt
 }
 
+model jbiddulph_videos {
+  id              Int     @id @default(autoincrement())
+  title           String
+  description     String?
+  youtube_url     String
+  link            String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}
+
 model jbiddulph_designs {
   id              Int     @id @default(autoincrement())
   name            String
