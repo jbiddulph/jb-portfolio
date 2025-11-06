@@ -1,22 +1,28 @@
 export default defineEventHandler(async (event) => {
   try {
-    // Use a public API key or environment variable
-    const apiKey = process.env.GOOGLE_FONTS_API_KEY || 'AIzaSyB2X5Yz8Q7K9L0M1N2O3P4Q5R6S7T8U9V0'
+    // Get API key from environment variable
+    const apiKey = process.env.GOOGLE_FONTS_API
     
-    if (apiKey && apiKey !== 'AIzaSyB2X5Yz8Q7K9L0M1N2O3P4Q5R6S7T8U9V0') {
-      const response = await fetch(`https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}`)
-      
-      if (response.ok) {
-        const data = await response.json()
+    // If API key is set, try to fetch from Google Fonts API
+    if (apiKey) {
+      try {
+        const response = await fetch(`https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}`)
         
-        return {
-          success: true,
-          data: data.items.slice(0, 100).map(font => ({
-            family: font.family,
-            variants: font.variants,
-            category: font.category
-          }))
+        if (response.ok) {
+          const data = await response.json()
+          
+          return {
+            success: true,
+            data: data.items.slice(0, 100).map((font: any) => ({
+              family: font.family,
+              variants: font.variants,
+              category: font.category
+            }))
+          }
         }
+      } catch (apiError) {
+        console.warn('Google Fonts API request failed, using fallback list:', apiError)
+        // Fall through to return curated list
       }
     }
     
