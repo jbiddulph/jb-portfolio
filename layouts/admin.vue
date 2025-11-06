@@ -66,6 +66,18 @@
             </li>
             <li>
               <NuxtLink 
+                to="/admin/videos" 
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                :class="$route.path.startsWith('/admin/videos') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
+              >
+                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                Videos
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink 
                 to="/admin/site-info" 
                 class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
                 :class="$route.path === '/admin/site-info' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
