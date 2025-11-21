@@ -163,19 +163,20 @@
           <!-- Social Links -->
           <div v-if="links.length > 0">
             <h3 
-              class="text-sm font-medium mb-2"
+              class="text-sm font-medium mb-3"
               :style="getHeadingStyle(siteInfo?.design, 'h3')"
             >
               Links
             </h3>
-            <div class="flex flex-wrap gap-4">
+            <div class="flex flex-col space-y-2">
               <a 
                 v-for="link in links" 
                 :key="link.id"
                 :href="link.link_url" 
                 target="_blank"
-                class="text-sm font-medium hover:underline transition-colors"
+                class="block w-full text-left px-3 py-2 text-sm font-medium rounded-md border transition-colors hover:opacity-80"
                 :style="{ 
+                  borderColor: siteInfo?.design?.primary_color || '#2563eb',
                   color: siteInfo?.design?.primary_color || '#2563eb',
                   fontFamily: getFontFamily(siteInfo?.design, 'primary')
                 }"
