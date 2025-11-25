@@ -42,9 +42,17 @@ export default defineEventHandler(async (event) => {
       
       if (!response.ok) {
         let errorText = ''
+        let errorData = null
         try {
           errorText = await response.text()
           console.error('Error response body:', errorText)
+          // Try to parse as JSON
+          try {
+            errorData = JSON.parse(errorText)
+            console.error('Parsed error data:', errorData)
+          } catch {
+            // Not JSON, use as text
+          }
         } catch (e) {
           console.error('Could not read error response body')
         }
@@ -58,6 +66,28 @@ export default defineEventHandler(async (event) => {
 2. The webhook is active in n8n
 3. The workflow containing the webhook is activated
 4. The webhook path matches exactly (case-sensitive)`
+          })
+        }
+        
+        // Handle n8n-specific errors
+        if (response.status === 500 && errorData?.message) {
+          if (errorData.message.includes('Unused Respond to Webhook node')) {
+            throw createError({
+              statusCode: 500,
+              statusMessage: `n8n Workflow Error: Unused "Respond to Webhook" node found. 
+              
+To fix this in n8n:
+1. Remove any unused "Respond to Webhook" nodes from your workflow
+2. OR connect the "Respond to Webhook" node properly in the workflow
+3. Make sure only ONE "Respond to Webhook" node is connected and active
+4. The node should be at the end of your workflow execution path`
+            })
+          }
+          
+          // Other n8n errors
+          throw createError({
+            statusCode: 500,
+            statusMessage: `n8n Workflow Error: ${errorData.message}`
           })
         }
         
