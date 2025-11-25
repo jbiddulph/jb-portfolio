@@ -266,6 +266,9 @@
         </div>
       </div>
     </footer>
+
+    <!-- Chat Box -->
+    <ChatBox />
   </div>
 </template>
 
