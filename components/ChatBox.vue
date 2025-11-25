@@ -4,10 +4,7 @@
     <button
       v-if="!isOpen"
       @click="toggleChat"
-      class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110"
-      :style="{
-        backgroundColor: siteInfo?.design?.primary_color || '#4f46e5',
-      }"
+      class="bg-black hover:bg-gray-800 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110"
       aria-label="Open chat"
     >
       <svg
@@ -29,26 +26,11 @@
     <!-- Chat Window -->
     <div
       v-if="isOpen"
-      class="bg-white rounded-lg shadow-2xl w-80 h-96 flex flex-col border"
-      :style="{
-        borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-        borderRadius: siteInfo?.design?.border_radius || '8px',
-      }"
+      class="bg-white rounded-lg shadow-2xl w-80 h-96 flex flex-col border border-gray-300"
     >
       <!-- Chat Header -->
-      <div
-        class="flex items-center justify-between p-4 border-b rounded-t-lg"
-        :style="{
-          backgroundColor: siteInfo?.design?.primary_color || '#4f46e5',
-          borderColor: siteInfo?.design?.primary_color || '#4f46e5',
-        }"
-      >
-        <h3
-          class="text-white font-semibold text-lg"
-          :style="{
-            fontFamily: getFontFamily(siteInfo?.design, 'heading'),
-          }"
-        >
+      <div class="flex items-center justify-between p-4 border-b rounded-t-lg bg-black border-black">
+        <h3 class="text-white font-semibold text-lg">
           Chat
         </h3>
         <button
@@ -70,19 +52,11 @@
       <!-- Messages Area -->
       <div
         ref="messagesContainer"
-        class="flex-1 overflow-y-auto p-4 space-y-3"
-        :style="{
-          backgroundColor: siteInfo?.design?.background_color || '#f9fafb',
-          color: siteInfo?.design?.text_color || '#1f2937',
-        }"
+        class="flex-1 overflow-y-auto p-4 space-y-3 bg-white"
       >
         <div
           v-if="messages.length === 0"
-          class="text-center text-sm py-8"
-          :style="{
-            color: siteInfo?.design?.text_color || '#6b7280',
-            fontFamily: getFontFamily(siteInfo?.design, 'primary'),
-          }"
+          class="text-center text-sm py-8 text-gray-500"
         >
           Start a conversation...
         </div>
@@ -96,54 +70,23 @@
             class="max-w-[80%] rounded-lg px-3 py-2"
             :class="
               message.sender === 'user'
-                ? 'text-white'
-                : 'bg-white border'
-            "
-            :style="
-              message.sender === 'user'
-                ? {
-                    backgroundColor: siteInfo?.design?.primary_color || '#4f46e5',
-                    borderRadius: siteInfo?.design?.border_radius || '8px',
-                    color: '#ffffff',
-                  }
-                : {
-                    backgroundColor: '#ffffff',
-                    borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-                    borderRadius: siteInfo?.design?.border_radius || '8px',
-                    color: siteInfo?.design?.text_color || '#1f2937',
-                    fontFamily: getFontFamily(siteInfo?.design, 'primary'),
-                  }
+                ? 'bg-black text-white'
+                : 'bg-gray-100 text-black border border-gray-300'
             "
           >
-            <p 
-              class="text-sm whitespace-pre-wrap"
-              :style="message.sender === 'user' 
-                ? { color: '#ffffff' }
-                : { 
-                    color: siteInfo?.design?.text_color || '#1f2937',
-                    fontFamily: getFontFamily(siteInfo?.design, 'primary'),
-                  }"
-            >
+            <p class="text-sm whitespace-pre-wrap">
               {{ message.text }}
             </p>
             <p
               class="text-xs mt-1 opacity-70"
-              :style="{
-                color: message.sender === 'user' ? '#ffffff' : (siteInfo?.design?.text_color || '#6b7280'),
-              }"
+              :class="message.sender === 'user' ? 'text-white' : 'text-gray-600'"
             >
               {{ formatTime(message.timestamp) }}
             </p>
           </div>
         </div>
         <div v-if="isLoading" class="flex justify-start">
-          <div
-            class="bg-white border rounded-lg px-3 py-2"
-            :style="{
-              borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-              borderRadius: siteInfo?.design?.border_radius || '8px',
-            }"
-          >
+          <div class="bg-gray-100 border border-gray-300 rounded-lg px-3 py-2">
             <div class="flex space-x-1">
               <div
                 class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
@@ -163,33 +106,19 @@
       </div>
 
       <!-- Input Area -->
-      <div class="p-4 border-t bg-white rounded-b-lg">
+      <div class="p-4 border-t border-gray-300 bg-white rounded-b-lg">
         <form @submit.prevent="sendMessage" class="flex space-x-2">
           <input
             v-model="inputMessage"
             type="text"
             placeholder="Type your message..."
-            class="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-            :style="{
-              borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-              borderRadius: siteInfo?.design?.border_radius || '6px',
-              fontFamily: getFontFamily(siteInfo?.design, 'primary'),
-              color: siteInfo?.design?.text_color || '#1f2937',
-              backgroundColor: '#ffffff',
-            }"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-sm text-black bg-white"
             :disabled="isLoading"
           />
           <button
             type="submit"
             :disabled="!inputMessage.trim() || isLoading"
-            class="px-4 py-2 rounded-md text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            :style="{
-              backgroundColor:
-                !inputMessage.trim() || isLoading
-                  ? '#9ca3af'
-                  : siteInfo?.design?.primary_color || '#4f46e5',
-              borderRadius: siteInfo?.design?.border_radius || '6px',
-            }"
+            class="px-4 py-2 rounded-md text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-black hover:bg-gray-800 disabled:bg-gray-400"
           >
             <svg
               v-if="!isLoading"
