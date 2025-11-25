@@ -11,22 +11,30 @@ export default defineEventHandler(async (event) => {
     }
 
     // Forward request to n8n webhook (server-side to avoid CORS)
-    const webhookUrl = 'https://n8n.neurohub.uk/webhook-test/jbiddulph/a0fe2042-ef3d-4911-a488-42343d8bf39b'
+    const webhookUrl = 'https://n8n.neurohub.uk/webhook/jbiddulph/a0fe2042-ef3d-4911-a488-42343d8bf39b'
     
-    console.log('=== Chat API Request ===')
-    console.log('Webhook URL:', webhookUrl)
-    console.log('Message text:', text)
-    console.log('Request method: POST')
-    
-    try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-      })
+      console.log('=== Chat API Request ===')
+      console.log('Webhook URL:', webhookUrl)
+      console.log('Message text:', text)
+      console.log('Request method: POST')
+      console.log('Request body:', JSON.stringify({ text }))
+      
+      try {
+        // Add timeout to prevent hanging requests
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+        
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({ text }),
+          signal: controller.signal,
+        })
+        
+        clearTimeout(timeoutId)
       
       console.log('Response status:', response.status, response.statusText)
       console.log('Response headers:', Object.fromEntries(response.headers.entries()))
@@ -136,10 +144,17 @@ export default defineEventHandler(async (event) => {
       }
       
       // Handle network errors
-      if (fetchError.message?.includes('fetch failed') || fetchError.message?.includes('ECONNREFUSED')) {
+      if (fetchError.name === 'AbortError') {
+        throw createError({
+          statusCode: 504,
+          statusMessage: 'Request timeout. The webhook took too long to respond.'
+        })
+      }
+      
+      if (fetchError.message?.includes('fetch failed') || fetchError.message?.includes('ECONNREFUSED') || fetchError.message?.includes('ENOTFOUND')) {
         throw createError({
           statusCode: 503,
-          statusMessage: 'Unable to connect to webhook server. Please check if the n8n server is running.'
+          statusMessage: 'Unable to connect to webhook server. Please check if the n8n server is running and accessible.'
         })
       }
       
