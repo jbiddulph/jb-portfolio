@@ -77,7 +77,7 @@
       >
         <div
           v-if="messages.length === 0"
-          class="text-center text-gray-500 text-sm py-8"
+          class="text-center text-sm py-8"
           :style="{
             color: siteInfo?.design?.text_color || '#6b7280',
             fontFamily: getFontFamily(siteInfo?.design, 'primary'),
@@ -95,14 +95,15 @@
             class="max-w-[80%] rounded-lg px-3 py-2"
             :class="
               message.sender === 'user'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-white text-gray-800 border'
+                ? 'text-white'
+                : 'bg-white border'
             "
             :style="
               message.sender === 'user'
                 ? {
                     backgroundColor: siteInfo?.design?.primary_color || '#4f46e5',
                     borderRadius: siteInfo?.design?.border_radius || '8px',
+                    color: '#ffffff',
                   }
                 : {
                     backgroundColor: '#ffffff',
@@ -113,11 +114,18 @@
                   }
             "
           >
-            <p class="text-sm whitespace-pre-wrap">{{ message.text }}</p>
+            <p 
+              class="text-sm whitespace-pre-wrap"
+              :style="{
+                color: message.sender === 'user' ? '#ffffff' : (siteInfo?.design?.text_color || '#1f2937'),
+              }"
+            >
+              {{ message.text }}
+            </p>
             <p
               class="text-xs mt-1 opacity-70"
               :style="{
-                color: message.sender === 'user' ? '#ffffff' : siteInfo?.design?.text_color || '#6b7280',
+                color: message.sender === 'user' ? '#ffffff' : (siteInfo?.design?.text_color || '#6b7280'),
               }"
             >
               {{ formatTime(message.timestamp) }}
@@ -162,6 +170,8 @@
               borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
               borderRadius: siteInfo?.design?.border_radius || '6px',
               fontFamily: getFontFamily(siteInfo?.design, 'primary'),
+              color: siteInfo?.design?.text_color || '#1f2937',
+              backgroundColor: '#ffffff',
             }"
             :disabled="isLoading"
           />
@@ -266,10 +276,24 @@ const sendMessage = async () => {
       sender: 'bot',
       timestamp: new Date(),
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error sending message:', error)
+    
+    // Show more specific error message to user
+    let errorMessage = 'Sorry, there was an error processing your message. Please try again.'
+    
+    if (error.message?.includes('404')) {
+      errorMessage = 'The webhook endpoint was not found (404). Please check that the webhook is active in n8n.'
+    } else if (error.message?.includes('CORS')) {
+      errorMessage = 'CORS error: The webhook server is not allowing requests from this domain.'
+    } else if (error.message?.includes('Network error')) {
+      errorMessage = 'Network error: Unable to connect to the webhook server.'
+    } else if (error.message) {
+      errorMessage = `Error: ${error.message}`
+    }
+    
     messages.value.push({
-      text: 'Sorry, there was an error processing your message. Please try again.',
+      text: errorMessage,
       sender: 'bot',
       timestamp: new Date(),
     })
@@ -282,21 +306,47 @@ const sendMessage = async () => {
 }
 
 const sendToWebhook = async (text: string): Promise<string> => {
-  const res = await fetch(
-    'https://n8n.neurohub.uk/webhook-test/jbiddulph/a0fe2042-ef3d-4911-a488-42343d8bf39b',
-    {
+  try {
+    const webhookUrl = 'https://n8n.neurohub.uk/webhook-test/jbiddulph/a0fe2042-ef3d-4911-a488-42343d8bf39b'
+    
+    console.log('Sending message to webhook:', webhookUrl)
+    console.log('Message text:', text)
+    
+    const res = await fetch(webhookUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ text }),
+    })
+
+    console.log('Webhook response status:', res.status)
+    console.log('Webhook response headers:', res.headers)
+
+    if (!res.ok) {
+      const errorText = await res.text()
+      console.error('Webhook error response:', errorText)
+      throw new Error(`HTTP error! status: ${res.status} - ${errorText}`)
     }
-  )
 
-  if (!res.ok) {
-    throw new Error(`HTTP error! status: ${res.status}`)
+    const data = await res.json()
+    console.log('Webhook response data:', data)
+    return data.reply || data.message || data.text || 'No reply received'
+  } catch (error: any) {
+    console.error('Webhook fetch error:', error)
+    
+    // If it's a network error (CORS, etc.)
+    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+      throw new Error('Network error: Unable to reach the webhook. This might be a CORS issue or the webhook URL is incorrect.')
+    }
+    
+    // If it's a 404, provide helpful message
+    if (error.message?.includes('404')) {
+      throw new Error('Webhook not found (404). Please check that the webhook URL is correct and the webhook is active in n8n.')
+    }
+    
+    throw error
   }
-
-  const data = await res.json()
-  return data.reply || 'No reply received'
 }
 
 const formatTime = (date: Date) => {
