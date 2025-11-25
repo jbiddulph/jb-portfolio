@@ -70,9 +70,10 @@
       <!-- Messages Area -->
       <div
         ref="messagesContainer"
-        class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"
+        class="flex-1 overflow-y-auto p-4 space-y-3"
         :style="{
           backgroundColor: siteInfo?.design?.background_color || '#f9fafb',
+          color: siteInfo?.design?.text_color || '#1f2937',
         }"
       >
         <div
@@ -116,9 +117,12 @@
           >
             <p 
               class="text-sm whitespace-pre-wrap"
-              :style="{
-                color: message.sender === 'user' ? '#ffffff' : (siteInfo?.design?.text_color || '#1f2937'),
-              }"
+              :style="message.sender === 'user' 
+                ? { color: '#ffffff' }
+                : { 
+                    color: siteInfo?.design?.text_color || '#1f2937',
+                    fontFamily: getFontFamily(siteInfo?.design, 'primary'),
+                  }"
             >
               {{ message.text }}
             </p>
@@ -217,7 +221,13 @@ import { ref, computed, nextTick, watch, onMounted } from 'vue'
 
 const isOpen = ref(false)
 const inputMessage = ref('')
-const messages = ref<Array<{ text: string; sender: 'user' | 'bot'; timestamp: Date }>>([])
+const messages = ref<Array<{ text: string; sender: 'user' | 'bot'; timestamp: Date }>>([
+  {
+    text: "Hi! I'm here to help. Feel free to ask me anything about my CV, experience, or projects!",
+    sender: 'bot',
+    timestamp: new Date(),
+  }
+])
 const isLoading = ref(false)
 const messagesContainer = ref<HTMLElement | null>(null)
 
@@ -307,45 +317,30 @@ const sendMessage = async () => {
 
 const sendToWebhook = async (text: string): Promise<string> => {
   try {
-    const webhookUrl = 'https://n8n.neurohub.uk/webhook-test/jbiddulph/a0fe2042-ef3d-4911-a488-42343d8bf39b'
-    
-    console.log('Sending message to webhook:', webhookUrl)
-    console.log('Message text:', text)
-    
-    const res = await fetch(webhookUrl, {
+    // Use server-side API route to avoid CORS issues
+    const response = await $fetch('/api/chat', {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ text }),
+      body: { text },
     })
 
-    console.log('Webhook response status:', res.status)
-    console.log('Webhook response headers:', res.headers)
-
-    if (!res.ok) {
-      const errorText = await res.text()
-      console.error('Webhook error response:', errorText)
-      throw new Error(`HTTP error! status: ${res.status} - ${errorText}`)
+    if (response.success) {
+      return response.reply
+    } else {
+      throw new Error(response.message || 'Failed to get reply')
     }
-
-    const data = await res.json()
-    console.log('Webhook response data:', data)
-    return data.reply || data.message || data.text || 'No reply received'
   } catch (error: any) {
-    console.error('Webhook fetch error:', error)
+    console.error('Chat API error:', error)
     
-    // If it's a network error (CORS, etc.)
-    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
-      throw new Error('Network error: Unable to reach the webhook. This might be a CORS issue or the webhook URL is incorrect.')
+    // Handle different error types
+    if (error.statusCode === 404) {
+      throw new Error('Webhook not found (404). Please check that the webhook is active in n8n.')
+    } else if (error.statusCode === 500) {
+      throw new Error('Server error. Please try again later.')
+    } else if (error.message) {
+      throw new Error(error.message)
     }
     
-    // If it's a 404, provide helpful message
-    if (error.message?.includes('404')) {
-      throw new Error('Webhook not found (404). Please check that the webhook URL is correct and the webhook is active in n8n.')
-    }
-    
-    throw error
+    throw new Error('Failed to send message. Please try again.')
   }
 }
 
