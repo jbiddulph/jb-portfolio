@@ -197,10 +197,27 @@
                   {{ item.project_name }}
                 </h4>
                 <p 
-                  class="text-xs mb-3 line-clamp-3"
+                  class="text-xs mb-3"
+                  :class="{ 'line-clamp-3': !isDescriptionExpanded(item.id) }"
                   :style="getBodyStyle(siteInfo?.design)"
-                  v-html="truncateDescription(item.project_description)"
-                ></p>
+                >
+                  {{ getDescriptionPreview(item.project_description, item.id) }}
+                  <span
+                    v-if="isDescriptionTruncated(item.project_description)"
+                    role="button"
+                    tabindex="0"
+                    class="ml-1 cursor-pointer font-medium hover:underline"
+                    :style="{ 
+                      color: siteInfo?.design?.primary_color || '#2563eb',
+                      fontFamily: getFontFamily(siteInfo?.design, 'primary')
+                    }"
+                    @click.prevent.stop="toggleDescription(item.id)"
+                    @keydown.enter.prevent.stop="toggleDescription(item.id)"
+                    @keydown.space.prevent.stop="toggleDescription(item.id)"
+                  >
+                    {{ isDescriptionExpanded(item.id) ? 'Less' : 'More' }}
+                  </span>
+                </p>
                 
                 <!-- Tags -->
                 <div v-if="item.project_tags" class="mb-3">
@@ -454,8 +471,24 @@
                 <p 
                   class="text-sm mb-3"
                   :style="getBodyStyle(siteInfo?.design)"
-                  v-html="truncateDescription(item.project_description)"
-                ></p>
+                >
+                  {{ getDescriptionPreview(item.project_description, item.id) }}
+                  <span
+                    v-if="isDescriptionTruncated(item.project_description)"
+                    role="button"
+                    tabindex="0"
+                    class="ml-1 cursor-pointer font-medium hover:underline"
+                    :style="{ 
+                      color: siteInfo?.design?.primary_color || '#2563eb',
+                      fontFamily: getFontFamily(siteInfo?.design, 'primary')
+                    }"
+                    @click.prevent.stop="toggleDescription(item.id)"
+                    @keydown.enter.prevent.stop="toggleDescription(item.id)"
+                    @keydown.space.prevent.stop="toggleDescription(item.id)"
+                  >
+                    {{ isDescriptionExpanded(item.id) ? 'Less' : 'More' }}
+                  </span>
+                </p>
                 
                 <!-- Tags -->
                 <div v-if="item.project_tags" class="mb-3">
@@ -526,6 +559,7 @@ const loading = ref(true)
 const portfolioLoading = ref(true)
 const portfolioLoadTimeout = ref(false)
 const currentVideoPage = ref(1)
+const expandedDescriptions = ref<Record<string, boolean>>({})
 const videosPerPage = 6
 
 // User design management
@@ -712,11 +746,35 @@ const getTags = (tagsString) => {
   return tagsString.split(',').filter(tag => tag.trim())
 }
 
-const truncateDescription = (description) => {
+const DESCRIPTION_PREVIEW_LENGTH = 60
+
+const getDescriptionKey = (projectId: string | number) => String(projectId)
+
+const getPlainTextDescription = (description?: string | null) => {
   if (!description) return ''
-  // Remove HTML tags and truncate to 60 characters
-  const textOnly = description.replace(/<[^>]*>/g, '')
-  return textOnly.length > 60 ? textOnly.substring(0, 60) + '...' : textOnly
+  return description.replace(/<[^>]*>/g, '').trim()
+}
+
+const isDescriptionExpanded = (projectId: string | number) => {
+  return !!expandedDescriptions.value[getDescriptionKey(projectId)]
+}
+
+const isDescriptionTruncated = (description?: string | null) => {
+  return getPlainTextDescription(description).length > DESCRIPTION_PREVIEW_LENGTH
+}
+
+const getDescriptionPreview = (description: string, projectId: string | number) => {
+  const textOnly = getPlainTextDescription(description)
+  if (!textOnly) return ''
+  if (isDescriptionExpanded(projectId) || textOnly.length <= DESCRIPTION_PREVIEW_LENGTH) {
+    return textOnly
+  }
+  return `${textOnly.slice(0, DESCRIPTION_PREVIEW_LENGTH)}…`
+}
+
+const toggleDescription = (projectId: string | number) => {
+  const key = getDescriptionKey(projectId)
+  expandedDescriptions.value[key] = !expandedDescriptions.value[key]
 }
 
 const formatDate = (dateString) => {
