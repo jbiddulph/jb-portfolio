@@ -167,10 +167,12 @@
 
         <!-- Portfolio Items - 4 Column Grid -->
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <NuxtLink 
+          <a 
             v-for="item in limitedPortfolio" 
             :key="item.id"
-            :to="`/portfolio/${item.id}`"
+            :href="getProjectCardUrl(item)"
+            :target="getProjectCardTarget(item)"
+            :rel="getProjectCardRel(item)"
             class="block border rounded-lg hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
             :style="{ 
               ...getBorderStyle(siteInfo?.design),
@@ -224,31 +226,18 @@
                   >
                     {{ formatDate(item.project_date) }}
                   </span>
-                  <a 
-                    v-if="item.project_link"
-                    :href="item.project_link" 
-                    target="_blank"
-                    class="text-xs font-medium hover:underline"
+                  <span
+                    class="text-xs font-medium"
                     :style="{ 
                       color: siteInfo?.design?.primary_color || '#2563eb',
                       fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
                     }"
                   >
-                    Link →
-                  </a>
-                  <span 
-                    v-else
-                    class="text-xs font-medium opacity-50"
-                    :style="{ 
-                      color: siteInfo?.design?.primary_color || '#2563eb',
-                      fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
-                    }"
-                  >
-                    No Link
+                    {{ item.project_link ? 'Open Live Site ↗' : 'View Details →' }}
                   </span>
                 </div>
               </div>
-          </NuxtLink>
+          </a>
         </div>
 
         <!-- View More Projects Link -->
@@ -434,10 +423,12 @@
 
         <!-- Portfolio Items -->
         <div v-else class="space-y-6">
-          <NuxtLink 
+          <a 
             v-for="item in limitedPortfolio" 
             :key="item.id"
-            :to="`/portfolio/${item.id}`"
+            :href="getProjectCardUrl(item)"
+            :target="getProjectCardTarget(item)"
+            :rel="getProjectCardRel(item)"
             class="block border rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
             :style="{ 
               ...getBorderStyle(siteInfo?.design),
@@ -490,32 +481,19 @@
                   >
                     {{ formatDate(item.project_date) }}
                   </span>
-                  <a 
-                    v-if="item.project_link"
-                    :href="item.project_link" 
-                    target="_blank"
-                    class="text-xs font-medium hover:underline"
+                  <span
+                    class="text-xs font-medium"
                     :style="{ 
                       color: siteInfo?.design?.primary_color || '#2563eb',
                       fontFamily: getFontFamily(siteInfo?.design, 'primary')
                     }"
                   >
-                    Link →
-                  </a>
-                  <span 
-                    v-else
-                    class="text-xs font-medium opacity-50"
-                    :style="{ 
-                      color: siteInfo?.design?.primary_color || '#2563eb',
-                      fontFamily: getFontFamily(siteInfo?.design, 'primary')
-                    }"
-                  >
-                    No Link
+                    {{ item.project_link ? 'Open Live Site ↗' : 'View Details →' }}
                   </span>
                 </div>
               </div>
             </div>
-          </NuxtLink>
+          </a>
         </div>
 
         <!-- View More Projects Link -->
@@ -747,6 +725,18 @@ const formatDate = (dateString) => {
     month: 'long',
     day: 'numeric'
   })
+}
+
+const getProjectCardUrl = (item) => {
+  return item?.project_link || `/portfolio/${item.id}`
+}
+
+const getProjectCardTarget = (item) => {
+  return item?.project_link ? '_blank' : '_self'
+}
+
+const getProjectCardRel = (item) => {
+  return item?.project_link ? 'noopener noreferrer' : undefined
 }
 
 const getFontFamily = (design, fontType = 'primary') => {

@@ -39,10 +39,12 @@
 
     <!-- Portfolio Grid - 4 Columns -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      <NuxtLink 
+      <a 
         v-for="item in portfolio" 
         :key="item.id"
-        :to="`/portfolio/${item.id}`"
+        :href="getProjectCardUrl(item)"
+        :target="getProjectCardTarget(item)"
+        :rel="getProjectCardRel(item)"
         class="block group border rounded-lg hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden"
         :style="{ 
           ...getBorderStyle(siteInfo?.design),
@@ -97,34 +99,21 @@
             >
               {{ formatDate(item.project_date) }}
             </span>
-            <a 
-              v-if="item.project_link"
-              :href="item.project_link" 
-              target="_blank"
-              class="inline-flex items-center text-sm font-medium hover:underline"
+            <span
+              class="inline-flex items-center text-sm font-medium"
               :style="{ 
                 color: siteInfo?.design?.primary_color || '#2563eb',
                 fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
               }"
             >
-              Link
+              {{ item.project_link ? 'Open Live Site' : 'View Details' }}
               <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
               </svg>
-            </a>
-            <span 
-              v-else
-              class="inline-flex items-center text-sm font-medium opacity-50"
-              :style="{ 
-                color: siteInfo?.design?.primary_color || '#2563eb',
-                fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
-              }"
-            >
-              No Link
             </span>
           </div>
         </div>
-      </NuxtLink>
+      </a>
     </div>
 
     <!-- Back to Home Link -->
@@ -301,6 +290,18 @@ const formatDate = (dateString) => {
     month: 'long',
     day: 'numeric'
   })
+}
+
+const getProjectCardUrl = (item) => {
+  return item?.project_link || `/portfolio/${item.id}`
+}
+
+const getProjectCardTarget = (item) => {
+  return item?.project_link ? '_blank' : '_self'
+}
+
+const getProjectCardRel = (item) => {
+  return item?.project_link ? 'noopener noreferrer' : undefined
 }
 
 const getFontFamily = (design, fontType = 'primary') => {
