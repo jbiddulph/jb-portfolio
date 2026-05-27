@@ -111,6 +111,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const designs = ref([])
 const activeDropdown = ref(null)
 const pageLoading = ref(true)
@@ -138,7 +139,7 @@ onMounted(async () => {
 
 const fetchDesigns = async () => {
   try {
-    const response = await $fetch('/api/admin/designs')
+    const response = await fetchAdminData('/api/admin/designs')
     designs.value = response.data || []
   } catch (error) {
     console.error('Error fetching designs:', error)

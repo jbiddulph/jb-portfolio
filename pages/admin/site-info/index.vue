@@ -188,6 +188,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const loading = ref(false)
 const pageLoading = ref(true)
 const pageError = ref(null)
@@ -228,7 +229,7 @@ onMounted(async () => {
 
 const fetchSiteInfo = async () => {
   try {
-    const response = await $fetch('/api/admin/site-info')
+    const response = await fetchAdminData('/api/admin/site-info')
     if (response.data) {
       Object.assign(form, response.data)
     }
@@ -240,7 +241,7 @@ const fetchSiteInfo = async () => {
 
 const fetchDesigns = async () => {
   try {
-    const response = await $fetch('/api/admin/designs')
+    const response = await fetchAdminData('/api/admin/designs')
     designs.value = response.data || []
   } catch (error) {
     console.error('Error fetching designs:', error)
