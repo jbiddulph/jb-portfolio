@@ -13,8 +13,12 @@
       </NuxtLink>
     </div>
 
-    <!-- Designs Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <AdminPageState v-if="pageLoading" message="Loading designs..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
+    <template v-else>
+      <!-- Designs Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div 
         v-for="design in designs" 
         :key="design.id"
@@ -79,10 +83,10 @@
           </span>
         </div>
       </div>
-    </div>
+      </div>
 
-    <!-- Empty State -->
-    <div v-if="designs.length === 0" class="text-center py-12">
+      <!-- Empty State -->
+      <div v-if="designs.length === 0" class="text-center py-12">
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
       </svg>
@@ -96,7 +100,8 @@
           Create Design
         </NuxtLink>
       </div>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -108,9 +113,20 @@ definePageMeta({
 
 const designs = ref([])
 const activeDropdown = ref(null)
+const pageLoading = ref(true)
+const pageError = ref(null)
 
 onMounted(async () => {
-  await fetchDesigns()
+  pageLoading.value = true
+  pageError.value = null
+  try {
+    await fetchDesigns()
+  } catch (error) {
+    console.error('Error fetching designs:', error)
+    pageError.value = 'Failed to load designs. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
+  }
   
   // Close dropdown when clicking outside
   document.addEventListener('click', (e) => {
@@ -126,6 +142,7 @@ const fetchDesigns = async () => {
     designs.value = response.data || []
   } catch (error) {
     console.error('Error fetching designs:', error)
+    throw error
   }
 }
 

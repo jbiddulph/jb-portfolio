@@ -5,7 +5,10 @@
       <p class="mt-2 text-gray-600">Manage your website's basic information and branding</p>
     </div>
 
-    <form @submit.prevent="updateSiteInfo" class="space-y-8">
+    <AdminPageState v-if="pageLoading" message="Loading site information..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
+    <form v-else @submit.prevent="updateSiteInfo" class="space-y-8">
       <div class="bg-white shadow rounded-lg p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h2>
         <div class="space-y-6">
@@ -186,6 +189,8 @@ definePageMeta({
 })
 
 const loading = ref(false)
+const pageLoading = ref(true)
+const pageError = ref(null)
 const siteImageError = ref(false)
 const avatarError = ref(false)
 
@@ -206,10 +211,19 @@ const form = reactive({
 })
 
 onMounted(async () => {
-  await Promise.all([
-    fetchSiteInfo(),
-    fetchDesigns()
-  ])
+  pageLoading.value = true
+  pageError.value = null
+  try {
+    await Promise.all([
+      fetchSiteInfo(),
+      fetchDesigns()
+    ])
+  } catch (error) {
+    console.error('Error fetching site info page data:', error)
+    pageError.value = 'Failed to load site information. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
+  }
 })
 
 const fetchSiteInfo = async () => {
@@ -220,6 +234,7 @@ const fetchSiteInfo = async () => {
     }
   } catch (error) {
     console.error('Error fetching site info:', error)
+    throw error
   }
 }
 
@@ -229,6 +244,7 @@ const fetchDesigns = async () => {
     designs.value = response.data || []
   } catch (error) {
     console.error('Error fetching designs:', error)
+    throw error
   }
 }
 

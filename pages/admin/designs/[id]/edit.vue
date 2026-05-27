@@ -8,7 +8,10 @@
       <p class="mt-2 text-gray-600">Update your design theme</p>
     </div>
 
-    <form @submit.prevent="updateDesign" class="space-y-8">
+    <AdminPageState v-if="pageLoading" message="Loading design..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
+    <form v-else @submit.prevent="updateDesign" class="space-y-8">
       <div class="bg-white shadow rounded-lg p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -464,6 +467,8 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
+const pageLoading = ref(true)
+const pageError = ref(null)
 const availableFonts = ref([])
 const enableGoogleFonts = ref(false)
 const selectedFonts = computed(() => enableGoogleFonts.value && (googleFonts.primary || googleFonts.heading))
@@ -516,10 +521,19 @@ const form = reactive({
 })
 
 onMounted(async () => {
-  await Promise.all([
-    fetchDesign(),
-    fetchGoogleFonts()
-  ])
+  pageLoading.value = true
+  pageError.value = null
+  try {
+    await Promise.all([
+      fetchDesign(),
+      fetchGoogleFonts()
+    ])
+  } catch (error) {
+    console.error('Error fetching design page data:', error)
+    pageError.value = 'Failed to load this design. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
+  }
 })
 
 const fetchDesign = async () => {
@@ -555,6 +569,7 @@ const fetchDesign = async () => {
   } catch (error) {
     console.error('Error fetching design:', error)
     console.error('Error details:', error.message)
+    throw error
   }
 }
 
@@ -566,6 +581,7 @@ const fetchGoogleFonts = async () => {
     }
   } catch (error) {
     console.error('Error fetching Google Fonts:', error)
+    throw error
   }
 }
 

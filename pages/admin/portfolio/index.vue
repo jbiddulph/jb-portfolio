@@ -13,8 +13,11 @@
       </NuxtLink>
     </div>
 
+    <AdminPageState v-if="pageLoading" message="Loading portfolio projects..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
     <!-- Portfolio Items Table -->
-    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+    <div v-else class="bg-white shadow overflow-hidden sm:rounded-md">
       <div v-if="portfolio.length === 0" class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
@@ -113,9 +116,20 @@ definePageMeta({
 
 const portfolio = ref([])
 const deleting = ref(false)
+const pageLoading = ref(true)
+const pageError = ref(null)
 
 onMounted(async () => {
-  await fetchPortfolio()
+  pageLoading.value = true
+  pageError.value = null
+  try {
+    await fetchPortfolio()
+  } catch (error) {
+    console.error('Error fetching portfolio:', error)
+    pageError.value = 'Failed to load portfolio projects. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
+  }
 })
 
 const fetchPortfolio = async () => {
@@ -124,6 +138,7 @@ const fetchPortfolio = async () => {
     portfolio.value = response.data || []
   } catch (error) {
     console.error('Error fetching portfolio:', error)
+    throw error
   }
 }
 

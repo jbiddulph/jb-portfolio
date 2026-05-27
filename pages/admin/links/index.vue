@@ -13,8 +13,11 @@
       </button>
     </div>
 
+    <AdminPageState v-if="pageLoading" message="Loading links..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
     <!-- Add/Edit Form Modal -->
-    <div v-if="showAddForm || editingLink" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div v-if="!pageLoading && !pageError && (showAddForm || editingLink)" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
       <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3">
           <h3 class="text-lg font-medium text-gray-900 mb-4">
@@ -65,7 +68,7 @@
     </div>
 
     <!-- Links Table -->
-    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+    <div v-if="!pageLoading && !pageError" class="bg-white shadow overflow-hidden sm:rounded-md">
       <div v-if="links.length === 0" class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
@@ -140,6 +143,8 @@ const links = ref([])
 const showAddForm = ref(false)
 const editingLink = ref(null)
 const loading = ref(false)
+const pageLoading = ref(true)
+const pageError = ref(null)
 
 const linkForm = reactive({
   link_name: '',
@@ -147,7 +152,16 @@ const linkForm = reactive({
 })
 
 onMounted(async () => {
-  await fetchLinks()
+  pageLoading.value = true
+  pageError.value = null
+  try {
+    await fetchLinks()
+  } catch (error) {
+    console.error('Error fetching links:', error)
+    pageError.value = 'Failed to load links. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
+  }
 })
 
 const fetchLinks = async () => {
@@ -156,6 +170,7 @@ const fetchLinks = async () => {
     links.value = response.data || []
   } catch (error) {
     console.error('Error fetching links:', error)
+    throw error
   }
 }
 
