@@ -167,6 +167,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
@@ -203,7 +204,7 @@ onMounted(async () => {
 
 const fetchProject = async () => {
   try {
-    const response = await $fetch(`/api/admin/portfolio/${route.params.id}`)
+    const response = await fetchAdminData(`/api/admin/portfolio/${route.params.id}`)
     if (response.data) {
       Object.assign(form, {
         ...response.data,

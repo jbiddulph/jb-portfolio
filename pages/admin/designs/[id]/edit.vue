@@ -464,6 +464,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
@@ -539,7 +540,7 @@ onMounted(async () => {
 const fetchDesign = async () => {
   try {
     console.log('Fetching design with ID:', route.params.id)
-    const response = await $fetch(`/api/admin/designs/${route.params.id}`)
+    const response = await fetchAdminData(`/api/admin/designs/${route.params.id}`)
     console.log('Design API response:', response)
     
     if (response.data) {
@@ -575,7 +576,7 @@ const fetchDesign = async () => {
 
 const fetchGoogleFonts = async () => {
   try {
-    const response = await $fetch('/api/admin/google-fonts')
+    const response = await fetchAdminData('/api/admin/google-fonts')
     if (response.success) {
       availableFonts.value = response.data
     }

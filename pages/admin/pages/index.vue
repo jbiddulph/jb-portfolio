@@ -88,6 +88,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const loading = ref(false)
 const pageLoading = ref(true)
 const pageError = ref(null)
@@ -115,7 +116,7 @@ onMounted(async () => {
 
 const fetchPages = async () => {
   try {
-    const response = await $fetch('/api/admin/pages')
+    const response = await fetchAdminData('/api/admin/pages')
     if (response.data) {
       Object.assign(form, response.data)
     }

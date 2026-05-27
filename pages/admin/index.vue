@@ -147,6 +147,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const stats = ref({
   designs: 0,
   portfolio: 0,
@@ -165,10 +166,10 @@ onMounted(async () => {
   try {
     // Fetch stats
     const [designsRes, portfolioRes, linksRes, siteInfoRes] = await Promise.all([
-      $fetch('/api/admin/designs'),
-      $fetch('/api/admin/portfolio'),
-      $fetch('/api/admin/links'),
-      $fetch('/api/admin/site-info')
+      fetchAdminData('/api/admin/designs'),
+      fetchAdminData('/api/admin/portfolio'),
+      fetchAdminData('/api/admin/links'),
+      fetchAdminData('/api/admin/site-info')
     ])
 
     stats.value = {

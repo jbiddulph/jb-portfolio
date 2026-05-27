@@ -114,6 +114,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const portfolio = ref([])
 const deleting = ref(false)
 const pageLoading = ref(true)
@@ -134,7 +135,7 @@ onMounted(async () => {
 
 const fetchPortfolio = async () => {
   try {
-    const response = await $fetch('/api/admin/portfolio')
+    const response = await fetchAdminData('/api/admin/portfolio')
     portfolio.value = response.data || []
   } catch (error) {
     console.error('Error fetching portfolio:', error)
