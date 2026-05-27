@@ -13,8 +13,11 @@
       </NuxtLink>
     </div>
 
+    <AdminPageState v-if="pageLoading" message="Loading videos..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
     <!-- Videos Table -->
-    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+    <div v-else class="bg-white shadow overflow-hidden sm:rounded-md">
       <div v-if="videos.length === 0" class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
@@ -110,9 +113,20 @@ definePageMeta({
 
 const videos = ref([])
 const deleting = ref(false)
+const pageLoading = ref(true)
+const pageError = ref(null)
 
 onMounted(async () => {
-  await fetchVideos()
+  pageLoading.value = true
+  pageError.value = null
+  try {
+    await fetchVideos()
+  } catch (error) {
+    console.error('Error fetching videos:', error)
+    pageError.value = 'Failed to load videos. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
+  }
 })
 
 const fetchVideos = async () => {
@@ -121,6 +135,7 @@ const fetchVideos = async () => {
     videos.value = response.data || []
   } catch (error) {
     console.error('Error fetching videos:', error)
+    throw error
   }
 }
 

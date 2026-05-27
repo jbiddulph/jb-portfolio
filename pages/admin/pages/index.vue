@@ -5,7 +5,10 @@
       <p class="mt-2 text-gray-600">Manage your website pages content</p>
     </div>
 
-    <form @submit.prevent="updatePages" class="space-y-8">
+    <AdminPageState v-if="pageLoading" message="Loading page content..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
+    <form v-else @submit.prevent="updatePages" class="space-y-8">
       <div class="bg-white shadow rounded-lg p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">Page Content</h2>
         <div class="space-y-6">
@@ -86,6 +89,8 @@ definePageMeta({
 })
 
 const loading = ref(false)
+const pageLoading = ref(true)
+const pageError = ref(null)
 
 const form = reactive({
   home: '',
@@ -96,7 +101,16 @@ const form = reactive({
 })
 
 onMounted(async () => {
-  await fetchPages()
+  pageLoading.value = true
+  pageError.value = null
+  try {
+    await fetchPages()
+  } catch (error) {
+    console.error('Error fetching pages:', error)
+    pageError.value = 'Failed to load page content. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
+  }
 })
 
 const fetchPages = async () => {
@@ -107,6 +121,7 @@ const fetchPages = async () => {
     }
   } catch (error) {
     console.error('Error fetching pages:', error)
+    throw error
   }
 }
 

@@ -8,7 +8,10 @@
       <p class="mt-2 text-gray-600">Update your project details</p>
     </div>
 
-    <form @submit.prevent="updateProject" class="space-y-8">
+    <AdminPageState v-if="pageLoading" message="Loading project..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
+    <form v-else @submit.prevent="updateProject" class="space-y-8">
       <div class="bg-white shadow rounded-lg p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">Project Information</h2>
         <div class="space-y-6">
@@ -167,6 +170,8 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
+const pageLoading = ref(true)
+const pageError = ref(null)
 
 // File upload functionality
 const { uploading, uploadError, uploadPortfolioImage } = useFileUpload()
@@ -184,7 +189,16 @@ const form = reactive({
 })
 
 onMounted(async () => {
-  await fetchProject()
+  pageLoading.value = true
+  pageError.value = null
+  try {
+    await fetchProject()
+  } catch (error) {
+    console.error('Error fetching project:', error)
+    pageError.value = 'Failed to load this project. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
+  }
 })
 
 const fetchProject = async () => {
@@ -198,6 +212,7 @@ const fetchProject = async () => {
     }
   } catch (error) {
     console.error('Error fetching project:', error)
+    throw error
   }
 }
 

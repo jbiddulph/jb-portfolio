@@ -5,8 +5,12 @@
       <p class="mt-2 text-gray-600">Manage your website content and designs</p>
     </div>
 
-    <!-- Stats Overview -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <AdminPageState v-if="pageLoading" message="Loading dashboard data..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
+    <template v-else>
+      <!-- Stats Overview -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
           <div class="p-3 rounded-full bg-blue-100">
@@ -64,8 +68,8 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <!-- Quick Actions -->
+      <div class="bg-white rounded-lg shadow p-6 mb-8">
       <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <NuxtLink 
@@ -115,8 +119,8 @@
       </div>
     </div>
 
-    <!-- Recent Activity -->
-    <div class="bg-white rounded-lg shadow p-6">
+      <!-- Recent Activity -->
+      <div class="bg-white rounded-lg shadow p-6">
       <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
       <div class="space-y-3">
         <div v-if="recentActivity.length === 0" class="text-gray-500 text-center py-8">
@@ -132,7 +136,8 @@
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -150,8 +155,13 @@ const stats = ref({
 
 const activeDesign = ref(null)
 const recentActivity = ref([])
+const pageLoading = ref(true)
+const pageError = ref(null)
 
 onMounted(async () => {
+  pageLoading.value = true
+  pageError.value = null
+
   try {
     // Fetch stats
     const [designsRes, portfolioRes, linksRes, siteInfoRes] = await Promise.all([
@@ -176,6 +186,9 @@ onMounted(async () => {
     ]
   } catch (error) {
     console.error('Error fetching dashboard data:', error)
+    pageError.value = 'Failed to load dashboard data. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
   }
 })
 

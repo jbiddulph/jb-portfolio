@@ -8,7 +8,10 @@
       <p class="mt-2 text-gray-600">Create a new design theme for your website</p>
     </div>
 
-    <form @submit.prevent="createDesign" class="space-y-8">
+    <AdminPageState v-if="pageLoading" message="Loading design options..." />
+    <AdminPageState v-else-if="pageError" :error="pageError" />
+
+    <form v-else @submit.prevent="createDesign" class="space-y-8">
       <div class="bg-white shadow rounded-lg p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -455,6 +458,8 @@ definePageMeta({
 
 const router = useRouter()
 const loading = ref(false)
+const pageLoading = ref(true)
+const pageError = ref(null)
 const availableFonts = ref([])
 const enableGoogleFonts = ref(false)
 const selectedFonts = computed(() => enableGoogleFonts.value && (googleFonts.primary || googleFonts.heading))
@@ -512,7 +517,16 @@ const form = reactive({
 })
 
 onMounted(async () => {
-  await fetchGoogleFonts()
+  pageLoading.value = true
+  pageError.value = null
+  try {
+    await fetchGoogleFonts()
+  } catch (error) {
+    console.error('Error fetching design options:', error)
+    pageError.value = 'Failed to load design options. Please refresh and try again.'
+  } finally {
+    pageLoading.value = false
+  }
 })
 
 const fetchGoogleFonts = async () => {
@@ -523,6 +537,7 @@ const fetchGoogleFonts = async () => {
     }
   } catch (error) {
     console.error('Error fetching Google Fonts:', error)
+    throw error
   }
 }
 
