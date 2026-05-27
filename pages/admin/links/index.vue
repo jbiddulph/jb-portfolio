@@ -139,6 +139,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const links = ref([])
 const showAddForm = ref(false)
 const editingLink = ref(null)
@@ -166,7 +167,7 @@ onMounted(async () => {
 
 const fetchLinks = async () => {
   try {
-    const response = await $fetch('/api/admin/links')
+    const response = await fetchAdminData('/api/admin/links')
     links.value = response.data || []
   } catch (error) {
     console.error('Error fetching links:', error)

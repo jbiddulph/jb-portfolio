@@ -106,6 +106,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
@@ -134,7 +135,7 @@ onMounted(async () => {
 
 const fetchVideo = async () => {
   try {
-    const response = await $fetch(`/api/admin/videos/${route.params.id}`)
+    const response = await fetchAdminData(`/api/admin/videos/${route.params.id}`)
     if (response.data) {
       Object.assign(form, {
         title: response.data.title || '',

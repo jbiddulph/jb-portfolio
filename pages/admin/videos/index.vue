@@ -111,6 +111,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const videos = ref([])
 const deleting = ref(false)
 const pageLoading = ref(true)
@@ -131,7 +132,7 @@ onMounted(async () => {
 
 const fetchVideos = async () => {
   try {
-    const response = await $fetch('/api/admin/videos')
+    const response = await fetchAdminData('/api/admin/videos')
     videos.value = response.data || []
   } catch (error) {
     console.error('Error fetching videos:', error)

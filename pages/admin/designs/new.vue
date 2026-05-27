@@ -456,6 +456,7 @@ definePageMeta({
   middleware: 'admin-auth'
 })
 
+const { fetchAdminData } = useAdminFetch()
 const router = useRouter()
 const loading = ref(false)
 const pageLoading = ref(true)
@@ -527,7 +528,7 @@ onMounted(async () => {
 
 const fetchGoogleFonts = async () => {
   try {
-    const response = await $fetch('/api/admin/google-fonts')
+    const response = await fetchAdminData('/api/admin/google-fonts')
     if (response.success) {
       availableFonts.value = response.data
     }
