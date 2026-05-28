@@ -8,15 +8,18 @@ const DATABASE_URL_FALLBACK_KEYS = [
   'NUXT_DATABASE_URL',
   'PRISMA_DATABASE_URL',
   'POSTGRES_PRISMA_URL',
-  'POSTGRES_URL'
+  'POSTGRES_URL_NON_POOLING',
+  'POSTGRES_URL',
+  'DATABASE_URL_UNPOOLED',
+  'DIRECT_URL'
 ] as const
 
 const ensureDatabaseUrl = () => {
-  if (process.env.DATABASE_URL) {
+  if (process.env.DATABASE_URL?.trim()) {
     return
   }
 
-  const fallbackKey = DATABASE_URL_FALLBACK_KEYS.find((key) => process.env[key])
+  const fallbackKey = DATABASE_URL_FALLBACK_KEYS.find((key) => process.env[key]?.trim())
   if (!fallbackKey) {
     return
   }

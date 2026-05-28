@@ -26,7 +26,7 @@ Create a `.env` file and configure your database connection before running the a
 DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<db_name>
 ```
 
-The server also accepts `NUXT_DATABASE_URL`, `PRISMA_DATABASE_URL`, `POSTGRES_PRISMA_URL`, or `POSTGRES_URL` and will use the first available value as a fallback.
+The server also accepts `NUXT_DATABASE_URL`, `PRISMA_DATABASE_URL`, `POSTGRES_PRISMA_URL`, `POSTGRES_URL_NON_POOLING`, `POSTGRES_URL`, `DATABASE_URL_UNPOOLED`, or `DIRECT_URL` and will use the first available value as a fallback.
 
 ## Development Server
 
