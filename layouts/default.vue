@@ -58,6 +58,18 @@
               >
                 {{ siteInfo.site_slogan }}
               </p>
+              <p
+                class="hidden md:block font-bold leading-tight"
+                :style="getSiteDescriptionStyle(siteInfo?.design, 'desktop')"
+              >
+                07935 085 736
+              </p>
+              <p
+                class="md:hidden font-bold leading-tight"
+                :style="getSiteDescriptionStyle(siteInfo?.design, 'mobile')"
+              >
+                07935 085 736
+              </p>
             </div>
           </div>
           
