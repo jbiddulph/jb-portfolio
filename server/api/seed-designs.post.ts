@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
     const siteInfo = await prisma.jbiddulph_info.create({
       data: {
         site_name: 'John Biddulph Portfolio',
-        site_slogan: 'Full Stack Developer & Designer',
+        site_slogan: 'Full Stack Developer & Designer | 07935 085 736',
         site_description: 'A modern portfolio showcasing my development and design work',
         site_footer: '© 2025 John Biddulph. All rights reserved.',
         design_id: null

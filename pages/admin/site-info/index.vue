@@ -30,7 +30,7 @@
               type="text"
               id="site_slogan"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="e.g., Full Stack Developer & Designer"
+              placeholder="e.g., Full Stack Developer & Designer | 07935 085 736"
             />
           </div>
 
