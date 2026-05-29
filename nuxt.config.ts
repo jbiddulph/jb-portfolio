@@ -25,21 +25,6 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'en', // specify the language of your page
       },
-      script: [
-        {
-          async: true,
-          src: 'https://www.googletagmanager.com/gtag/js?id=G-HCYEX6RHPN',
-        },
-        {
-          children: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'G-HCYEX6RHPN');
-          `,
-        },
-      ],
     }
   },
 
