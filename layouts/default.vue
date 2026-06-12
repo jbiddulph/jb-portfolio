@@ -75,6 +75,17 @@
           
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center space-x-6">
+            <NuxtLink
+              to="/cv"
+              class="text-sm font-medium hover:underline transition-colors"
+              :style="{ 
+                color: siteInfo?.design?.primary_color || '#2563eb',
+                fontFamily: getFontFamily(siteInfo?.design, 'primary')
+              }"
+            >
+              CV
+            </NuxtLink>
+
             <!-- Social Links -->
             <div v-if="links.length > 0" class="flex items-center space-x-4">
               <a 
@@ -172,6 +183,19 @@
         :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }"
       >
         <div class="space-y-4">
+          <NuxtLink
+            to="/cv"
+            class="block w-full text-left px-3 py-2 text-sm font-medium rounded-md border transition-colors hover:opacity-80"
+            :style="{ 
+              borderColor: siteInfo?.design?.primary_color || '#2563eb',
+              color: siteInfo?.design?.primary_color || '#2563eb',
+              fontFamily: getFontFamily(siteInfo?.design, 'primary')
+            }"
+            @click="mobileMenuOpen = false"
+          >
+            CV
+          </NuxtLink>
+
           <!-- Social Links -->
           <div v-if="links.length > 0">
             <h3 
