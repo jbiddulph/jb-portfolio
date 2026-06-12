@@ -48,6 +48,20 @@
             </div>
           </dl>
         </div>
+        <div class="mt-8">
+          <a
+            :href="cvPdfPath"
+            download="john-biddulph-cv-2026.pdf"
+            class="inline-flex items-center rounded-md px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90"
+            :style="{
+              backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
+              color: '#ffffff',
+              fontFamily: getFontFamily(siteInfo?.design, 'primary')
+            }"
+          >
+            Download PDF CV
+          </a>
+        </div>
       </header>
 
       <div class="px-6 py-8 sm:px-10 sm:py-10">
@@ -215,6 +229,7 @@ useSeoMeta({
 
 const siteInfo = ref<any>(null)
 const { userDesignId } = useUserDesign()
+const cvPdfPath = '/cv/john-biddulph-cv-2026.pdf'
 
 const profile = [
   'Senior Full Stack Developer with 16+ years of commercial experience delivering scalable web applications, SaaS platforms, eCommerce solutions, and data-driven systems. Extensive expertise across JavaScript, TypeScript, Vue.js, Nuxt.js, React, Next.js, Laravel, PHP, Python, Node.js, REST APIs, cloud platforms, and modern DevOps practices.',
