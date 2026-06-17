@@ -6,9 +6,10 @@ export default defineEventHandler(async (event) => {
     
     const portfolio = await prisma.jbiddulph_portfolio.findMany({
       where: { live: true },
-      orderBy: {
-        project_date: 'desc'
-      },
+      orderBy: [
+        { sort_order: 'asc' },
+        { project_date: 'desc' }
+      ],
       select: {
         id: true,
         project_name: true,

@@ -4,9 +4,10 @@ export default defineEventHandler(async (event) => {
   try {
     console.log('Admin portfolio API called')
     const portfolio = await prisma.jbiddulph_portfolio.findMany({
-      orderBy: {
-        project_date: 'desc'
-      }
+      orderBy: [
+        { sort_order: 'asc' },
+        { project_date: 'desc' }
+      ]
     })
     
     console.log('Admin API - Found portfolio items:', portfolio.length)

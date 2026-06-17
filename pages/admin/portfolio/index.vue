@@ -3,7 +3,7 @@
     <div class="mb-8 flex justify-between items-center">
       <div>
         <h1 class="text-3xl font-bold text-gray-900">Portfolio Management</h1>
-        <p class="mt-2 text-gray-600">Manage your portfolio projects</p>
+        <p class="mt-2 text-gray-600">Manage your portfolio projects. Drag items to set display order.</p>
       </div>
       <NuxtLink 
         to="/admin/portfolio/new"
@@ -18,6 +18,14 @@
 
     <!-- Portfolio Items Table -->
     <div v-else class="bg-white shadow overflow-hidden sm:rounded-md">
+      <div
+        v-if="sortMessage"
+        class="px-6 py-2 text-sm border-b"
+        :class="sortError ? 'bg-red-50 text-red-700 border-red-100' : 'bg-green-50 text-green-700 border-green-100'"
+      >
+        {{ sortMessage }}
+      </div>
+
       <div v-if="portfolio.length === 0" class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
@@ -35,9 +43,36 @@
       </div>
 
       <ul v-else class="divide-y divide-gray-200">
-        <li v-for="item in portfolio" :key="item.id" class="px-6 py-4">
+        <li
+          v-for="(item, index) in portfolio"
+          :key="item.id"
+          draggable="true"
+          class="px-6 py-4 transition-colors"
+          :class="{
+            'bg-indigo-50': dragOverIndex === index,
+            'opacity-50': draggedIndex === index
+          }"
+          @dragstart="onDragStart(index)"
+          @dragover="onDragOver($event, index)"
+          @dragleave="onDragLeave(index)"
+          @drop="onDrop(index)"
+          @dragend="onDragEnd"
+        >
           <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-4 min-w-0">
+              <button
+                type="button"
+                class="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 p-1"
+                aria-label="Drag to reorder"
+                @mousedown.stop
+              >
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
+                </svg>
+              </button>
+              <span class="flex-shrink-0 text-xs font-medium text-gray-400 w-6 text-center">
+                {{ index + 1 }}
+              </span>
               <div v-if="item.project_image" class="flex-shrink-0">
                 <img 
                   :src="item.project_image" 
@@ -62,6 +97,12 @@
                 <div class="flex flex-wrap items-center gap-4 mt-1">
                   <span class="text-xs text-gray-400">
                     {{ formatDate(item.project_date) }}
+                  </span>
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                    :class="item.live ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'"
+                  >
+                    {{ item.live ? 'LIVE' : 'Hidden' }}
                   </span>
                   <a 
                     v-if="item.project_link"
@@ -119,6 +160,12 @@ const portfolio = ref([])
 const deleting = ref(false)
 const pageLoading = ref(true)
 const pageError = ref(null)
+const draggedIndex = ref(null)
+const dragOverIndex = ref(null)
+const sorting = ref(false)
+const sortMessage = ref('')
+const sortError = ref(false)
+let sortMessageTimeout = null
 
 onMounted(async () => {
   pageLoading.value = true
@@ -180,5 +227,68 @@ const formatDate = (dateString) => {
 const getTags = (tagsString) => {
   if (!tagsString) return []
   return tagsString.split(',').filter(tag => tag.trim())
+}
+
+const onDragStart = (index) => {
+  draggedIndex.value = index
+}
+
+const onDragOver = (event, index) => {
+  event.preventDefault()
+  dragOverIndex.value = index
+}
+
+const onDragLeave = (index) => {
+  if (dragOverIndex.value === index) {
+    dragOverIndex.value = null
+  }
+}
+
+const onDragEnd = () => {
+  draggedIndex.value = null
+  dragOverIndex.value = null
+}
+
+const showSortMessage = (message, isError = false) => {
+  sortMessage.value = message
+  sortError.value = isError
+  if (sortMessageTimeout) {
+    clearTimeout(sortMessageTimeout)
+  }
+  sortMessageTimeout = setTimeout(() => {
+    sortMessage.value = ''
+    sortError.value = false
+  }, 3000)
+}
+
+const saveOrder = async () => {
+  sorting.value = true
+  try {
+    await $fetch('/api/admin/portfolio/reorder', {
+      method: 'PUT',
+      body: { order: portfolio.value.map((item) => item.id) }
+    })
+    showSortMessage('Display order saved')
+  } catch (error) {
+    console.error('Error saving portfolio order:', error)
+    showSortMessage('Failed to save order. Refreshing list...', true)
+    await fetchPortfolio()
+  } finally {
+    sorting.value = false
+  }
+}
+
+const onDrop = async (index) => {
+  if (draggedIndex.value === null || draggedIndex.value === index) {
+    onDragEnd()
+    return
+  }
+
+  const items = [...portfolio.value]
+  const [moved] = items.splice(draggedIndex.value, 1)
+  items.splice(index, 0, moved)
+  portfolio.value = items
+  onDragEnd()
+  await saveOrder()
 }
 </script>

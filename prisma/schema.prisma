@@ -97,8 +97,19 @@ model jbiddulph_portfolio {
   project_description   String?
   project_tags          String?
   live                  Boolean @default(true)
+  sort_order            Int     @default(0)
   created_at            DateTime @default(now())
   updated_at            DateTime @updatedAt
+}
+
+model jbiddulph_enquiries {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?
+  service     String?
+  message     String
+  created_at  DateTime @default(now())
 }
 
 model jbiddulph_links {

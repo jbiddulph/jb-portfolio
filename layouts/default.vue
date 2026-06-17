@@ -86,6 +86,17 @@
               CV
             </NuxtLink>
 
+            <NuxtLink
+              to="/services"
+              class="text-base font-medium hover:underline transition-colors"
+              :style="{ 
+                color: siteInfo?.design?.primary_color || '#2563eb',
+                fontFamily: getFontFamily(siteInfo?.design, 'primary')
+              }"
+            >
+              Services
+            </NuxtLink>
+
             <!-- Social Links -->
             <div v-if="navLinks.length > 0" class="flex items-center space-x-4">
               <a 
@@ -194,6 +205,19 @@
             @click="mobileMenuOpen = false"
           >
             CV
+          </NuxtLink>
+
+          <NuxtLink
+            to="/services"
+            class="block w-full text-left px-3 py-2 text-base font-medium rounded-md border transition-colors hover:opacity-80"
+            :style="{ 
+              borderColor: siteInfo?.design?.primary_color || '#2563eb',
+              color: siteInfo?.design?.primary_color || '#2563eb',
+              fontFamily: getFontFamily(siteInfo?.design, 'primary')
+            }"
+            @click="mobileMenuOpen = false"
+          >
+            Services
           </NuxtLink>
 
           <!-- Social Links -->

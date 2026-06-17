@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@pinia/nuxt", "@nuxt/content", "@nuxt/image",],
 
   runtimeConfig: {
+    servicesEnquiryWebhookUrl: process.env.SERVICES_ENQUIRY_WEBHOOK_URL || '',
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
