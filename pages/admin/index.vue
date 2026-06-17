@@ -10,7 +10,7 @@
 
     <template v-else>
       <!-- Stats Overview -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
       <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
           <div class="p-3 rounded-full bg-blue-100">
@@ -66,6 +66,20 @@
           </div>
         </div>
       </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-rose-100">
+            <svg class="h-6 w-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Service Enquiries</p>
+            <p class="text-2xl font-semibold text-gray-900">{{ stats.enquiries }}</p>
+          </div>
+        </div>
+      </div>
     </div>
 
       <!-- Quick Actions -->
@@ -116,8 +130,63 @@
             <p class="text-sm text-gray-500">Edit site details</p>
           </div>
         </NuxtLink>
+
+        <NuxtLink 
+          to="/admin/services" 
+          class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <div class="p-2 bg-rose-100 rounded-lg mr-3">
+            <svg class="h-5 w-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-medium text-gray-900">Services Enquiries</h3>
+            <p class="text-sm text-gray-500">View form submissions</p>
+          </div>
+        </NuxtLink>
       </div>
     </div>
+
+      <!-- Services Enquiries -->
+      <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Services Enquiries</h2>
+          <NuxtLink
+            to="/admin/services"
+            class="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            View all →
+          </NuxtLink>
+        </div>
+
+        <div v-if="recentEnquiries.length === 0" class="text-gray-500 text-center py-8">
+          No service enquiries yet
+        </div>
+
+        <div v-else class="space-y-3">
+          <div
+            v-for="enquiry in recentEnquiries"
+            :key="enquiry.id"
+            class="flex items-start justify-between gap-4 p-4 bg-gray-50 rounded-lg"
+          >
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-gray-900">{{ enquiry.name }}</p>
+              <p class="text-sm text-gray-500 truncate">{{ enquiry.email }}</p>
+              <p class="text-sm text-gray-700 mt-2 line-clamp-2">{{ enquiry.message }}</p>
+            </div>
+            <div class="flex-shrink-0 text-right">
+              <span
+                v-if="enquiry.service"
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+              >
+                {{ formatService(enquiry.service) }}
+              </span>
+              <p class="text-xs text-gray-500 mt-2">{{ formatDate(enquiry.created_at) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Recent Activity -->
       <div class="bg-white rounded-lg shadow p-6">
@@ -151,13 +220,22 @@ const { fetchAdminData } = useAdminFetch()
 const stats = ref({
   designs: 0,
   portfolio: 0,
-  links: 0
+  links: 0,
+  enquiries: 0
 })
 
 const activeDesign = ref(null)
 const recentActivity = ref([])
+const recentEnquiries = ref([])
 const pageLoading = ref(true)
 const pageError = ref(null)
+
+const serviceLabels = {
+  'full-stack': 'Full Stack',
+  frontend: 'Frontend',
+  'ui-ux-seo': 'UI / UX & SEO',
+  multiple: 'Multiple / Unsure'
+}
 
 onMounted(async () => {
   pageLoading.value = true
@@ -165,20 +243,23 @@ onMounted(async () => {
 
   try {
     // Fetch stats
-    const [designsRes, portfolioRes, linksRes, siteInfoRes] = await Promise.all([
+    const [designsRes, portfolioRes, linksRes, siteInfoRes, enquiriesRes] = await Promise.all([
       fetchAdminData('/api/admin/designs'),
       fetchAdminData('/api/admin/portfolio'),
       fetchAdminData('/api/admin/links'),
-      fetchAdminData('/api/admin/site-info')
+      fetchAdminData('/api/admin/site-info'),
+      fetchAdminData('/api/admin/enquiries')
     ])
 
     stats.value = {
       designs: designsRes.data?.length || 0,
       portfolio: portfolioRes.data?.length || 0,
-      links: linksRes.data?.length || 0
+      links: linksRes.data?.length || 0,
+      enquiries: enquiriesRes.data?.length || 0
     }
 
     activeDesign.value = siteInfoRes.data?.design
+    recentEnquiries.value = (enquiriesRes.data || []).slice(0, 5)
 
     // Generate recent activity (you can enhance this with actual activity tracking)
     recentActivity.value = [
@@ -202,4 +283,6 @@ const formatDate = (dateString) => {
     minute: '2-digit'
   })
 }
+
+const formatService = (service) => serviceLabels[service] || service
 </script>

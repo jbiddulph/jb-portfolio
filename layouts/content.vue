@@ -61,7 +61,7 @@
       <nuxt-page />
     </main>
     <footer class="bg-slate-800 border-t border-slate-700 text-slate-500 text-center p-4">
-      <p class="text-xs">&copy; copyright jbiddulph 2025 </p>
+      <p class="text-xs">&copy; copyright jbiddulph 2026 </p>
     </footer>
   </div>
 </template>

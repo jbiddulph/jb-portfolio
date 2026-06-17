@@ -52,7 +52,7 @@
               type="text"
               id="site_footer"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="e.g., © 2025 John Biddulph. All rights reserved."
+              placeholder="e.g., © 2026 John Biddulph. All rights reserved."
             />
           </div>
         </div>

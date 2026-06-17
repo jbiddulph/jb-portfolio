@@ -310,7 +310,7 @@
             class="text-sm text-center sm:text-left"
             :style="getBodyStyle(siteInfo?.design)"
           >
-            {{ siteInfo?.site_footer || '© 2025 John Biddulph. All rights reserved.' }}
+            {{ siteInfo?.site_footer || '© 2026 John Biddulph. All rights reserved.' }}
           </p>
           
           <!-- Design Switcher -->
