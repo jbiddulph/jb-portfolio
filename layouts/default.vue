@@ -77,7 +77,7 @@
           <div class="hidden md:flex items-center space-x-6">
             <NuxtLink
               to="/cv"
-              class="text-sm font-medium hover:underline transition-colors"
+              class="text-base font-medium hover:underline transition-colors"
               :style="{ 
                 color: siteInfo?.design?.primary_color || '#2563eb',
                 fontFamily: getFontFamily(siteInfo?.design, 'primary')
@@ -87,13 +87,13 @@
             </NuxtLink>
 
             <!-- Social Links -->
-            <div v-if="links.length > 0" class="flex items-center space-x-4">
+            <div v-if="navLinks.length > 0" class="flex items-center space-x-4">
               <a 
-                v-for="link in links" 
+                v-for="link in navLinks" 
                 :key="link.id"
                 :href="link.link_url" 
                 target="_blank"
-                class="text-sm font-medium hover:underline transition-colors"
+                class="text-base font-medium hover:underline transition-colors"
                 :style="{ 
                   color: siteInfo?.design?.primary_color || '#2563eb',
                   fontFamily: getFontFamily(siteInfo?.design, 'primary')
@@ -185,7 +185,7 @@
         <div class="space-y-4">
           <NuxtLink
             to="/cv"
-            class="block w-full text-left px-3 py-2 text-sm font-medium rounded-md border transition-colors hover:opacity-80"
+            class="block w-full text-left px-3 py-2 text-base font-medium rounded-md border transition-colors hover:opacity-80"
             :style="{ 
               borderColor: siteInfo?.design?.primary_color || '#2563eb',
               color: siteInfo?.design?.primary_color || '#2563eb',
@@ -197,7 +197,7 @@
           </NuxtLink>
 
           <!-- Social Links -->
-          <div v-if="links.length > 0">
+          <div v-if="navLinks.length > 0">
             <h3 
               class="text-sm font-medium mb-3"
               :style="getHeadingStyle(siteInfo?.design, 'h3')"
@@ -206,11 +206,11 @@
             </h3>
             <div class="flex flex-col space-y-2">
               <a 
-                v-for="link in links" 
+                v-for="link in navLinks" 
                 :key="link.id"
                 :href="link.link_url" 
                 target="_blank"
-                class="block w-full text-left px-3 py-2 text-sm font-medium rounded-md border transition-colors hover:opacity-80"
+                class="block w-full text-left px-3 py-2 text-base font-medium rounded-md border transition-colors hover:opacity-80"
                 :style="{ 
                   borderColor: siteInfo?.design?.primary_color || '#2563eb',
                   color: siteInfo?.design?.primary_color || '#2563eb',
@@ -457,7 +457,7 @@ const handleDesignChange = async (designId: number | string) => {
   if (designId && typeof designId === 'number') {
     await fetchUserDesign()
   } else {
-    // Reset to default design (ID 3)
+    // Reset to default design (Newspaper)
     await fetchUserDesign()
   }
 }
@@ -499,6 +499,11 @@ const fetchLinks = async () => {
     console.error('Error fetching links:', error)
   }
 }
+
+const hiddenNavLinkNames = ['CV (PDF)', 'CV (DOC)']
+const navLinks = computed(() =>
+  links.value.filter((link) => !hiddenNavLinkNames.includes(link.link_name))
+)
 
 // Computed styles based on design system
 const dynamicStyles = computed(() => {

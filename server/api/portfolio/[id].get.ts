@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     
     console.log('Project found:', project ? 'Yes' : 'No')
     
-    if (!project) {
+    if (!project || !project.live) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Project not found'

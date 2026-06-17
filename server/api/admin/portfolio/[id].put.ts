@@ -13,7 +13,8 @@ export default defineEventHandler(async (event) => {
         project_link: body.project_link,
         project_image: body.project_image,
         project_description: body.project_description,
-        project_tags: body.project_tags
+        project_tags: body.project_tags,
+        live: body.live ?? true
       }
     })
     

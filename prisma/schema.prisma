@@ -96,6 +96,7 @@ model jbiddulph_portfolio {
   project_image         String?
   project_description   String?
   project_tags          String?
+  live                  Boolean @default(true)
   created_at            DateTime @default(now())
   updated_at            DateTime @updatedAt
 }

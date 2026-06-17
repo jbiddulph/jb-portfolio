@@ -5,6 +5,7 @@ export default defineEventHandler(async (event) => {
     console.log('Public portfolio API called')
     
     const portfolio = await prisma.jbiddulph_portfolio.findMany({
+      where: { live: true },
       orderBy: {
         project_date: 'desc'
       },

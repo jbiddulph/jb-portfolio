@@ -2,7 +2,7 @@ export const useUserDesign = () => {
   const userDesignId = ref<number | null>(null)
   const availableDesigns = ref([])
   const loading = ref(false)
-  const defaultDesignId = 3
+  const defaultDesignId = 5 // Newspaper theme
 
   // Load user's saved design preference from cookie
   const loadUserDesign = () => {

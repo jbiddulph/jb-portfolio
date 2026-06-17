@@ -120,6 +120,23 @@
             <p class="mt-1 text-sm text-gray-500">Comma-separated tags to categorize your project</p>
           </div>
 
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <input
+                v-model="form.live"
+                type="checkbox"
+                id="live"
+                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              />
+            </div>
+            <div class="ml-3">
+              <label for="live" class="block text-sm font-medium text-gray-700">
+                LIVE
+              </label>
+              <p class="text-sm text-gray-500">When checked, this project is visible on the public site</p>
+            </div>
+          </div>
+
           <!-- Image Preview -->
           <div v-if="form.project_image" class="mt-6">
             <label class="block text-sm font-medium text-gray-700 mb-3">Image Preview</label>
@@ -186,7 +203,8 @@ const form = reactive({
   project_date: '',
   project_link: '',
   project_image: '',
-  project_tags: ''
+  project_tags: '',
+  live: true
 })
 
 onMounted(async () => {
@@ -208,7 +226,8 @@ const fetchProject = async () => {
     if (response.data) {
       Object.assign(form, {
         ...response.data,
-        project_date: response.data.project_date ? new Date(response.data.project_date).toISOString().split('T')[0] : ''
+        project_date: response.data.project_date ? new Date(response.data.project_date).toISOString().split('T')[0] : '',
+        live: response.data.live ?? true
       })
     }
   } catch (error) {
