@@ -75,6 +75,19 @@
           
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center space-x-6">
+            <a
+              href="https://www.oldskoolvibe.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-base font-medium hover:underline transition-colors"
+              :style="{ 
+                color: siteInfo?.design?.primary_color || '#2563eb',
+                fontFamily: getFontFamily(siteInfo?.design, 'primary')
+              }"
+            >
+              Old Skool Vibe Dev
+            </a>
+
             <NuxtLink
               to="/cv"
               class="text-base font-medium hover:underline transition-colors"
@@ -194,6 +207,21 @@
         :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }"
       >
         <div class="space-y-4">
+          <a
+            href="https://www.oldskoolvibe.dev/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block w-full text-left px-3 py-2 text-base font-medium rounded-md border transition-colors hover:opacity-80"
+            :style="{ 
+              borderColor: siteInfo?.design?.primary_color || '#2563eb',
+              color: siteInfo?.design?.primary_color || '#2563eb',
+              fontFamily: getFontFamily(siteInfo?.design, 'primary')
+            }"
+            @click="mobileMenuOpen = false"
+          >
+            Old Skool Vibe Dev
+          </a>
+
           <NuxtLink
             to="/cv"
             class="block w-full text-left px-3 py-2 text-base font-medium rounded-md border transition-colors hover:opacity-80"
