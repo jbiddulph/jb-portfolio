@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
         project_image: true,
         project_tags: true
       },
-      take: 20 // Limit to 20 items for better performance
+      take: 50 // Increased limit to show all portfolio items
     })
     
     console.log('Found portfolio items:', portfolio.length)
