@@ -59,16 +59,16 @@
                 {{ siteInfo.site_slogan }}
               </p>
               <p
-                class="hidden md:block font-bold leading-tight"
+                class="hidden md:block font-bold leading-tight mt-1"
                 :style="getSiteDescriptionStyle(siteInfo?.design, 'desktop')"
               >
-                07935 085 736
+                07935085736
               </p>
               <p
-                class="md:hidden font-bold leading-tight"
+                class="md:hidden font-bold leading-tight mt-1"
                 :style="getSiteDescriptionStyle(siteInfo?.design, 'mobile')"
               >
-                07935 085 736
+                07935085736
               </p>
             </div>
           </div>
