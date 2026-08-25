@@ -21,10 +21,13 @@
         <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h1 class="font-bold mb-3" :style="getHeadingStyle(siteInfo?.design, 'h1')">
-              John Michael Biddulph
+              John Biddulph
             </h1>
             <p class="text-xl font-semibold" :style="getBodyStyle(siteInfo?.design)">
-              Senior Full Stack Developer
+              Full Stack Engineer
+            </p>
+            <p class="text-lg font-medium mt-2" :style="getBodyStyle(siteInfo?.design)">
+              07935085736
             </p>
           </div>
           <dl class="grid gap-3 text-sm sm:grid-cols-2 lg:text-right">
