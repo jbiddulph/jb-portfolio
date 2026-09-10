@@ -14,6 +14,20 @@
       >
         A collection of my recent projects and work
       </p>
+      <div class="mt-6">
+        <a
+          href="/john-biddulph-recent-projects-2026.pdf"
+          download="john-biddulph-recent-projects-2026.pdf"
+          class="inline-flex items-center rounded-md px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90"
+          :style="{
+            backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
+            color: '#ffffff',
+            fontFamily: getFontFamily(siteInfo?.design, 'primary')
+          }"
+        >
+          Download PDF of recent projects
+        </a>
+      </div>
     </div>
 
     <!-- Portfolio Loading State -->
