@@ -20,6 +20,7 @@ export const useAdminFetch = () => {
         return await $fetch<T>(url, {
           ...options,
           headers: {
+            ...useRequestHeaders(['cookie']),
             ...(options as { headers?: Record<string, string> })?.headers,
             'cache-control': 'no-cache'
           }
