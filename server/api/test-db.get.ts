@@ -13,7 +13,9 @@ export default defineEventHandler(async (event) => {
     console.log('Portfolio table accessible, count:', count)
     
     // Test fetching a specific project
-    const project = await prisma.jbiddulph_portfolio.findFirst()
+    const project = await prisma.jbiddulph_portfolio.findFirst({
+      select: { id: true }
+    })
     console.log('Sample project found:', project ? project.id : 'None')
     
     return {

@@ -100,6 +100,18 @@ model jbiddulph_portfolio {
   sort_order            Int     @default(0)
   created_at            DateTime @default(now())
   updated_at            DateTime @updatedAt
+
+  // Admin-only operational details. Public APIs must not select these columns.
+  domains               String?
+  subdomains            String?
+  hosting               String?
+  database_info         String?
+  ssl                   String?
+  github_repo           String?
+  passwords             String?
+  apis_used             String?
+  documentation         String?
+  other_info            String?
 }
 
 model jbiddulph_enquiries {

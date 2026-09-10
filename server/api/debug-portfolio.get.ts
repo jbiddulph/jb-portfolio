@@ -1,6 +1,7 @@
 import { prisma } from '~/lib/prisma'
+import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
   try {
     // Get total count
     const totalCount = await prisma.jbiddulph_portfolio.count()
@@ -9,7 +10,8 @@ export default defineEventHandler(async (event) => {
     const allItems = await prisma.jbiddulph_portfolio.findMany({
       orderBy: {
         project_date: 'desc'
-      }
+      },
+      select: PUBLIC_PORTFOLIO_SELECT
     })
     
     // Get first 3 items for preview
@@ -17,7 +19,8 @@ export default defineEventHandler(async (event) => {
       take: 3,
       orderBy: {
         project_date: 'desc'
-      }
+      },
+      select: PUBLIC_PORTFOLIO_SELECT
     })
     
     return {

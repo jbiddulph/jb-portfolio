@@ -1,6 +1,7 @@
 import { prisma } from '~/lib/prisma'
+import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
   try {
     // Test portfolio data
     const portfolioCount = await prisma.jbiddulph_portfolio.count()
@@ -8,7 +9,8 @@ export default defineEventHandler(async (event) => {
       take: 5,
       orderBy: {
         project_date: 'desc'
-      }
+      },
+      select: PUBLIC_PORTFOLIO_SELECT
     })
     
     // Test site info

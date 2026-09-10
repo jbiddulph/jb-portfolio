@@ -1,4 +1,5 @@
 import { prisma } from '~/lib/prisma'
+import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -10,15 +11,7 @@ export default defineEventHandler(async (event) => {
         { sort_order: 'asc' },
         { project_date: 'desc' }
       ],
-      select: {
-        id: true,
-        project_name: true,
-        project_description: true,
-        project_date: true,
-        project_link: true,
-        project_image: true,
-        project_tags: true
-      },
+      select: PUBLIC_PORTFOLIO_SELECT,
       take: 50 // Increased limit to show all portfolio items
     })
     

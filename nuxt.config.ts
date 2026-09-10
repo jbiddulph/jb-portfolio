@@ -5,6 +5,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     servicesEnquiryWebhookUrl: process.env.SERVICES_ENQUIRY_WEBHOOK_URL || '',
+    portfolioSecretsKey: process.env.PORTFOLIO_SECRETS_KEY || '',
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,

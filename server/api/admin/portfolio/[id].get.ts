@@ -17,9 +17,16 @@ export default defineEventHandler(async (event) => {
     
     return {
       success: true,
-      data: portfolio
+      data: {
+        ...portfolio,
+        passwords: decryptSecret(portfolio.passwords)
+      }
     }
   } catch (error) {
+    if (error.statusCode) {
+      throw error
+    }
+
     throw createError({
       statusCode: 500,
       statusMessage: 'Failed to fetch portfolio item'

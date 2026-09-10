@@ -116,6 +116,8 @@
         </div>
       </div>
 
+      <AdminPortfolioOpsFields :form="form" />
+
       <div class="flex justify-end space-x-3">
         <NuxtLink
           to="/admin/portfolio"
@@ -136,6 +138,8 @@
 </template>
 
 <script setup>
+import { emptyAdminPortfolioFields } from '~/lib/portfolioFields'
+
 definePageMeta({
   layout: 'admin',
   middleware: 'admin-auth'
@@ -155,7 +159,9 @@ const form = reactive({
   project_date: new Date().toISOString().split('T')[0],
   project_link: '',
   project_image: '',
-  project_tags: ''
+  project_tags: '',
+  live: true,
+  ...emptyAdminPortfolioFields()
 })
 
 const handleProjectImageUpload = async (event) => {
