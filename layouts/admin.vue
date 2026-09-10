@@ -1,19 +1,30 @@
 <template>
   <div class="min-h-screen bg-gray-100">
     <!-- Admin Header -->
-    <header class="bg-white shadow-sm border-b">
+    <header class="bg-white shadow-sm border-b sticky top-0 z-30">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
-          <div class="flex items-center">
-            <NuxtLink to="/admin" class="text-xl font-bold text-gray-900">
+          <div class="flex items-center space-x-4">
+            <!-- Mobile menu button -->
+            <button
+              @click="mobileMenuOpen = !mobileMenuOpen"
+              class="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              aria-label="Toggle menu"
+            >
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path v-if="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <NuxtLink to="/admin" class="text-lg sm:text-xl font-bold text-gray-900">
               JBiddulph Admin
             </NuxtLink>
           </div>
-          <div class="flex items-center space-x-4">
-            <span class="text-sm text-gray-700">{{ user?.email }}</span>
+          <div class="flex items-center space-x-2 sm:space-x-4">
+            <span class="text-xs sm:text-sm text-gray-700 truncate max-w-[120px] sm:max-w-none">{{ user?.email }}</span>
             <button 
               @click="signOut"
-              class="text-sm text-gray-500 hover:text-gray-700"
+              class="text-xs sm:text-sm text-gray-500 hover:text-gray-700 whitespace-nowrap"
             >
               Sign Out
             </button>
@@ -22,10 +33,17 @@
       </div>
     </header>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Mobile menu overlay -->
+    <div
+      v-if="mobileMenuOpen"
+      class="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden"
+      @click="mobileMenuOpen = false"
+    ></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       <div class="flex">
-        <!-- Sidebar -->
-        <nav class="w-64 bg-white rounded-lg shadow-sm p-6 mr-8">
+        <!-- Sidebar - Desktop -->
+        <nav class="hidden lg:block w-64 bg-white rounded-lg shadow-sm p-6 mr-8 flex-shrink-0 h-fit sticky top-20">
           <ul class="space-y-2">
             <li>
               <NuxtLink 
@@ -127,8 +145,122 @@
           </ul>
         </nav>
 
+        <!-- Sidebar - Mobile (sliding) -->
+        <nav
+          class="lg:hidden fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white shadow-xl p-6 transform transition-transform duration-300 ease-in-out z-50 overflow-y-auto"
+          :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'"
+        >
+          <ul class="space-y-2">
+            <li>
+              <NuxtLink 
+                to="/admin" 
+                @click="mobileMenuOpen = false"
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                :class="$route.path === '/admin' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
+              >
+                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
+                </svg>
+                Dashboard
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink 
+                to="/admin/designs" 
+                @click="mobileMenuOpen = false"
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                :class="$route.path === '/admin/designs' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
+              >
+                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
+                </svg>
+                Designs
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink 
+                to="/admin/portfolio" 
+                @click="mobileMenuOpen = false"
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                :class="$route.path === '/admin/portfolio' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
+              >
+                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                Portfolio
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink 
+                to="/admin/videos" 
+                @click="mobileMenuOpen = false"
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                :class="$route.path.startsWith('/admin/videos') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
+              >
+                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                Videos
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink 
+                to="/admin/site-info" 
+                @click="mobileMenuOpen = false"
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                :class="$route.path === '/admin/site-info' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
+              >
+                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Site Info
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink 
+                to="/admin/links" 
+                @click="mobileMenuOpen = false"
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                :class="$route.path === '/admin/links' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
+              >
+                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                </svg>
+                Links
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink 
+                to="/admin/pages" 
+                @click="mobileMenuOpen = false"
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                :class="$route.path === '/admin/pages' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
+              >
+                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Pages
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink 
+                to="/admin/services" 
+                @click="mobileMenuOpen = false"
+                class="flex items-center px-3 py-2 text-sm font-medium rounded-md"
+                :class="$route.path.startsWith('/admin/services') ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'"
+              >
+                <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Services
+              </NuxtLink>
+            </li>
+          </ul>
+        </nav>
+
         <!-- Main Content -->
-        <main class="flex-1">
+        <main class="flex-1 min-w-0">
           <slot />
         </main>
       </div>
@@ -141,6 +273,7 @@ import { ref, onMounted } from 'vue'
 
 const client = useSupabaseClient()
 const user = ref(null)
+const mobileMenuOpen = ref(false)
 
 // Get authenticated user data securely
 const fetchUser = async () => {

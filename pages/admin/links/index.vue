@@ -1,16 +1,18 @@
 <template>
   <div>
-    <div class="mb-8 flex justify-between items-center">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Links Management</h1>
-        <p class="mt-2 text-gray-600">Manage your external links</p>
+    <div class="mb-6 sm:mb-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Links Management</h1>
+          <p class="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Manage your external links</p>
+        </div>
+        <button 
+          @click="showAddForm = true"
+          class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors text-center whitespace-nowrap"
+        >
+          Add New Link
+        </button>
       </div>
-      <button 
-        @click="showAddForm = true"
-        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-      >
-        Add New Link
-      </button>
     </div>
 
     <AdminPageState v-if="pageLoading" message="Loading links..." />

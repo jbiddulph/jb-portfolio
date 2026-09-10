@@ -1,16 +1,18 @@
 <template>
   <div>
-    <div class="mb-8 flex justify-between items-center">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Video Management</h1>
-        <p class="mt-2 text-gray-600">Manage your video showcases</p>
+    <div class="mb-6 sm:mb-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Video Management</h1>
+          <p class="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Manage your video showcases</p>
+        </div>
+        <NuxtLink 
+          to="/admin/videos/new"
+          class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors text-center whitespace-nowrap"
+        >
+          Add New Video
+        </NuxtLink>
       </div>
-      <NuxtLink 
-        to="/admin/videos/new"
-        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-      >
-        Add New Video
-      </NuxtLink>
     </div>
 
     <AdminPageState v-if="pageLoading" message="Loading videos..." />
@@ -35,32 +37,32 @@
       </div>
 
       <ul v-else class="divide-y divide-gray-200">
-        <li v-for="video in videos" :key="video.id" class="px-6 py-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4 flex-1">
+        <li v-for="video in videos" :key="video.id" class="px-4 sm:px-6 py-4">
+          <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+            <div class="flex items-start space-x-3 sm:space-x-4 flex-1 min-w-0">
               <!-- YouTube Thumbnail -->
               <div v-if="getYouTubeVideoId(video.youtube_url)" class="flex-shrink-0">
                 <img 
                   :src="`https://img.youtube.com/vi/${getYouTubeVideoId(video.youtube_url)}/mqdefault.jpg`" 
                   :alt="video.title"
-                  class="h-20 w-32 rounded-lg object-cover"
+                  class="h-16 w-24 sm:h-20 sm:w-32 rounded-lg object-cover"
                 />
               </div>
               <div v-else class="flex-shrink-0">
-                <div class="h-20 w-32 bg-gray-200 rounded-lg flex items-center justify-center">
-                  <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="h-16 w-24 sm:h-20 sm:w-32 bg-gray-200 rounded-lg flex items-center justify-center">
+                  <svg class="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                   </svg>
                 </div>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-medium text-gray-900 break-words">
+                <h3 class="text-base sm:text-lg font-medium text-gray-900 break-words">
                   {{ video.title }}
                 </h3>
-                <p v-if="video.description" class="text-sm text-gray-500 break-words mt-1">
+                <p v-if="video.description" class="text-sm text-gray-500 break-words mt-1 line-clamp-2 sm:line-clamp-none">
                   {{ video.description }}
                 </p>
-                <div class="flex flex-wrap items-center gap-4 mt-2">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
                   <a 
                     :href="video.youtube_url" 
                     target="_blank"
@@ -82,10 +84,10 @@
                 </div>
               </div>
             </div>
-            <div class="flex items-center space-x-2 ml-4">
+            <div class="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-1 ml-auto sm:ml-0">
               <NuxtLink 
                 :to="`/admin/videos/${video.id}/edit`"
-                class="text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+                class="text-indigo-600 hover:text-indigo-500 text-sm font-medium whitespace-nowrap"
               >
                 Edit
               </NuxtLink>
@@ -93,7 +95,7 @@
                 @click.prevent="deleteVideo(video.id)"
                 type="button"
                 :disabled="deleting"
-                class="text-red-600 hover:text-red-500 text-sm font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                class="text-red-600 hover:text-red-500 text-sm font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {{ deleting ? 'Deleting...' : 'Delete' }}
               </button>

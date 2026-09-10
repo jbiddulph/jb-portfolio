@@ -1,16 +1,18 @@
 <template>
   <div>
-    <div class="mb-8 flex justify-between items-center">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Portfolio Management</h1>
-        <p class="mt-2 text-gray-600">Manage your portfolio projects. Drag items to set display order.</p>
+    <div class="mb-6 sm:mb-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Portfolio Management</h1>
+          <p class="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Manage your portfolio projects. Drag items to set display order.</p>
+        </div>
+        <NuxtLink 
+          to="/admin/portfolio/new"
+          class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors text-center whitespace-nowrap"
+        >
+          Add New Project
+        </NuxtLink>
       </div>
-      <NuxtLink 
-        to="/admin/portfolio/new"
-        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-      >
-        Add New Project
-      </NuxtLink>
     </div>
 
     <AdminPageState v-if="pageLoading" message="Loading portfolio projects..." />
@@ -58,11 +60,12 @@
           @drop="onDrop(index)"
           @dragend="onDragEnd"
         >
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4 min-w-0">
+          <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+            <!-- Left section: drag handle, number, image, content -->
+            <div class="flex items-start space-x-3 sm:space-x-4 flex-1 min-w-0">
               <button
                 type="button"
-                class="flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 p-1"
+                class="hidden sm:block flex-shrink-0 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 p-1 mt-1"
                 aria-label="Drag to reorder"
                 @mousedown.stop
               >
@@ -70,31 +73,31 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
                 </svg>
               </button>
-              <span class="flex-shrink-0 text-xs font-medium text-gray-400 w-6 text-center">
+              <span class="flex-shrink-0 text-xs font-medium text-gray-400 w-6 text-center mt-1">
                 {{ index + 1 }}
               </span>
               <div v-if="item.project_image" class="flex-shrink-0">
                 <img 
                   :src="item.project_image" 
                   :alt="item.project_name"
-                  class="h-12 w-12 rounded-lg object-cover"
+                  class="h-16 w-16 sm:h-12 sm:w-12 rounded-lg object-cover"
                 />
               </div>
               <div v-else class="flex-shrink-0">
-                <div class="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                <div class="h-16 w-16 sm:h-12 sm:w-12 bg-gray-200 rounded-lg flex items-center justify-center">
                   <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                   </svg>
                 </div>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-medium text-gray-900 break-words">
+                <h3 class="text-base sm:text-lg font-medium text-gray-900 break-words">
                   {{ item.project_name }}
                 </h3>
-                <p class="text-sm text-gray-500 break-words">
+                <p class="text-sm text-gray-500 break-words line-clamp-2 sm:line-clamp-none">
                   {{ item.project_description }}
                 </p>
-                <div class="flex flex-wrap items-center gap-4 mt-1">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
                   <span class="text-xs text-gray-400">
                     {{ formatDate(item.project_date) }}
                   </span>
@@ -126,10 +129,11 @@
                 </div>
               </div>
             </div>
-            <div class="flex items-center space-x-2">
+            <!-- Right section: actions -->
+            <div class="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-1 ml-9 sm:ml-0">
               <NuxtLink 
                 :to="`/admin/portfolio/${item.id}/edit`"
-                class="text-indigo-600 hover:text-indigo-500 text-sm font-medium"
+                class="text-indigo-600 hover:text-indigo-500 text-sm font-medium whitespace-nowrap"
               >
                 Edit
               </NuxtLink>
@@ -137,7 +141,7 @@
                 @click.prevent="deleteProject(item.id)"
                 type="button"
                 :disabled="deleting"
-                class="text-red-600 hover:text-red-500 text-sm font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                class="text-red-600 hover:text-red-500 text-sm font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {{ deleting ? 'Deleting...' : 'Delete' }}
               </button>

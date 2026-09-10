@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="mb-8">
-      <NuxtLink to="/admin/portfolio" class="text-indigo-600 hover:text-indigo-500 mb-4 inline-block">
+    <div class="mb-6 sm:mb-8">
+      <NuxtLink to="/admin/portfolio" class="text-indigo-600 hover:text-indigo-500 mb-3 sm:mb-4 inline-block text-sm sm:text-base">
         ← Back to Portfolio
       </NuxtLink>
-      <h1 class="text-3xl font-bold text-gray-900">Edit Project</h1>
-      <p class="mt-2 text-gray-600">Update your project details</p>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Edit Project</h1>
+      <p class="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Update your project details</p>
     </div>
 
     <AdminPageState v-if="pageLoading" message="Loading project..." />
@@ -65,7 +65,7 @@
           <div>
             <label for="project_image" class="block text-sm font-medium text-gray-700">Project Image</label>
             <div class="mt-1 space-y-3">
-              <div class="flex items-center space-x-4">
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
                 <input
                   v-model="form.project_image"
                   type="url"
@@ -84,7 +84,7 @@
                   type="button"
                   @click="() => projectImageInput?.click()"
                   :disabled="uploading"
-                  class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                 >
                   {{ uploading ? 'Uploading...' : 'Upload' }}
                 </button>
