@@ -46,6 +46,11 @@ export const pickAdminPortfolioFields = (body: Record<string, unknown>) => {
       continue
     }
 
+    if (field === 'passwords') {
+      data[field] = value === '' ? null : value
+      continue
+    }
+
     const trimmed = value.trim()
     data[field] = trimmed === '' ? null : trimmed
   }
