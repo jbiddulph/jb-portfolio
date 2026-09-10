@@ -1,4 +1,5 @@
 import { prisma } from '~/lib/prisma'
+import { pickAdminPortfolioFields } from '~/lib/portfolioFields'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -14,7 +15,8 @@ export default defineEventHandler(async (event) => {
         project_image: body.project_image,
         project_description: body.project_description,
         project_tags: body.project_tags,
-        live: body.live ?? true
+        live: body.live ?? true,
+        ...pickAdminPortfolioFields(body)
       }
     })
     

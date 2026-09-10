@@ -1,4 +1,5 @@
 import { prisma } from '~/lib/prisma'
+import { pickAdminPortfolioFields } from '~/lib/portfolioFields'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -17,7 +18,8 @@ export default defineEventHandler(async (event) => {
         project_description: body.project_description,
         project_tags: body.project_tags,
         live: body.live ?? true,
-        sort_order: (maxSortOrder._max.sort_order ?? 0) + 1
+        sort_order: (maxSortOrder._max.sort_order ?? 0) + 1,
+        ...pickAdminPortfolioFields(body)
       }
     })
     

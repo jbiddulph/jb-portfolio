@@ -1,17 +1,24 @@
 import { prisma } from '~/lib/prisma'
+import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
   try {
     console.log('Admin portfolio API called')
     const portfolio = await prisma.jbiddulph_portfolio.findMany({
       orderBy: [
         { sort_order: 'asc' },
         { project_date: 'desc' }
-      ]
+      ],
+      select: {
+        ...PUBLIC_PORTFOLIO_SELECT,
+        live: true,
+        sort_order: true,
+        created_at: true,
+        updated_at: true
+      }
     })
     
     console.log('Admin API - Found portfolio items:', portfolio.length)
-    console.log('Admin API - Portfolio data:', portfolio)
     
     return {
       success: true,

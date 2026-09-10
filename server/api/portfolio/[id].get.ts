@@ -1,4 +1,5 @@
 import { prisma } from '~/lib/prisma'
+import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -14,7 +15,11 @@ export default defineEventHandler(async (event) => {
     }
     
     const project = await prisma.jbiddulph_portfolio.findUnique({
-      where: { id }
+      where: { id },
+      select: {
+        ...PUBLIC_PORTFOLIO_SELECT,
+        live: true
+      }
     })
     
     console.log('Project found:', project ? 'Yes' : 'No')
@@ -25,10 +30,12 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Project not found'
       })
     }
+
+    const { live, ...publicProject } = project
     
     return {
       success: true,
-      data: project
+      data: publicProject
     }
   } catch (error) {
     console.error('Error in portfolio/[id] API:', error)
