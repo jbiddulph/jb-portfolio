@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Site Information</h1>
-      <p class="mt-2 text-gray-600">Manage your website's basic information and branding</p>
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Site Information</h1>
+      <p class="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Manage your website's basic information and branding</p>
     </div>
 
     <AdminPageState v-if="pageLoading" message="Loading site information..." />
@@ -63,7 +63,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label for="site_image" class="block text-sm font-medium text-gray-700">Site Image</label>
-            <div class="mt-1 flex items-center space-x-4">
+            <div class="mt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
               <input
                 v-model="form.site_image"
                 type="url"
@@ -82,7 +82,7 @@
                 type="button"
                 @click="() => siteImageInput?.click()"
                 :disabled="uploading"
-                class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 whitespace-nowrap"
               >
                 {{ uploading ? 'Uploading...' : 'Upload' }}
               </button>
@@ -92,7 +92,7 @@
           
           <div>
             <label for="site_avatar" class="block text-sm font-medium text-gray-700">Site Avatar</label>
-            <div class="mt-1 flex items-center space-x-4">
+            <div class="mt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
               <input
                 v-model="form.site_avatar"
                 type="url"
@@ -111,7 +111,7 @@
                 type="button"
                 @click="() => avatarInput?.click()"
                 :disabled="uploading"
-                class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 whitespace-nowrap"
               >
                 {{ uploading ? 'Uploading...' : 'Upload' }}
               </button>

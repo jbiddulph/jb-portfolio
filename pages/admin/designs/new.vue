@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="mb-8">
-      <NuxtLink to="/admin/designs" class="text-indigo-600 hover:text-indigo-500 mb-4 inline-block">
+    <div class="mb-6 sm:mb-8">
+      <NuxtLink to="/admin/designs" class="text-indigo-600 hover:text-indigo-500 mb-3 sm:mb-4 inline-block text-sm sm:text-base">
         ← Back to Designs
       </NuxtLink>
-      <h1 class="text-3xl font-bold text-gray-900">Create New Design</h1>
-      <p class="mt-2 text-gray-600">Create a new design theme for your website</p>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Create New Design</h1>
+      <p class="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Create a new design theme for your website</p>
     </div>
 
     <AdminPageState v-if="pageLoading" message="Loading design options..." />

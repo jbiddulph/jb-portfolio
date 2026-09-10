@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-      <p class="mt-2 text-gray-600">Manage your website content and designs</p>
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+      <p class="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Manage your website content and designs</p>
     </div>
 
     <AdminPageState v-if="pageLoading" message="Loading dashboard data..." />

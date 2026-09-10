@@ -1,17 +1,19 @@
 <template>
   <div>
-    <div class="mb-8 flex justify-between items-center">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Services Enquiries</h1>
-        <p class="mt-2 text-gray-600">View enquiries submitted from the public services page</p>
+    <div class="mb-6 sm:mb-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Services Enquiries</h1>
+          <p class="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">View enquiries submitted from the public services page</p>
+        </div>
+        <NuxtLink
+          to="/services"
+          target="_blank"
+          class="text-indigo-600 hover:text-indigo-500 text-sm font-medium whitespace-nowrap"
+        >
+          View public page →
+        </NuxtLink>
       </div>
-      <NuxtLink
-        to="/services"
-        target="_blank"
-        class="text-indigo-600 hover:text-indigo-500 text-sm font-medium"
-      >
-        View public page →
-      </NuxtLink>
     </div>
 
     <AdminPageState v-if="pageLoading" message="Loading enquiries..." />
