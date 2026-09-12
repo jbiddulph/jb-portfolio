@@ -1,411 +1,152 @@
 <template>
-  <div class="mx-auto px-4 sm:px-6 lg:px-8 py-12" :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }">
-    <!-- Page Header -->
-    <div class="text-center mb-12">
-      <h1 
-        class="text-4xl font-bold mb-4"
-        :style="getHeadingStyle(siteInfo?.design, 'h1')"
+  <div>
+    <PageIntro
+      eyebrow="Portfolio"
+      :title="pages?.portfolio || 'My Portfolio'"
+      description="A collection of recent client work, products and side projects."
+    >
+      <a
+        href="/john-biddulph-recent-projects-2026.pdf"
+        download="john-biddulph-recent-projects-2026.pdf"
+        class="btn btn-primary"
       >
-        {{ pages?.portfolio || 'My Portfolio' }}
-      </h1>
-      <p 
-        class="text-lg max-w-2xl mx-auto"
-        :style="getBodyStyle(siteInfo?.design)"
-      >
-        A collection of my recent projects and work
-      </p>
-      <div class="mt-6">
-        <a
-          href="/john-biddulph-recent-projects-2026.pdf"
-          download="john-biddulph-recent-projects-2026.pdf"
-          class="inline-flex items-center rounded-md px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90"
-          :style="{
-            backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
-            color: '#ffffff',
-            fontFamily: getFontFamily(siteInfo?.design, 'primary')
-          }"
-        >
-          Download PDF of recent projects
-        </a>
-      </div>
-    </div>
-
-    <!-- Portfolio Loading State -->
-    <div v-if="portfolioLoading" class="text-center py-12">
-      <div class="flex justify-center items-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2" :style="{ borderColor: siteInfo?.design?.primary_color || '#3b82f6' }"></div>
-        <span class="ml-4" :style="getBodyStyle(siteInfo?.design)">Loading portfolio...</span>
-      </div>
-    </div>
-
-    <!-- No Projects State -->
-    <div v-else-if="portfolio.length === 0" class="text-center py-12">
-      <div class="max-w-md mx-auto">
-        <svg class="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
         </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No projects available</h3>
-        <p :style="getBodyStyle(siteInfo?.design)" class="text-gray-500">
-          Check back later for new projects and updates.
-        </p>
-      </div>
-    </div>
-
-    <!-- Portfolio Grid - 4 Columns -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      <a 
-        v-for="item in portfolio" 
-        :key="item.id"
-        :href="getProjectCardUrl(item)"
-        :target="getProjectCardTarget(item)"
-        :rel="getProjectCardRel(item)"
-        class="block group border rounded-lg hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer overflow-hidden"
-        :style="{ 
-          ...getBorderStyle(siteInfo?.design),
-          borderRadius: siteInfo?.design?.border_radius || '8px',
-          backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-        }"
-      >
-        <!-- Project Image - No padding, full width -->
-        <div v-if="item.project_image" class="aspect-square overflow-hidden">
-          <img 
-            :src="item.project_image" 
-            :alt="item.project_name"
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-
-        <!-- Project Info -->
-        <div class="p-6 space-y-3">
-          <h3 
-            class="font-bold text-lg"
-            :style="getHeadingStyle(siteInfo?.design, 'h3')"
-          >
-            {{ item.project_name }}
-          </h3>
-          
-          <p 
-            class="text-sm leading-relaxed"
-            :style="getBodyStyle(siteInfo?.design)"
-          >
-            {{ getDescriptionPreview(item.project_description, item.id) }}
-            <span
-              v-if="isDescriptionTruncated(item.project_description)"
-              role="button"
-              tabindex="0"
-              class="ml-1 cursor-pointer font-medium hover:underline"
-              :style="{ 
-                color: siteInfo?.design?.primary_color || '#2563eb',
-                fontFamily: getFontFamily(siteInfo?.design, 'primary')
-              }"
-              @click.prevent.stop="toggleDescription(item.id)"
-              @keydown.enter.prevent.stop="toggleDescription(item.id)"
-              @keydown.space.prevent.stop="toggleDescription(item.id)"
-            >
-              {{ isDescriptionExpanded(item.id) ? 'Less' : 'More' }}
-            </span>
-          </p>
-          
-          <!-- Tags -->
-          <div v-if="item.project_tags" class="flex flex-wrap gap-2">
-            <span 
-              v-for="tag in getTags(item.project_tags)" 
-              :key="tag"
-              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-              :style="{ 
-                backgroundColor: siteInfo?.design?.accent_color || '#3b82f6',
-                color: '#ffffff'
-              }"
-            >
-              {{ tag.trim() }}
-            </span>
-          </div>
-
-          <!-- Project Meta -->
-          <div class="flex items-center justify-between pt-3 border-t" :style="{ borderColor: siteInfo?.design?.primary_color || '#e5e7eb' }">
-            <span 
-              class="text-xs"
-              :style="getBodyStyle(siteInfo?.design)"
-            >
-              {{ formatDate(item.project_date) }}
-            </span>
-            <span
-              class="inline-flex items-center text-sm font-medium"
-              :style="{ 
-                color: siteInfo?.design?.primary_color || '#2563eb',
-                fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
-              }"
-            >
-              {{ item.project_link ? 'Open Live Site' : 'View Details' }}
-              <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-              </svg>
-            </span>
-          </div>
-        </div>
+        Recent projects (PDF)
       </a>
-    </div>
+    </PageIntro>
 
-    <!-- Back to Home Link -->
-    <div class="text-center mt-12">
-      <NuxtLink 
-        to="/"
-        class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-md border transition-colors"
-        :style="{ 
-          borderColor: siteInfo?.design?.primary_color || '#2563eb',
-          color: siteInfo?.design?.primary_color || '#2563eb'
-        }"
-      >
-        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
-        Back to Home
-      </NuxtLink>
-    </div>
+    <section class="page-x section">
+      <!-- Toolbar -->
+      <div v-if="portfolio.length" class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by technology">
+          <button
+            type="button"
+            class="btn btn-sm"
+            :class="activeTag === null ? 'btn-primary' : 'btn-outline'"
+            @click="activeTag = null"
+          >
+            All
+            <span class="opacity-70">{{ portfolio.length }}</span>
+          </button>
+          <button
+            v-for="tag in topTags"
+            :key="tag.name"
+            type="button"
+            class="btn btn-sm"
+            :class="activeTag === tag.name ? 'btn-primary' : 'btn-outline'"
+            @click="activeTag = activeTag === tag.name ? null : tag.name"
+          >
+            {{ tag.name }}
+            <span class="opacity-70">{{ tag.count }}</span>
+          </button>
+        </div>
+        <label class="relative block w-full lg:max-w-xs">
+          <span class="sr-only">Search projects</span>
+          <svg class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path stroke-linecap="round" d="M20 20l-3.5-3.5" />
+          </svg>
+          <input
+            v-model="query"
+            type="search"
+            placeholder="Search projects…"
+            class="field-input !rounded-full !py-2.5 !pl-11"
+          />
+        </label>
+      </div>
+
+      <!-- Loading -->
+      <div v-if="loading && !portfolio.length" class="auto-grid [--grid-min:18rem]">
+        <SkeletonCard v-for="n in 8" :key="n" />
+      </div>
+
+      <!-- Empty -->
+      <div v-else-if="portfolio.length === 0" class="card mx-auto flex max-w-lg flex-col items-center gap-4 px-6 py-16 text-center">
+        <span class="flex h-14 w-14 items-center justify-center rounded-full bg-brand-soft text-brand" aria-hidden="true">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" />
+          </svg>
+        </span>
+        <h2 class="font-heading text-lg font-semibold text-ink">
+          {{ failed ? 'Projects could not be loaded' : 'No projects available' }}
+        </h2>
+        <p class="text-sm text-muted">
+          {{ failed ? 'Please try again in a moment.' : 'Check back later for new projects and updates.' }}
+        </p>
+        <button v-if="failed" type="button" class="btn btn-primary btn-sm" @click="load(true)">Retry</button>
+      </div>
+
+      <!-- Grid -->
+      <template v-else>
+        <p class="mb-4 text-sm text-muted" aria-live="polite">
+          Showing {{ filtered.length }} of {{ portfolio.length }} projects
+          <template v-if="activeTag"> tagged <strong class="text-ink">{{ activeTag }}</strong></template>
+          <template v-if="query"> matching “<strong class="text-ink">{{ query }}</strong>”</template>
+        </p>
+
+        <div v-if="filtered.length" class="auto-grid [--grid-min:18rem]">
+          <PortfolioCard v-for="item in filtered" :key="item.id" :item="item" />
+        </div>
+
+        <div v-else class="card flex flex-col items-center gap-3 px-6 py-14 text-center">
+          <p class="text-muted">No projects match that filter.</p>
+          <button type="button" class="btn btn-outline btn-sm" @click="resetFilters">Clear filters</button>
+        </div>
+      </template>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { useSupabaseClient } from '#imports'
+import { computed, onMounted, ref } from 'vue'
+import { splitTags, stripHtml } from '~/composables/useSiteContent'
 
-const getSupabaseClient = () => {
-  if (process.client) {
-    try {
-      return useSupabaseClient()
-    } catch (error) {
-      console.warn('Failed to initialize Supabase client:', error)
-      return null
-    }
-  }
-  return null
-}
-const user = ref(null)
-
-// User design management
-const { userDesignId } = useUserDesign()
-
-// Securely fetch user data (only if session exists)
-const fetchUser = async () => {
-  const client = getSupabaseClient()
-  if (!client) {
-    console.log('Supabase client not available (SSR)')
-    user.value = null
-    return
-  }
-  
-  try {
-    // First check if there's an active session
-    const { data: { session } } = await client.auth.getSession()
-    if (!session) {
-      // No session, user is not logged in (this is normal for public pages)
-      user.value = null
-      return
-    }
-    
-    // If session exists, get the authenticated user
-    const { data: { user: authenticatedUser }, error } = await client.auth.getUser()
-    if (!error && authenticatedUser) {
-      user.value = authenticatedUser
-    } else {
-      user.value = null
-    }
-  } catch (error) {
-    console.error('Error fetching user:', error)
-    user.value = null
-  }
-}
-
-// Reactive data
-const siteInfo = ref(null)
-const portfolio = ref([])
-const pages = ref(null)
-const portfolioLoading = ref(true)
-const expandedDescriptions = ref<Record<string, boolean>>({})
-
-// Fetch all data on mount
-onMounted(async () => {
-  await Promise.all([
-    fetchUser(),
-    fetchSiteInfo(),
-    fetchPortfolio(),
-    fetchPages()
-  ])
-  portfolioLoading.value = false
-  
-  // Listen for theme changes
-  window.addEventListener('theme-changed', handleThemeChange)
+useSeoMeta({
+  title: 'Projects | John Michael Biddulph',
+  description: 'A collection of recent projects and client work by John Biddulph, Full Stack Engineer.'
 })
 
-onUnmounted(() => {
-  window.removeEventListener('theme-changed', handleThemeChange)
+const { pages, load: loadPages } = useSitePages()
+const { portfolio, loading, failed, load } = usePortfolioList()
+
+const activeTag = ref<string | null>(null)
+const query = ref('')
+
+const topTags = computed(() => {
+  const counts = new Map<string, number>()
+  for (const item of portfolio.value) {
+    for (const tag of splitTags(item.project_tags)) {
+      counts.set(tag, (counts.get(tag) || 0) + 1)
+    }
+  }
+  return [...counts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+    .slice(0, 8)
 })
 
-const handleThemeChange = async (event) => {
-  // Only handle theme changes on client side
-  if (!process.client) return
-  
-  console.log('Portfolio index: Theme change event received:', event.detail)
-  
-  // Always use user's preferred design (including default)
-  await fetchUserDesign()
-}
-
-const fetchSiteInfo = async () => {
-  try {
-    const response = await $fetch('/api/site-info')
-    siteInfo.value = response.data
-    
-    // Always fetch and apply user's preferred design (including default)
-    // Only on client side to avoid SSR issues
-    if (process.client && userDesignId.value) {
-      await fetchUserDesign()
-    }
-  } catch (error) {
-    console.error('Error fetching site info:', error)
-  }
-}
-
-const fetchUserDesign = async () => {
-  if (!process.client || !userDesignId.value) return
-  
-  try {
-    const response = await $fetch(`/api/designs/${userDesignId.value}`)
-    if (response.success && siteInfo.value) {
-      // Override the design with user's preferred design
-      siteInfo.value.design = response.data
-    }
-  } catch (error) {
-    console.error('Error fetching user design:', error)
-  }
-}
-
-const fetchPortfolio = async () => {
-  try {
-    console.log('Fetching portfolio from /api/portfolio')
-    const response = await $fetch('/api/portfolio')
-    console.log('Portfolio API response:', response)
-    portfolio.value = response.data || []
-    console.log('Portfolio data set:', portfolio.value)
-  } catch (error) {
-    console.error('Error fetching portfolio:', error)
-    portfolio.value = []
-  }
-}
-
-const fetchPages = async () => {
-  try {
-    const response = await $fetch('/api/pages')
-    pages.value = response.data
-  } catch (error) {
-    console.error('Error fetching pages:', error)
-  }
-}
-
-// Utility functions
-const getTags = (tagsString) => {
-  if (!tagsString) return []
-  return tagsString.split(',').filter(tag => tag.trim())
-}
-
-const DESCRIPTION_PREVIEW_LENGTH = 60
-
-const getDescriptionKey = (projectId: string | number) => String(projectId)
-
-const getPlainTextDescription = (description?: string | null) => {
-  if (!description) return ''
-  return description.replace(/<[^>]*>/g, '').trim()
-}
-
-const isDescriptionExpanded = (projectId: string | number) => {
-  return !!expandedDescriptions.value[getDescriptionKey(projectId)]
-}
-
-const isDescriptionTruncated = (description?: string | null) => {
-  return getPlainTextDescription(description).length > DESCRIPTION_PREVIEW_LENGTH
-}
-
-const getDescriptionPreview = (description: string, projectId: string | number) => {
-  const textOnly = getPlainTextDescription(description)
-  if (!textOnly) return ''
-  if (isDescriptionExpanded(projectId) || textOnly.length <= DESCRIPTION_PREVIEW_LENGTH) {
-    return textOnly
-  }
-  return `${textOnly.slice(0, DESCRIPTION_PREVIEW_LENGTH)}…`
-}
-
-const toggleDescription = (projectId: string | number) => {
-  const key = getDescriptionKey(projectId)
-  expandedDescriptions.value[key] = !expandedDescriptions.value[key]
-}
-
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+const filtered = computed(() => {
+  const needle = query.value.trim().toLowerCase()
+  return portfolio.value.filter((item) => {
+    if (activeTag.value && !splitTags(item.project_tags).includes(activeTag.value)) return false
+    if (!needle) return true
+    const haystack = [item.project_name, stripHtml(item.project_description), item.project_tags]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+    return haystack.includes(needle)
   })
+})
+
+const resetFilters = () => {
+  activeTag.value = null
+  query.value = ''
 }
 
-const getProjectCardUrl = (item) => {
-  return item?.project_link || `/portfolio/${item.id}`
-}
-
-const getProjectCardTarget = (item) => {
-  return item?.project_link ? '_blank' : '_self'
-}
-
-const getProjectCardRel = (item) => {
-  return item?.project_link ? 'noopener noreferrer' : undefined
-}
-
-const getFontFamily = (design, fontType = 'primary') => {
-  if (!design) return 'inherit'
-  
-  let fontFamily = fontType === 'heading' ? design.heading_font : design.font_family
-  
-  // Use Google Fonts if available
-  if (design.google_fonts) {
-    try {
-      const googleFonts = JSON.parse(design.google_fonts)
-      if (fontType === 'heading' && googleFonts.heading) {
-        fontFamily = `"${googleFonts.heading}", ${design.heading_font}`
-      } else if (googleFonts.primary) {
-        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
-      }
-    } catch (e) {
-      console.error('Error parsing Google Fonts:', e)
-    }
-  }
-  
-  return fontFamily
-}
-
-const getHeadingStyle = (design, level = 'h1') => {
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'heading'),
-    fontSize: design?.[`font_size_${level}`] || '1.5rem'
-  }
-}
-
-const getBodyStyle = (design) => {
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'primary'),
-    fontSize: design?.font_size_base || '16px'
-  }
-}
-
-const getBorderStyle = (design) => {
-  const thickness = design?.border_thickness || '1px'
-  const style = design?.border_style || 'solid'
-  const color = design?.primary_color || '#e5e7eb'
-  
-  return {
-    borderWidth: thickness,
-    borderStyle: style,
-    borderColor: color
-  }
-}
+onMounted(() => {
+  loadPages()
+  load()
+})
 </script>

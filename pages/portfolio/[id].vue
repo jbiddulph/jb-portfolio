@@ -1,359 +1,184 @@
 <template>
-  <div 
-    class="mx-auto px-4 sm:px-6 lg:px-8 py-12"
-    :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }"
-  >
-    <!-- Loading State -->
-    <div v-if="loading" class="text-center py-8">
-      <div class="flex justify-center items-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2" :style="{ borderColor: siteInfo?.design?.primary_color || '#3b82f6' }"></div>
-        <span class="ml-2" :style="getBodyStyle(siteInfo?.design)">Loading project details...</span>
+  <div>
+    <!-- Loading -->
+    <div v-if="loading" class="page-x section">
+      <div class="mb-8 h-4 w-32 animate-pulse rounded bg-surface-3" />
+      <div class="mb-10 h-12 w-2/3 max-w-xl animate-pulse rounded bg-surface-3" />
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]">
+        <div class="card aspect-video animate-pulse bg-surface-2" />
+        <SkeletonCard :media="false" />
       </div>
     </div>
 
-    <!-- Error State -->
-    <div v-else-if="error" class="text-center py-8">
-      <h2 
-        class="text-2xl font-bold mb-4"
-        :style="getHeadingStyle(siteInfo?.design, 'h2')"
-      >
-        Project Not Found
-      </h2>
-      <p :style="getBodyStyle(siteInfo?.design)" class="mb-6">
-        {{ error }}
-      </p>
-      <NuxtLink 
-        to="/portfolio"
-        class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-md transition-colors"
-        :style="{ 
-          backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
-          color: '#ffffff'
-        }"
-      >
-        ← Back to All Projects
-      </NuxtLink>
+    <!-- Error -->
+    <div v-else-if="error" class="page-x section">
+      <div class="card mx-auto flex max-w-lg flex-col items-center gap-4 px-6 py-16 text-center">
+        <h1 class="fluid-h2 font-heading text-ink">Project not found</h1>
+        <p class="text-muted">{{ error }}</p>
+        <NuxtLink to="/portfolio" class="btn btn-primary">Back to all projects</NuxtLink>
+      </div>
     </div>
 
-    <!-- Project Details -->
-    <div v-else-if="project" class="space-y-8">
-      <!-- Header -->
-      <div class="flex justify-between items-start">
-        <div>
-          <h1 
-            class="text-3xl font-bold mb-4"
-            :style="getHeadingStyle(siteInfo?.design, 'h1')"
-          >
-            {{ project.project_name }}
-          </h1>
-          <div class="flex items-center space-x-4 mb-4">
-            <span 
-              class="text-lg"
-              :style="getBodyStyle(siteInfo?.design)"
-            >
-              {{ formatDate(project.project_date) }}
-            </span>
-            <a 
-              v-if="project.project_link"
-              :href="project.project_link" 
-              target="_blank"
-              class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors"
-              :style="{ 
-                backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
-                color: '#ffffff'
-              }"
-            >
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-              </svg>
-              View Live Project
-            </a>
-          </div>
-        </div>
-        <NuxtLink 
-          to="/portfolio"
-          class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors border"
-          :style="{ 
-            ...getBorderStyle(siteInfo?.design),
-            color: siteInfo?.design?.primary_color || '#2563eb'
-          }"
+    <!-- Project -->
+    <article v-else-if="project">
+      <PageIntro :eyebrow="`Project · ${formatProjectDate(project.project_date, { year: 'numeric', month: 'long' })}`">
+        <template #title>{{ project.project_name }}</template>
+        <template v-if="tags.length" #description>
+          <span class="flex flex-wrap gap-2">
+            <span v-for="tag in tags" :key="tag" class="chip">{{ tag }}</span>
+          </span>
+        </template>
+
+        <a
+          v-if="project.project_link"
+          :href="project.project_link"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary"
         >
-          ← Back to Portfolio
-        </NuxtLink>
-      </div>
+          View live project
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M7 7h10v10" />
+          </svg>
+        </a>
+        <NuxtLink to="/portfolio" class="btn btn-outline">All projects</NuxtLink>
+      </PageIntro>
 
-      <!-- 2 Column Layout (70/30) -->
-      <div class="grid grid-cols-1 lg:grid-cols-10 gap-8">
-        <!-- Main Content (70%) -->
-        <div class="lg:col-span-7 space-y-8">
-          <!-- Project Image -->
-          <div v-if="project.project_image" class="aspect-video rounded-lg overflow-hidden shadow-lg">
-            <img 
-              :src="project.project_image" 
+      <div class="page-x section grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] xl:gap-14">
+        <div class="min-w-0 space-y-10">
+          <figure v-if="project.project_image" class="card overflow-hidden">
+            <img
+              :src="project.project_image"
               :alt="project.project_name"
-              class="w-full h-full object-cover"
+              class="w-full object-cover"
+              fetchpriority="high"
             />
-          </div>
+          </figure>
 
-          <!-- Project Description -->
-          <div class="prose max-w-none">
-            <h2 
-              class="text-2xl font-bold mb-6"
-              :style="getHeadingStyle(siteInfo?.design, 'h2')"
-            >
-              About This Project
-            </h2>
-            <div 
-              class="text-lg leading-relaxed"
-              :style="getBodyStyle(siteInfo?.design)"
-              v-html="project.project_description"
-            ></div>
-          </div>
+          <section>
+            <h2 class="fluid-h3 mb-5 font-heading text-ink">About this project</h2>
+            <div class="prose-theme max-w-[75ch] text-[1.0625rem]" v-html="project.project_description" />
+          </section>
         </div>
 
-        <!-- Sidebar (30%) -->
-        <div class="lg:col-span-3 space-y-6">
-          <!-- Project Info Card -->
-          <div 
-            class="border rounded-lg p-6"
-            :style="{ 
-              borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-              borderRadius: siteInfo?.design?.border_radius || '8px',
-              backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-            }"
-          >
-            <h3 
-              class="text-lg font-semibold mb-4"
-              :style="getHeadingStyle(siteInfo?.design, 'h3')"
-            >
-              Project Details
-            </h3>
-            
-            <div class="space-y-4">
+        <aside class="space-y-6 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start">
+          <div class="card p-6">
+            <h3 class="mb-4 font-heading text-base font-semibold text-ink">Project details</h3>
+            <dl class="space-y-4 text-sm">
               <div>
-                <h4 
-                  class="text-sm font-medium mb-2"
-                  :style="getHeadingStyle(siteInfo?.design, 'h4')"
-                >
-                  Launch Date
-                </h4>
-                <p :style="getBodyStyle(siteInfo?.design)">
-                  {{ formatDate(project.project_date) }}
-                </p>
+                <dt class="text-xs font-medium uppercase tracking-wider text-muted">Launched</dt>
+                <dd class="mt-1 text-ink">{{ formatProjectDate(project.project_date, { year: 'numeric', month: 'long', day: 'numeric' }) }}</dd>
               </div>
-
               <div v-if="project.project_link">
-                <h4 
-                  class="text-sm font-medium mb-2"
-                  :style="getHeadingStyle(siteInfo?.design, 'h4')"
-                >
-                  Live URL
-                </h4>
-                <a 
-                  :href="project.project_link" 
-                  target="_blank"
-                  class="text-sm break-all hover:underline"
-                  :style="{ 
-                    color: siteInfo?.design?.primary_color || '#2563eb',
-                    fontFamily: getFontFamily(siteInfo?.design, 'primary')
-                  }"
-                >
-                  {{ project.project_link }}
-                </a>
+                <dt class="text-xs font-medium uppercase tracking-wider text-muted">Live URL</dt>
+                <dd class="mt-1">
+                  <a
+                    :href="project.project_link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="break-all font-medium text-brand hover:underline"
+                  >
+                    {{ prettyUrl }}
+                  </a>
+                </dd>
               </div>
-            </div>
+              <div v-if="tags.length">
+                <dt class="text-xs font-medium uppercase tracking-wider text-muted">Technologies</dt>
+                <dd class="mt-2 flex flex-wrap gap-1.5">
+                  <span v-for="tag in tags" :key="tag" class="chip">{{ tag }}</span>
+                </dd>
+              </div>
+            </dl>
           </div>
 
-          <!-- Tags Card -->
-          <div 
-            v-if="project.project_tags"
-            class="border rounded-lg p-6"
-            :style="{ 
-              borderColor: siteInfo?.design?.primary_color || '#e5e7eb',
-              borderRadius: siteInfo?.design?.border_radius || '8px'
-            }"
-          >
-            <h3 
-              class="text-lg font-semibold mb-4"
-              :style="getHeadingStyle(siteInfo?.design, 'h3')"
-            >
-              Technologies Used
-            </h3>
-            <div class="flex flex-wrap gap-2">
-              <span 
-                v-for="tag in getTags(project.project_tags)" 
-                :key="tag"
-                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                :style="{ 
-                  backgroundColor: siteInfo?.design?.accent_color || '#3b82f6',
-                  color: '#ffffff'
-                }"
-              >
-                {{ tag.trim() }}
-              </span>
+          <div class="card relative overflow-hidden p-6">
+            <div class="absolute inset-0 bg-hero-glow" aria-hidden="true" />
+            <div class="relative">
+              <h3 class="font-heading text-base font-semibold text-ink">Like what you see?</h3>
+              <p class="mt-2 text-sm text-muted">I'm available for full stack, frontend and UI/UX work.</p>
+              <NuxtLink to="/services#enquire" class="btn btn-primary btn-sm mt-4">Start a project</NuxtLink>
             </div>
           </div>
-
-        </div>
+        </aside>
       </div>
-    </div>
+
+      <!-- More projects -->
+      <section v-if="related.length" class="border-t border-line bg-surface-2">
+        <div class="page-x section-tight">
+          <SectionHeading eyebrow="Keep exploring" title="More projects">
+            <NuxtLink to="/portfolio" class="btn btn-outline btn-sm">View all</NuxtLink>
+          </SectionHeading>
+          <div class="auto-grid [--grid-min:17rem]">
+            <PortfolioCard v-for="item in related" :key="item.id" :item="item" />
+          </div>
+        </div>
+      </section>
+    </article>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-
-// Reactive data
-const siteInfo = ref(null)
-const project = ref(null)
-const loading = ref(true)
-const error = ref(null)
+import { computed, onMounted, ref, watch } from 'vue'
+import { formatProjectDate, splitTags, type PortfolioItem } from '~/composables/useSiteContent'
 
 const route = useRoute()
+const { portfolio, load: loadPortfolio } = usePortfolioList()
 
-// User design management
-const { userDesignId } = useUserDesign()
+const project = ref<PortfolioItem | null>(null)
+const loading = ref(true)
+const error = ref<string | null>(null)
 
-// Fetch data on mount
-onMounted(async () => {
-  await Promise.all([
-    fetchSiteInfo(),
-    fetchProject()
-  ])
-  
-  // Listen for theme changes
-  window.addEventListener('theme-changed', handleThemeChange)
+const tags = computed(() => splitTags(project.value?.project_tags))
+const prettyUrl = computed(() => (project.value?.project_link || '').replace(/^https?:\/\//, '').replace(/\/$/, ''))
+
+const related = computed(() => {
+  if (!project.value) return []
+  const currentTags = new Set(tags.value)
+  return portfolio.value
+    .filter((item) => item.id !== project.value?.id)
+    .map((item) => ({
+      item,
+      score: splitTags(item.project_tags).filter((tag) => currentTags.has(tag)).length
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map(({ item }) => item)
 })
 
-onUnmounted(() => {
-  window.removeEventListener('theme-changed', handleThemeChange)
+useSeoMeta({
+  title: computed(() => project.value ? `${project.value.project_name} | John Michael Biddulph` : 'Project | John Michael Biddulph'),
+  description: computed(() => project.value?.project_description?.replace(/<[^>]*>/g, '').slice(0, 160) || '')
 })
-
-const handleThemeChange = async (event) => {
-  // Only handle theme changes on client side
-  if (!process.client) return
-  
-  console.log('Portfolio details: Theme change event received:', event.detail)
-  
-  // Always use user's preferred design (including default)
-  await fetchUserDesign()
-}
-
-const fetchSiteInfo = async () => {
-  try {
-    const response = await $fetch('/api/site-info')
-    siteInfo.value = response.data
-    
-    // If user has a preferred design, fetch and apply it
-    // Only on client side to avoid SSR issues
-    if (process.client && userDesignId.value) {
-      await fetchUserDesign()
-    }
-  } catch (error) {
-    console.error('Error fetching site info:', error)
-  }
-}
-
-const fetchUserDesign = async () => {
-  if (!process.client || !userDesignId.value) return
-  
-  try {
-    const response = await $fetch(`/api/designs/${userDesignId.value}`)
-    if (response.success && siteInfo.value) {
-      // Override the design with user's preferred design
-      siteInfo.value.design = response.data
-    }
-  } catch (error) {
-    console.error('Error fetching user design:', error)
-  }
-}
 
 const fetchProject = async () => {
+  loading.value = true
+  error.value = null
   try {
-    console.log('Fetching project with ID:', route.params.id)
-    const response = await $fetch(`/api/portfolio/${route.params.id}`)
-    console.log('Project response:', response)
-    
-    if (response.success && response.data) {
+    const response: any = await $fetch(`/api/portfolio/${route.params.id}`)
+    if (response?.success && response.data) {
       project.value = response.data
     } else {
-      error.value = 'Project not found'
+      error.value = 'This project could not be found.'
     }
-  } catch (error) {
-    console.error('Error fetching project:', error)
-    console.error('Error details:', error.message, error.statusCode)
-    error.value = `Failed to load project details: ${error.message || 'Unknown error'}`
+  } catch (err: any) {
+    console.error('Error fetching project:', err)
+    error.value = err?.statusCode === 404
+      ? 'This project could not be found.'
+      : `Failed to load project details: ${err?.message || 'Unknown error'}`
   } finally {
     loading.value = false
   }
 }
 
-// Helper functions
-const getTags = (tagsString) => {
-  if (!tagsString) return []
-  return tagsString.split(',').filter(tag => tag.trim())
-}
+onMounted(() => {
+  fetchProject()
+  loadPortfolio()
+})
 
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
-const getFontFamily = (design, fontType = 'primary') => {
-  if (!design) return 'inherit'
-  
-  let fontFamily = fontType === 'heading' ? design.heading_font : design.font_family
-  
-  // Use Google Fonts if available
-  if (design.google_fonts) {
-    try {
-      const googleFonts = JSON.parse(design.google_fonts)
-      if (fontType === 'heading' && googleFonts.heading) {
-        fontFamily = `"${googleFonts.heading}", ${design.heading_font}`
-      } else if (googleFonts.primary) {
-        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
-      }
-    } catch (e) {
-      console.error('Error parsing Google Fonts:', e)
-    }
+watch(() => route.params.id, () => {
+  if (route.name && String(route.name).startsWith('portfolio-id')) {
+    fetchProject()
+    if (process.client) window.scrollTo({ top: 0 })
   }
-  
-  return fontFamily
-}
-
-const getHeadingStyle = (design, level = 'h1') => {
-  const fontSizeMap = {
-    h1: design?.font_size_h1 || '2.5rem',
-    h2: design?.font_size_h2 || '2rem',
-    h3: design?.font_size_h3 || '1.5rem',
-    h4: design?.font_size_h4 || '1.25rem'
-  }
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'heading'),
-    fontSize: fontSizeMap[level]
-  }
-}
-
-const getBodyStyle = (design) => {
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'primary'),
-    fontSize: design?.font_size_base || '16px'
-  }
-}
-
-const getBorderStyle = (design) => {
-  const thickness = design?.border_thickness || '1px'
-  const style = design?.border_style || 'solid'
-  const color = design?.primary_color || '#e5e7eb'
-  
-  return {
-    borderWidth: thickness,
-    borderStyle: style,
-    borderColor: color
-  }
-}
+})
 </script>

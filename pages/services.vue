@@ -1,190 +1,150 @@
 <template>
-  <div class="mx-auto px-4 sm:px-6 lg:px-8 py-12" :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }">
-    <header class="mb-12 text-center max-w-3xl mx-auto">
-      <p
-        class="text-sm font-semibold uppercase tracking-[0.2em] mb-3"
-        :style="{ color: siteInfo?.design?.primary_color || '#2563eb', fontFamily: getFontFamily(siteInfo?.design, 'primary') }"
-      >
-        What I Offer
-      </p>
-      <h1 class="font-bold mb-4" :style="getHeadingStyle(siteInfo?.design, 'h1')">
-        Services
-      </h1>
-      <p class="text-lg leading-relaxed" :style="getBodyStyle(siteInfo?.design)">
-        From full stack applications to polished frontends and search-ready experiences — I help businesses design, build, and ship reliable digital products.
-      </p>
-    </header>
-
-    <div class="grid gap-8 md:grid-cols-3 mb-16">
-      <section
-        v-for="service in services"
-        :key="service.id"
-        class="flex flex-col border rounded-2xl p-6 shadow-sm transition-shadow hover:shadow-md"
-        :style="{
-          ...getBorderStyle(siteInfo?.design),
-          borderRadius: siteInfo?.design?.border_radius || '16px',
-          backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-        }"
-      >
-        <div
-          class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl"
-          :style="{ backgroundColor: `${siteInfo?.design?.primary_color || '#2563eb'}15` }"
-        >
-          <span class="text-2xl" aria-hidden="true">{{ service.icon }}</span>
-        </div>
-        <h2 class="font-bold mb-3" :style="getHeadingStyle(siteInfo?.design, 'h3')">
-          {{ service.title }}
-        </h2>
-        <p class="mb-4 leading-relaxed flex-1" :style="getBodyStyle(siteInfo?.design)">
-          {{ service.description }}
-        </p>
-        <ul class="space-y-2">
-          <li
-            v-for="item in service.highlights"
-            :key="item"
-            class="flex items-start gap-2 text-sm"
-            :style="getBodyStyle(siteInfo?.design)"
-          >
-            <span
-              class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full"
-              :style="{ backgroundColor: siteInfo?.design?.accent_color || siteInfo?.design?.primary_color || '#2563eb' }"
-            />
-            {{ item }}
-          </li>
-        </ul>
-      </section>
-    </div>
-
-    <section
-      id="enquire"
-      class="border rounded-2xl overflow-hidden shadow-sm"
-      :style="{
-        ...getBorderStyle(siteInfo?.design),
-        borderRadius: siteInfo?.design?.border_radius || '16px',
-        backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-      }"
+  <div>
+    <PageIntro
+      eyebrow="What I offer"
+      title="Services"
+      description="From full stack applications to polished frontends and search-ready experiences — I help businesses design, build, and ship reliable digital products."
     >
-      <div
-        class="px-6 py-8 sm:px-10 border-b"
-        :style="{ borderColor: siteInfo?.design?.primary_color || '#e5e7eb' }"
-      >
-        <h2 class="font-bold mb-2" :style="getHeadingStyle(siteInfo?.design, 'h2')">
-          Enquire Online
-        </h2>
-        <p :style="getMutedStyle(siteInfo?.design)">
-          Tell me about your project and I will get back to you as soon as possible.
-        </p>
-      </div>
+      <a href="#enquire" class="btn btn-primary">Enquire online</a>
+      <a href="tel:07935085736" class="btn btn-outline">Call 07935 085736</a>
+    </PageIntro>
 
-      <form class="px-6 py-8 sm:px-10 space-y-6" @submit.prevent="submitEnquiry">
-        <div class="hidden" aria-hidden="true">
-          <label for="website">Website</label>
-          <input id="website" v-model="form.website" type="text" tabindex="-1" autocomplete="off" />
-        </div>
-
-        <div class="grid gap-6 sm:grid-cols-2">
-          <div>
-            <label for="name" class="block text-sm font-semibold mb-2" :style="getBodyStyle(siteInfo?.design)">
-              Name <span class="text-red-500">*</span>
-            </label>
-            <input
-              id="name"
-              v-model="form.name"
-              type="text"
-              required
-              class="w-full rounded-lg border px-4 py-3 text-sm focus:outline-none focus:ring-2"
-              :style="inputStyle"
-              placeholder="Your name"
-            />
-          </div>
-
-          <div>
-            <label for="email" class="block text-sm font-semibold mb-2" :style="getBodyStyle(siteInfo?.design)">
-              Email <span class="text-red-500">*</span>
-            </label>
-            <input
-              id="email"
-              v-model="form.email"
-              type="email"
-              required
-              class="w-full rounded-lg border px-4 py-3 text-sm focus:outline-none focus:ring-2"
-              :style="inputStyle"
-              placeholder="you@example.com"
-            />
-          </div>
-        </div>
-
-        <div class="grid gap-6 sm:grid-cols-2">
-          <div>
-            <label for="phone" class="block text-sm font-semibold mb-2" :style="getBodyStyle(siteInfo?.design)">
-              Phone
-            </label>
-            <input
-              id="phone"
-              v-model="form.phone"
-              type="tel"
-              class="w-full rounded-lg border px-4 py-3 text-sm focus:outline-none focus:ring-2"
-              :style="inputStyle"
-              placeholder="Optional"
-            />
-          </div>
-
-          <div>
-            <label for="service" class="block text-sm font-semibold mb-2" :style="getBodyStyle(siteInfo?.design)">
-              Service of interest
-            </label>
-            <select
-              id="service"
-              v-model="form.service"
-              class="w-full rounded-lg border px-4 py-3 text-sm focus:outline-none focus:ring-2"
-              :style="inputStyle"
-            >
-              <option value="">Select a service</option>
-              <option value="full-stack">Full Stack Applications</option>
-              <option value="frontend">Frontend Development</option>
-              <option value="ui-ux-seo">UI / UX &amp; SEO</option>
-              <option value="multiple">Multiple services / Not sure</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label for="message" class="block text-sm font-semibold mb-2" :style="getBodyStyle(siteInfo?.design)">
-            Message <span class="text-red-500">*</span>
-          </label>
-          <textarea
-            id="message"
-            v-model="form.message"
-            required
-            rows="5"
-            class="w-full rounded-lg border px-4 py-3 text-sm focus:outline-none focus:ring-2 resize-y"
-            :style="inputStyle"
-            placeholder="Tell me about your project, timeline, and goals..."
-          />
-        </div>
-
-        <div v-if="formMessage" class="rounded-lg px-4 py-3 text-sm" :class="formError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'">
-          {{ formMessage }}
-        </div>
-
-        <button
-          type="submit"
-          :disabled="submitting"
-          class="inline-flex items-center rounded-lg px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-          :style="{
-            backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
-            color: '#ffffff',
-            fontFamily: getFontFamily(siteInfo?.design, 'primary')
-          }"
+    <section class="page-x section">
+      <div class="auto-grid-fit [--grid-min:20rem]">
+        <article
+          v-for="(service, index) in services"
+          :id="service.id"
+          :key="service.id"
+          class="card card-hover flex h-full flex-col p-7 animate-fade-up"
+          :style="{ animationDelay: `${index * 80}ms` }"
         >
-          {{ submitting ? 'Sending...' : 'Send Enquiry' }}
-        </button>
-      </form>
+          <div class="mb-5 flex items-center justify-between">
+            <span class="inline-flex h-12 w-12 items-center justify-center rounded-theme-sm bg-brand-soft text-2xl" aria-hidden="true">
+              {{ service.icon }}
+            </span>
+            <span class="font-heading text-sm font-semibold text-muted">0{{ index + 1 }}</span>
+          </div>
+          <h2 class="fluid-h3 font-heading text-ink">{{ service.title }}</h2>
+          <p class="mt-3 leading-relaxed text-muted">{{ service.description }}</p>
+          <ul class="mt-6 space-y-2.5 border-t border-line pt-6">
+            <li v-for="item in service.highlights" :key="item" class="flex items-start gap-3 text-sm text-ink">
+              <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              {{ item }}
+            </li>
+          </ul>
+          <a :href="`#enquire`" class="btn btn-ghost btn-sm mt-6 self-start" @click="form.service = service.id">
+            Enquire about this
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section id="enquire" class="scroll-mt-header border-t border-line bg-surface-2">
+      <div class="page-x section grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] xl:gap-16">
+        <div class="lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start">
+          <p class="eyebrow mb-4">Enquire online</p>
+          <h2 class="fluid-h2 font-heading text-ink">Tell me about your project</h2>
+          <p class="mt-4 text-muted">
+            Share a few details about what you're building, your timeline and your goals. I'll get back to you as soon as possible.
+          </p>
+          <dl class="mt-8 space-y-4 text-sm">
+            <div class="flex items-start gap-3">
+              <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand" aria-hidden="true">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </span>
+              <div>
+                <dt class="font-semibold text-ink">Phone</dt>
+                <dd><a href="tel:07935085736" class="text-muted hover:text-brand">07935 085736</a></dd>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand" aria-hidden="true">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                  <circle cx="12" cy="11" r="3" />
+                </svg>
+              </span>
+              <div>
+                <dt class="font-semibold text-ink">Based in</dt>
+                <dd class="text-muted">Worthing, West Sussex, UK — remote &amp; hybrid friendly</dd>
+              </div>
+            </div>
+          </dl>
+        </div>
+
+        <form class="card p-[clamp(1.5rem,3vw,2.5rem)]" @submit.prevent="submitEnquiry">
+          <div class="hidden" aria-hidden="true">
+            <label for="website">Website</label>
+            <input id="website" v-model="form.website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="grid gap-5 sm:grid-cols-2">
+            <div>
+              <label for="name" class="field-label">Name <span class="text-red-500">*</span></label>
+              <input id="name" v-model="form.name" type="text" required autocomplete="name" class="field-input" placeholder="Your name" />
+            </div>
+            <div>
+              <label for="email" class="field-label">Email <span class="text-red-500">*</span></label>
+              <input id="email" v-model="form.email" type="email" required autocomplete="email" class="field-input" placeholder="you@example.com" />
+            </div>
+            <div>
+              <label for="phone" class="field-label">Phone</label>
+              <input id="phone" v-model="form.phone" type="tel" autocomplete="tel" class="field-input" placeholder="Optional" />
+            </div>
+            <div>
+              <label for="service" class="field-label">Service of interest</label>
+              <select id="service" v-model="form.service" class="field-input">
+                <option value="">Select a service</option>
+                <option value="full-stack">Full Stack Applications</option>
+                <option value="frontend">Frontend Development</option>
+                <option value="ui-ux-seo">UI / UX &amp; SEO</option>
+                <option value="multiple">Multiple services / Not sure</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label for="message" class="field-label">Message <span class="text-red-500">*</span></label>
+              <textarea
+                id="message"
+                v-model="form.message"
+                required
+                rows="6"
+                class="field-input resize-y"
+                placeholder="Tell me about your project, timeline, and goals..."
+              />
+            </div>
+          </div>
+
+          <div
+            v-if="formMessage"
+            class="mt-5 rounded-theme-sm px-4 py-3 text-sm"
+            :class="formError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'"
+            role="status"
+          >
+            {{ formMessage }}
+          </div>
+
+          <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <p class="text-xs text-muted">Your details are only used to respond to your enquiry.</p>
+            <button type="submit" :disabled="submitting" class="btn btn-primary btn-lg">
+              {{ submitting ? 'Sending…' : 'Send enquiry' }}
+            </button>
+          </div>
+        </form>
+      </div>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import { reactive, ref } from 'vue'
+
 useHead({
   title: 'Services | John Biddulph',
   meta: [
@@ -194,9 +154,6 @@ useHead({
     }
   ]
 })
-
-const siteInfo = ref<any>(null)
-const { userDesignId } = useUserDesign()
 
 const form = reactive({
   name: '',
@@ -253,54 +210,6 @@ const services = [
   }
 ]
 
-const inputStyle = computed(() => ({
-  borderColor: siteInfo.value?.design?.primary_color || '#d1d5db',
-  backgroundColor: siteInfo.value?.design?.background_color || '#ffffff',
-  color: siteInfo.value?.design?.text_color || '#1f2937',
-  fontFamily: getFontFamily(siteInfo.value?.design, 'primary'),
-  '--tw-ring-color': siteInfo.value?.design?.primary_color || '#2563eb'
-}))
-
-onMounted(async () => {
-  await fetchSiteInfo()
-  window.addEventListener('theme-changed', handleThemeChange)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('theme-changed', handleThemeChange)
-})
-
-const handleThemeChange = async () => {
-  if (!process.client) return
-  await fetchUserDesign()
-}
-
-const fetchSiteInfo = async () => {
-  try {
-    const response: any = await $fetch('/api/site-info')
-    siteInfo.value = response.data
-
-    if (process.client && userDesignId.value) {
-      await fetchUserDesign()
-    }
-  } catch (error) {
-    console.error('Error fetching site info:', error)
-  }
-}
-
-const fetchUserDesign = async () => {
-  if (!process.client || !userDesignId.value) return
-
-  try {
-    const response: any = await $fetch(`/api/designs/${userDesignId.value}`)
-    if (response.success && siteInfo.value) {
-      siteInfo.value.design = response.data
-    }
-  } catch (error) {
-    console.error('Error fetching user design:', error)
-  }
-}
-
 const submitEnquiry = async () => {
   submitting.value = true
   formMessage.value = ''
@@ -324,65 +233,6 @@ const submitEnquiry = async () => {
     formMessage.value = error?.data?.statusMessage || error?.message || 'Failed to send enquiry. Please try again.'
   } finally {
     submitting.value = false
-  }
-}
-
-const getFontFamily = (design: any, fontType = 'primary') => {
-  if (!design) return 'inherit'
-
-  let fontFamily = fontType === 'heading' ? design.heading_font : design.font_family
-
-  if (design.google_fonts) {
-    try {
-      const googleFonts = JSON.parse(design.google_fonts)
-      if (fontType === 'heading' && googleFonts.heading) {
-        fontFamily = `"${googleFonts.heading}", ${design.heading_font}`
-      } else if (googleFonts.primary) {
-        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
-      }
-    } catch (error) {
-      console.error('Error parsing Google Fonts:', error)
-    }
-  }
-
-  return fontFamily
-}
-
-const getHeadingStyle = (design: any, level = 'h1') => {
-  const fontSizeMap: Record<string, string> = {
-    h1: design?.font_size_h1 || '2.25rem',
-    h2: design?.font_size_h2 || '1.75rem',
-    h3: design?.font_size_h3 || '1.25rem'
-  }
-
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'heading'),
-    fontSize: fontSizeMap[level]
-  }
-}
-
-const getBodyStyle = (design: any) => {
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'primary'),
-    fontSize: design?.font_size_base || '16px'
-  }
-}
-
-const getMutedStyle = (design: any) => {
-  return {
-    color: design?.secondary_color || design?.text_color || '#4b5563',
-    fontFamily: getFontFamily(design, 'primary'),
-    fontSize: design?.font_size_base || '16px'
-  }
-}
-
-const getBorderStyle = (design: any) => {
-  return {
-    borderWidth: design?.border_thickness || '1px',
-    borderStyle: design?.border_style || 'solid',
-    borderColor: design?.primary_color || '#e5e7eb'
   }
 }
 </script>

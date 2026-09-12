@@ -6,7 +6,7 @@
       v-model="selectedDesignId"
       @change="handleDesignChange"
       :disabled="loading"
-      class="text-sm bg-white border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="field-input !w-auto !rounded-full !py-1.5 !pl-3 !pr-8 text-xs disabled:cursor-not-allowed disabled:opacity-50"
     >
       <option value="">Default Theme</option>
       <option 
@@ -74,13 +74,6 @@ const emit = defineEmits<{
 
 <style scoped>
 .design-switcher select {
-  min-width: 120px;
-}
-
-@media (max-width: 768px) {
-  .design-switcher select {
-    min-width: 100px;
-    font-size: 0.875rem;
-  }
+  min-width: 8rem;
 }
 </style>
