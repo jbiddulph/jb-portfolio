@@ -1,125 +1,57 @@
 <template>
-  <div class="mx-auto px-4 sm:px-6 lg:px-8 py-12" :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }">
-    <div class="mb-8">
-      <h1 
-        class="font-bold mb-4"
-        :style="getHeadingStyle(siteInfo?.design, 'h1')"
-      >
-        Documentation
-      </h1>
-      <p 
-        class="mb-6"
-        :style="getBodyStyle(siteInfo?.design)"
-      >
-        Explore articles, guides, and resources.
-      </p>
-    </div>
-    <ContentList path="/docs" v-slot="{ list }">
-      <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-0">
-        <li
-          v-for="doc in list"
-          :key="doc._path"
-          class="border rounded-lg p-6 hover:shadow-md transition-shadow flex flex-col h-full"
-          :style="{ 
-            ...getBorderStyle(siteInfo?.design),
-            borderRadius: siteInfo?.design?.border_radius || '8px',
-            backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-          }"
-        >
-          <NuxtLink :to="doc._path" class="no-underline hover:underline flex-1 flex flex-col">
-            <h2 
-              class="text-xl font-semibold mb-2"
-              :style="getHeadingStyle(siteInfo?.design, 'h2')"
-            >
-              {{ doc.title || 'Untitled' }}
-            </h2>
-            <p 
-              class="mb-0"
-              :style="getBodyStyle(siteInfo?.design)"
-            >
-              {{ doc.description || 'Click to read more' }}
-            </p>
-          </NuxtLink>
-        </li>
-      </ul>
-    </ContentList>
+  <div>
+    <PageIntro
+      eyebrow="Documentation"
+      title="Docs & guides"
+      description="Articles, guides and resources on AI, Python and modern web development."
+    />
+
+    <section class="page-x section">
+      <ContentList path="/docs" v-slot="{ list }">
+        <ul class="auto-grid list-none p-0 [--grid-min:18rem]">
+          <li v-for="(doc, index) in list" :key="doc._path" class="animate-fade-up" :style="{ animationDelay: `${Math.min(index, 8) * 60}ms` }">
+            <NuxtLink :to="doc._path" class="card card-hover group flex h-full flex-col p-6 no-underline">
+              <div class="mb-4 flex items-center justify-between gap-3">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-theme-sm bg-brand-soft text-brand" aria-hidden="true">
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </span>
+                <time v-if="doc.date" :datetime="doc.date" class="text-xs text-muted">{{ formatDate(doc.date) }}</time>
+              </div>
+              <h2 class="font-heading text-lg font-semibold text-ink group-hover:text-brand">
+                {{ doc.title || 'Untitled' }}
+              </h2>
+              <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-muted">
+                {{ doc.description || 'Click to read more' }}
+              </p>
+              <div v-if="doc.tags?.length" class="mt-4 flex flex-wrap gap-1.5">
+                <span v-for="tag in doc.tags.slice(0, 4)" :key="tag" class="chip">{{ tag }}</span>
+              </div>
+              <span class="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-medium text-brand">
+                Read article
+                <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </NuxtLink>
+          </li>
+        </ul>
+      </ContentList>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  layout: 'default'
+useSeoMeta({
+  title: 'Docs | John Michael Biddulph',
+  description: 'Articles, guides and resources on AI, Python and modern web development.'
 })
 
-// Fetch site info for styling
-const siteInfo = ref(null)
-
-onMounted(async () => {
-  try {
-    const response = await $fetch('/api/site-info')
-    siteInfo.value = response.data
-  } catch (error) {
-    console.error('Error fetching site info:', error)
-  }
-})
-
-const getFontFamily = (design, fontType = 'primary') => {
-  if (!design) return 'inherit'
-  
-  let fontFamily = fontType === 'heading' ? design.heading_font : design.font_family
-  
-  if (design.google_fonts) {
-    try {
-      const googleFonts = JSON.parse(design.google_fonts)
-      if (fontType === 'heading' && googleFonts.heading) {
-        fontFamily = `"${googleFonts.heading}", ${design.heading_font}`
-      } else if (googleFonts.primary) {
-        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
-      }
-    } catch (e) {
-      console.error('Error parsing Google Fonts:', e)
-    }
-  }
-  
-  return fontFamily
-}
-
-const getHeadingStyle = (design, level = 'h1') => {
-  const fontSizeMap = {
-    h1: design?.font_size_h1 || '2rem',
-    h2: design?.font_size_h2 || '1.75rem',
-    h3: design?.font_size_h3 || '1.5rem',
-    h4: design?.font_size_h4 || '1.25rem'
-  }
-  
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'heading'),
-    fontSize: fontSizeMap[level]
-  }
-}
-
-const getBodyStyle = (design) => {
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'primary'),
-    fontSize: design?.font_size_base || '16px'
-  }
-}
-
-const getBorderStyle = (design) => {
-  const thickness = design?.border_thickness || '1px'
-  const style = design?.border_style || 'solid'
-  const color = design?.primary_color || '#e5e7eb'
-  
-  return {
-    borderWidth: thickness,
-    borderStyle: style,
-    borderColor: color
-  }
+const formatDate = (value: string) => {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 </script>
-
-<style scoped>
-
-</style>

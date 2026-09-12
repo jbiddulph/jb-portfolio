@@ -1,919 +1,194 @@
 <template>
-  <div class="mx-auto px-4 sm:px-6 lg:px-8 py-12" :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }">
-    <!-- Dynamic Layout: 1 column or 2 column -->
-    <div v-if="isOneColumnLayout" class="space-y-12">
-      <!-- 1 Column Layout: About Section Full Width -->
-      <div>
-        <div class="mb-8">
-          <h2 
-            class="font-bold mb-4"
-            :style="getHeadingStyle(siteInfo?.design, 'h2')"
-          >
+  <div>
+    <!-- Hero -->
+    <section class="relative overflow-hidden border-b border-line">
+      <div class="absolute inset-0 bg-hero-glow" aria-hidden="true" />
+      <div class="absolute inset-x-0 top-0 h-[60%] bg-grid-fade opacity-50" aria-hidden="true" />
+
+      <div
+        class="page-x relative grid gap-12 py-[clamp(3rem,8vw,7rem)]"
+        :class="heroSplit ? 'lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center' : 'max-w-5xl'"
+      >
+        <div class="animate-fade-up">
+          <p class="eyebrow mb-5">{{ siteInfo?.site_slogan || 'Full Stack Engineer' }}</p>
+          <h1 class="display text-ink">
             {{ pages?.home || 'Welcome to my portfolio' }}
-          </h2>
-          <div 
-            class="prose max-w-none hidden md:block"
-            :style="getSiteDescriptionStyle(siteInfo?.design, 'desktop')"
-            v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
-          ></div>
-          <div 
-            class="prose max-w-none md:hidden"
-            :style="getSiteDescriptionStyle(siteInfo?.design, 'mobile')"
-            v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
-          ></div>
-          <p class="mt-6" :style="getBodyStyle(siteInfo?.design)">
+          </h1>
+          <div class="prose-theme lead mt-6 max-w-2xl" v-html="siteDescription" />
+          <p class="mt-4 max-w-2xl text-muted">
             Enjoys building intuitive, responsive applications that provide seamless user experiences.
           </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <NuxtLink to="/portfolio" class="btn btn-primary btn-lg">
+              View projects
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </NuxtLink>
+            <NuxtLink to="/services" class="btn btn-outline btn-lg">Services</NuxtLink>
+            <NuxtLink to="/cv" class="btn btn-ghost btn-lg">Read my CV</NuxtLink>
+          </div>
+
+          <dl class="mt-10 grid grid-cols-2 gap-6 border-t border-line pt-6 sm:grid-cols-3">
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wider text-muted">Experience</dt>
+              <dd class="mt-1 font-heading text-2xl font-bold text-ink">16+ yrs</dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wider text-muted">Projects</dt>
+              <dd class="mt-1 font-heading text-2xl font-bold text-ink">
+                <span v-if="portfolio.length">{{ portfolio.length }}</span>
+                <span v-else class="inline-block h-7 w-10 animate-pulse rounded bg-surface-3 align-middle" />
+              </dd>
+            </div>
+            <div class="col-span-2 sm:col-span-1">
+              <dt class="text-xs font-medium uppercase tracking-wider text-muted">Get in touch</dt>
+              <dd class="mt-1">
+                <a href="tel:07935085736" class="font-heading text-2xl font-bold text-brand hover:underline">07935 085736</a>
+              </dd>
+            </div>
+          </dl>
         </div>
 
-        <!-- Hero Image -->
-        <div v-if="siteInfo?.site_image" class="mb-8">
-          <img 
-            :src="siteInfo.site_image" 
-            :alt="siteInfo.site_name"
-            class="w-full h-64 object-cover rounded-lg shadow-lg"
-            :style="{ borderRadius: siteInfo?.design?.border_radius || '8px' }"
+        <div v-if="heroSplit" class="relative animate-fade-up [animation-delay:150ms]">
+          <div
+            class="absolute -inset-4 -z-10 rounded-theme-lg bg-brand-soft blur-2xl"
+            aria-hidden="true"
           />
+          <figure v-if="siteInfo?.site_image" class="card overflow-hidden">
+            <img
+              :src="siteInfo.site_image"
+              :alt="siteName"
+              class="aspect-[4/3] w-full object-cover"
+              fetchpriority="high"
+            />
+          </figure>
+          <div v-else-if="featured[0]" class="grid gap-4">
+            <p class="eyebrow">Latest project</p>
+            <PortfolioCard :item="featured[0]" />
+          </div>
+          <div v-else class="card aspect-[4/3] animate-pulse bg-surface-2" aria-hidden="true" />
         </div>
       </div>
 
-      <!-- 1 Column Layout: Video Showcase Section -->
-      <div v-if="videos.length > 0" class="mb-12">
-        <h3 
-          class="font-bold mb-6"
-          :style="getHeadingStyle(siteInfo?.design, 'h3')"
-        >
-          Video Showcases
-        </h3>
-        
-        <!-- Videos Grid: 2 rows x 3 columns -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <div 
-            v-for="video in paginatedVideos" 
-            :key="video.id"
-            class="border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-            :style="{ 
-              ...getBorderStyle(siteInfo?.design),
-              borderRadius: siteInfo?.design?.border_radius || '8px',
-              backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-            }"
-          >
-            <!-- YouTube Video Embed -->
-            <div v-if="getYouTubeEmbedUrl(video.youtube_url)" class="aspect-video">
-              <iframe
-                :src="getYouTubeEmbedUrl(video.youtube_url)"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                class="w-full h-full"
-              ></iframe>
-            </div>
-            <!-- Video Info -->
-            <div class="p-4">
-              <h4 
-                class="font-semibold mb-2"
-                :style="getHeadingStyle(siteInfo?.design, 'h4')"
-              >
-                {{ video.title }}
-              </h4>
-              <p 
-                v-if="video.description"
-                class="text-sm mb-3 line-clamp-2"
-                :style="getBodyStyle(siteInfo?.design)"
-              >
-                {{ video.description }}
-              </p>
-              <a 
-                v-if="video.link"
-                :href="video.link" 
-                target="_blank"
-                class="text-xs font-medium hover:underline inline-block"
-                :style="{ 
-                  color: siteInfo?.design?.primary_color || '#2563eb',
-                  fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
-                }"
-              >
-                View Project →
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Pagination Controls -->
-        <div v-if="hasMoreVideos" class="flex justify-center items-center gap-4 mt-6">
-          <button
-            @click="previousVideoPage"
-            :disabled="currentVideoPage === 1"
-            class="px-4 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            :style="{ 
-              backgroundColor: currentVideoPage === 1 ? '#9ca3af' : (siteInfo?.design?.primary_color || '#2563eb'),
-              color: '#ffffff'
-            }"
-          >
-            Previous
-          </button>
-          <span 
-            class="text-sm"
-            :style="getBodyStyle(siteInfo?.design)"
-          >
-            Page {{ currentVideoPage }} of {{ totalVideoPages }}
-          </span>
-          <button
-            @click="nextVideoPage"
-            :disabled="currentVideoPage === totalVideoPages"
-            class="px-4 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            :style="{ 
-              backgroundColor: currentVideoPage === totalVideoPages ? '#9ca3af' : (siteInfo?.design?.primary_color || '#2563eb'),
-              color: '#ffffff'
-            }"
-          >
-            Next
-          </button>
-        </div>
+      <figure v-if="!heroSplit && siteInfo?.site_image" class="page-x relative pb-[clamp(3rem,6vw,5rem)]">
+        <img
+          :src="siteInfo.site_image"
+          :alt="siteName"
+          class="card aspect-[21/9] w-full object-cover"
+        />
+      </figure>
+    </section>
+
+    <!-- Projects -->
+    <section class="page-x section">
+      <SectionHeading
+        eyebrow="Selected work"
+        :title="pages?.portfolio || 'My Projects'"
+        description="Recent client work, products and experiments — built with Vue, Nuxt, React, Laravel, Python and Supabase."
+      >
+        <NuxtLink to="/portfolio" class="btn btn-outline">
+          All projects
+          <span v-if="portfolio.length" class="rounded-full bg-brand-soft px-2 py-0.5 text-xs text-brand">{{ portfolio.length }}</span>
+        </NuxtLink>
+      </SectionHeading>
+
+      <div v-if="portfolioLoading && !portfolio.length" class="auto-grid [--grid-min:17rem]">
+        <SkeletonCard v-for="n in 4" :key="n" />
       </div>
 
-      <!-- 1 Column Layout: Portfolio Section Below (4 columns) -->
-      <div>
-        <h3 
-          class="font-bold mb-6"
-          :style="getHeadingStyle(siteInfo?.design, 'h3')"
-        >
-          {{ pages?.portfolio || 'My Projects' }}
-        </h3>
-        
-        <!-- Portfolio Loading State -->
-        <div v-if="portfolioLoading" class="text-center py-8">
-          <div class="flex justify-center items-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2" :style="{ borderColor: siteInfo?.design?.primary_color || '#3b82f6' }"></div>
-            <span class="ml-2" :style="getBodyStyle(siteInfo?.design)">Loading projects...</span>
-          </div>
+      <div v-else-if="portfolio.length === 0" class="card flex flex-col items-center gap-4 px-6 py-16 text-center">
+        <p class="text-muted">{{ portfolioFailed ? 'Projects could not be loaded right now.' : 'No projects available yet.' }}</p>
+        <button type="button" class="btn btn-primary" @click="loadPortfolio(true)">
+          Retry loading projects
+        </button>
+      </div>
+
+      <template v-else>
+        <div class="auto-grid [--grid-min:17rem]">
+          <PortfolioCard v-for="item in featured" :key="item.id" :item="item" />
         </div>
-
-        <!-- No Projects State -->
-        <div v-else-if="portfolio.length === 0" class="text-center py-8">
-          <div class="space-y-3">
-            <p :style="getBodyStyle(siteInfo?.design)">
-              No projects available yet.
-            </p>
-            <button 
-              @click="fetchPortfolio()"
-              class="px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 transition-opacity"
-              :style="{ backgroundColor: siteInfo?.design?.primary_color || '#3b82f6' }"
-            >
-              Retry Loading Projects
-            </button>
-          </div>
-        </div>
-
-        <!-- Portfolio Items - 4 Column Grid -->
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <a 
-            v-for="item in limitedPortfolio" 
-            :key="item.id"
-            :href="getProjectCardUrl(item)"
-            :target="getProjectCardTarget(item)"
-            :rel="getProjectCardRel(item)"
-            class="block border rounded-lg hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
-            :style="{ 
-              ...getBorderStyle(siteInfo?.design),
-              borderRadius: siteInfo?.design?.border_radius || '8px',
-              backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-            }"
-          >
-            <!-- Project Image - No padding, full width -->
-            <div v-if="item.project_image" class="aspect-square overflow-hidden">
-              <img 
-                :src="item.project_image" 
-                :alt="item.project_name"
-                class="w-full h-full object-cover"
-              />
-            </div>
-            <!-- Project Info -->
-            <div class="p-4 space-y-3">
-                <h4 
-                  class="font-semibold mb-2 text-sm"
-                  :style="getHeadingStyle(siteInfo?.design, 'h4')"
-                >
-                  {{ item.project_name }}
-                </h4>
-                <p 
-                  class="text-xs mb-3"
-                  :class="{ 'line-clamp-3': !isDescriptionExpanded(item.id) }"
-                  :style="getBodyStyle(siteInfo?.design)"
-                >
-                  {{ getDescriptionPreview(item.project_description, item.id) }}
-                  <span
-                    v-if="isDescriptionTruncated(item.project_description)"
-                    role="button"
-                    tabindex="0"
-                    class="ml-1 cursor-pointer font-medium hover:underline"
-                    :style="{ 
-                      color: siteInfo?.design?.primary_color || '#2563eb',
-                      fontFamily: getFontFamily(siteInfo?.design, 'primary')
-                    }"
-                    @click.prevent.stop="toggleDescription(item.id)"
-                    @keydown.enter.prevent.stop="toggleDescription(item.id)"
-                    @keydown.space.prevent.stop="toggleDescription(item.id)"
-                  >
-                    {{ isDescriptionExpanded(item.id) ? 'Less' : 'More' }}
-                  </span>
-                </p>
-                
-                <!-- Tags -->
-                <div v-if="item.project_tags" class="mb-3">
-                  <div class="flex flex-wrap gap-1">
-                    <span 
-                      v-for="tag in getTags(item.project_tags)" 
-                      :key="tag"
-                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                      :style="{ 
-                        backgroundColor: siteInfo?.design?.accent_color || '#3b82f6',
-                        color: '#ffffff'
-                      }"
-                    >
-                      {{ tag.trim() }}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                  <span 
-                    class="text-xs"
-                    :style="getBodyStyle(siteInfo?.design)"
-                  >
-                    {{ formatDate(item.project_date) }}
-                  </span>
-                  <span
-                    class="text-xs font-medium"
-                    :style="{ 
-                      color: siteInfo?.design?.primary_color || '#2563eb',
-                      fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
-                    }"
-                  >
-                    {{ item.project_link ? 'Open Live Site ↗' : 'View Details →' }}
-                  </span>
-                </div>
-              </div>
-          </a>
-        </div>
-
-        <!-- View More Projects Link -->
-        <div v-if="portfolio.length > 4" class="text-center mt-8">
-          <NuxtLink 
-            to="/portfolio"
-            class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-md transition-colors"
-            :style="{ 
-              backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
-              color: '#ffffff'
-            }"
-          >
-            View More Projects ({{ portfolio.length - 4 }} more)
+        <div v-if="remainingCount > 0" class="mt-10 text-center">
+          <NuxtLink to="/portfolio" class="btn btn-primary btn-lg">
+            View {{ remainingCount }} more {{ remainingCount === 1 ? 'project' : 'projects' }}
           </NuxtLink>
         </div>
-      </div>
-    </div>
+      </template>
+    </section>
 
-    <!-- 2 Column Layout: Original Layout -->
-    <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-      <!-- About Section -->
-      <div class="lg:col-span-2">
-        <div class="mb-8">
-          <h2 
-            class="font-bold mb-4"
-            :style="getHeadingStyle(siteInfo?.design, 'h2')"
-          >
-            {{ pages?.home || 'Welcome to my portfolio' }}
-          </h2>
-          <div 
-            class="prose max-w-none hidden md:block"
-            :style="getSiteDescriptionStyle(siteInfo?.design, 'desktop')"
-            v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
-          ></div>
-          <div 
-            class="prose max-w-none md:hidden"
-            :style="getSiteDescriptionStyle(siteInfo?.design, 'mobile')"
-            v-html="siteInfo?.site_description || 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'"
-          ></div>
-          <p class="mt-6" :style="getBodyStyle(siteInfo?.design)">
-            Enjoys building intuitive, responsive applications that provide seamless user experiences.
-          </p>
-        </div>
-
-        <!-- Hero Image -->
-        <div v-if="siteInfo?.site_image" class="mb-8">
-          <img 
-            :src="siteInfo.site_image" 
-            :alt="siteInfo.site_name"
-            class="w-full h-64 object-cover rounded-lg shadow-lg"
-            :style="{ borderRadius: siteInfo?.design?.border_radius || '8px' }"
-          />
-        </div>
-      </div>
-
-      <!-- Video Showcase Section -->
-      <div v-if="videos.length > 0" class="mb-12">
-        <h3 
-          class="font-bold mb-6"
-          :style="getHeadingStyle(siteInfo?.design, 'h3')"
-        >
-          Video Showcases
-        </h3>
-        
-        <!-- Videos Grid: 2 rows x 3 columns -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <div 
-            v-for="video in paginatedVideos" 
-            :key="video.id"
-            class="border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-            :style="{ 
-              ...getBorderStyle(siteInfo?.design),
-              borderRadius: siteInfo?.design?.border_radius || '8px',
-              backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-            }"
-          >
-            <!-- YouTube Video Embed -->
-            <div v-if="getYouTubeEmbedUrl(video.youtube_url)" class="aspect-video">
-              <iframe
-                :src="getYouTubeEmbedUrl(video.youtube_url)"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                class="w-full h-full"
-              ></iframe>
-            </div>
-            <!-- Video Info -->
-            <div class="p-4">
-              <h4 
-                class="font-semibold mb-2"
-                :style="getHeadingStyle(siteInfo?.design, 'h4')"
-              >
-                {{ video.title }}
-              </h4>
-              <p 
-                v-if="video.description"
-                class="text-sm mb-3 line-clamp-2"
-                :style="getBodyStyle(siteInfo?.design)"
-              >
-                {{ video.description }}
-              </p>
-              <a 
-                v-if="video.link"
-                :href="video.link" 
-                target="_blank"
-                class="text-xs font-medium hover:underline inline-block"
-                :style="{ 
-                  color: siteInfo?.design?.primary_color || '#2563eb',
-                  fontFamily: siteInfo?.design?.body_font || 'Inter, sans-serif'
-                }"
-              >
-                View Project →
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Pagination Controls -->
-        <div v-if="hasMoreVideos" class="flex justify-center items-center gap-4 mt-6">
-          <button
-            @click="previousVideoPage"
-            :disabled="currentVideoPage === 1"
-            class="px-4 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            :style="{ 
-              backgroundColor: currentVideoPage === 1 ? '#9ca3af' : (siteInfo?.design?.primary_color || '#2563eb'),
-              color: '#ffffff'
-            }"
-          >
-            Previous
-          </button>
-          <span 
-            class="text-sm"
-            :style="getBodyStyle(siteInfo?.design)"
-          >
-            Page {{ currentVideoPage }} of {{ totalVideoPages }}
-          </span>
-          <button
-            @click="nextVideoPage"
-            :disabled="currentVideoPage === totalVideoPages"
-            class="px-4 py-2 text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            :style="{ 
-              backgroundColor: currentVideoPage === totalVideoPages ? '#9ca3af' : (siteInfo?.design?.primary_color || '#2563eb'),
-              color: '#ffffff'
-            }"
-          >
-            Next
-          </button>
-        </div>
-      </div>
-
-      <!-- Portfolio Section -->
-      <div>
-        <h3 
-          class="font-bold mb-6"
-          :style="getHeadingStyle(siteInfo?.design, 'h3')"
-        >
-          {{ pages?.portfolio || 'My Projects' }}
-        </h3>
-        
-        <!-- Portfolio Loading State -->
-        <div v-if="portfolioLoading" class="text-center py-8">
-          <div class="flex justify-center items-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2" :style="{ borderColor: siteInfo?.design?.primary_color || '#3b82f6' }"></div>
-            <span class="ml-2" :style="getBodyStyle(siteInfo?.design)">Loading projects...</span>
-          </div>
-        </div>
-
-        <!-- No Projects State -->
-        <div v-else-if="portfolio.length === 0" class="text-center py-8">
-          <div class="space-y-3">
-            <p :style="getBodyStyle(siteInfo?.design)">
-              No projects available yet.
-            </p>
-            <button 
-              @click="fetchPortfolio()"
-              class="px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 transition-opacity"
-              :style="{ backgroundColor: siteInfo?.design?.primary_color || '#3b82f6' }"
-            >
-              Retry Loading Projects
+    <!-- Videos -->
+    <section v-if="videos.length" class="border-t border-line bg-surface-2">
+      <div class="page-x section">
+        <SectionHeading eyebrow="Watch" title="Video showcases" description="Walkthroughs and demos of recent builds.">
+          <div v-if="totalVideoPages > 1" class="flex items-center gap-2">
+            <button type="button" class="btn btn-outline btn-sm" :disabled="currentVideoPage === 1" @click="currentVideoPage--">
+              Previous
+            </button>
+            <span class="text-sm text-muted">{{ currentVideoPage }} / {{ totalVideoPages }}</span>
+            <button type="button" class="btn btn-outline btn-sm" :disabled="currentVideoPage === totalVideoPages" @click="currentVideoPage++">
+              Next
             </button>
           </div>
-        </div>
+        </SectionHeading>
 
-        <!-- Portfolio Items -->
-        <div v-else class="space-y-6">
-          <a 
-            v-for="item in limitedPortfolio" 
-            :key="item.id"
-            :href="getProjectCardUrl(item)"
-            :target="getProjectCardTarget(item)"
-            :rel="getProjectCardRel(item)"
-            class="block border rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
-            :style="{ 
-              ...getBorderStyle(siteInfo?.design),
-              borderRadius: siteInfo?.design?.border_radius || '8px',
-              backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-            }"
-          >
-            <div class="flex items-start space-x-4">
-              <div v-if="item.project_image" class="flex-shrink-0">
-                <img 
-                  :src="item.project_image" 
-                  :alt="item.project_name"
-                  class="h-16 w-16 rounded-lg object-cover"
-                />
-              </div>
-              <div class="flex-1 min-w-0">
-                <h4 
-                  class="font-semibold mb-2"
-                  :style="getHeadingStyle(siteInfo?.design, 'h4')"
-                >
-                  {{ item.project_name }}
-                </h4>
-                <p 
-                  class="text-sm mb-3"
-                  :style="getBodyStyle(siteInfo?.design)"
-                >
-                  {{ getDescriptionPreview(item.project_description, item.id) }}
-                  <span
-                    v-if="isDescriptionTruncated(item.project_description)"
-                    role="button"
-                    tabindex="0"
-                    class="ml-1 cursor-pointer font-medium hover:underline"
-                    :style="{ 
-                      color: siteInfo?.design?.primary_color || '#2563eb',
-                      fontFamily: getFontFamily(siteInfo?.design, 'primary')
-                    }"
-                    @click.prevent.stop="toggleDescription(item.id)"
-                    @keydown.enter.prevent.stop="toggleDescription(item.id)"
-                    @keydown.space.prevent.stop="toggleDescription(item.id)"
-                  >
-                    {{ isDescriptionExpanded(item.id) ? 'Less' : 'More' }}
-                  </span>
-                </p>
-                
-                <!-- Tags -->
-                <div v-if="item.project_tags" class="mb-3">
-                  <div class="flex flex-wrap gap-1">
-                    <span 
-                      v-for="tag in getTags(item.project_tags)" 
-                      :key="tag"
-                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                      :style="{ 
-                        backgroundColor: siteInfo?.design?.accent_color || '#3b82f6',
-                        color: '#ffffff'
-                      }"
-                    >
-                      {{ tag.trim() }}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                  <span 
-                    class="text-xs"
-                    :style="getBodyStyle(siteInfo?.design)"
-                  >
-                    {{ formatDate(item.project_date) }}
-                  </span>
-                  <span
-                    class="text-xs font-medium"
-                    :style="{ 
-                      color: siteInfo?.design?.primary_color || '#2563eb',
-                      fontFamily: getFontFamily(siteInfo?.design, 'primary')
-                    }"
-                  >
-                    {{ item.project_link ? 'Open Live Site ↗' : 'View Details →' }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <!-- View More Projects Link -->
-        <div v-if="portfolio.length > 4" class="text-center mt-8">
-          <NuxtLink 
-            to="/portfolio"
-            class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-md transition-colors"
-            :style="{ 
-              backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
-              color: '#ffffff'
-            }"
-          >
-            View More Projects ({{ portfolio.length - 4 }} more)
-          </NuxtLink>
+        <div class="auto-grid [--grid-min:20rem]">
+          <VideoCard v-for="video in paginatedVideos" :key="video.id" :video="video" />
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="page-x section-tight">
+      <div class="card relative overflow-hidden p-[clamp(1.5rem,4vw,3.5rem)]">
+        <div class="absolute inset-0 bg-hero-glow" aria-hidden="true" />
+        <div class="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div class="max-w-xl">
+            <p class="eyebrow mb-3">Work with me</p>
+            <h2 class="fluid-h2 font-heading text-ink">Have a project in mind?</h2>
+            <p class="mt-3 text-muted">
+              Full stack builds, polished frontends and search-ready experiences. Tell me about your goals and I'll get back to you quickly.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <NuxtLink to="/services#enquire" class="btn btn-primary btn-lg">Enquire online</NuxtLink>
+            <a href="tel:07935085736" class="btn btn-outline btn-lg">Call 07935 085736</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
-// Reactive data
-const siteInfo = ref(null)
-const portfolio = ref([])
-const pages = ref(null)
-const videos = ref([])
-const loading = ref(true)
-const portfolioLoading = ref(true)
-const portfolioLoadTimeout = ref(false)
+const FEATURED_LIMIT = 8
+const VIDEOS_PER_PAGE = 6
+
+const DEFAULT_DESCRIPTION = 'A passionate Nuxt developer specialising in modern JavaScript frameworks like VueJs / Nuxt with Supabase, Prisma and Pinia and some React / Next. Always still experimenting and learning Python, Laravel.'
+
+const { siteInfo, siteName, isOneColumnLayout } = useSiteDesign()
+const { pages, load: loadPages } = useSitePages()
+const { portfolio, loading: portfolioLoading, failed: portfolioFailed, load: loadPortfolio } = usePortfolioList()
+const { videos, load: loadVideos } = useVideoList()
+
 const currentVideoPage = ref(1)
-const expandedDescriptions = ref<Record<string, boolean>>({})
-const videosPerPage = 6
 
-// User design management
-const { userDesignId, getEffectiveDesignId } = useUserDesign()
+const heroSplit = computed(() => !isOneColumnLayout.value)
+const siteDescription = computed(() => siteInfo.value?.site_description || DEFAULT_DESCRIPTION)
+const featured = computed(() => portfolio.value.slice(0, FEATURED_LIMIT))
+const remainingCount = computed(() => Math.max(portfolio.value.length - FEATURED_LIMIT, 0))
 
-// Computed properties
-const isOneColumnLayout = computed(() => {
-  return siteInfo.value?.design?.layout_columns === '1'
-})
-
-const limitedPortfolio = computed(() => {
-  return portfolio.value.slice(0, 4)
-})
-
-// Video pagination
+const totalVideoPages = computed(() => Math.max(Math.ceil(videos.value.length / VIDEOS_PER_PAGE), 1))
 const paginatedVideos = computed(() => {
-  const start = (currentVideoPage.value - 1) * videosPerPage
-  const end = start + videosPerPage
-  return videos.value.slice(start, end)
+  const start = (currentVideoPage.value - 1) * VIDEOS_PER_PAGE
+  return videos.value.slice(start, start + VIDEOS_PER_PAGE)
 })
 
-const totalVideoPages = computed(() => {
-  return Math.ceil(videos.value.length / videosPerPage)
+onMounted(() => {
+  loadPages()
+  loadPortfolio()
+  loadVideos()
 })
-
-const hasMoreVideos = computed(() => {
-  return videos.value.length > videosPerPage
-})
-
-// Fetch all data on mount
-onMounted(async () => {
-  await Promise.all([
-    fetchSiteInfo(),
-    fetchPortfolio(),
-    fetchPages(),
-    fetchVideos()
-  ])
-  loading.value = false
-  
-  // Listen for theme changes
-  window.addEventListener('theme-changed', handleThemeChange)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('theme-changed', handleThemeChange)
-})
-
-const handleThemeChange = async (event) => {
-  // Only handle theme changes on client side
-  if (!process.client) return
-  
-  console.log('Home page: Theme change event received:', event.detail)
-  
-  // Always use user's preferred design (including default)
-  await fetchUserDesign()
-}
-
-const fetchSiteInfo = async () => {
-  try {
-    const response = await $fetch('/api/site-info')
-    siteInfo.value = response.data
-    
-    // If user has a preferred design, fetch and apply it
-    // Only on client side to avoid SSR issues
-    if (process.client && userDesignId.value) {
-      await fetchUserDesign()
-    }
-  } catch (error) {
-    console.error('Error fetching site info:', error)
-  }
-}
-
-const fetchUserDesign = async () => {
-  if (!process.client || !userDesignId.value) return
-  
-  try {
-    const response = await $fetch(`/api/designs/${userDesignId.value}`)
-    if (response.success && siteInfo.value) {
-      // Override the design with user's preferred design
-      siteInfo.value.design = response.data
-    }
-  } catch (error) {
-    console.error('Error fetching user design:', error)
-  }
-}
-
-const fetchPortfolio = async (retryCount = 0) => {
-  portfolioLoading.value = true
-  const maxRetries = 3
-  const timeoutMs = 10000 // 10 seconds
-  
-  try {
-    // Create a timeout promise
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
-    })
-    
-    // Race between fetch and timeout
-    const response = await Promise.race([
-      $fetch('/api/portfolio'),
-      timeoutPromise
-    ])
-    
-    if (response.success && response.data) {
-      portfolio.value = response.data
-      console.log('Portfolio loaded successfully:', response.data.length, 'items')
-    } else {
-      portfolio.value = []
-      console.warn('Portfolio API returned no data')
-    }
-  } catch (error) {
-    console.error('Error fetching portfolio (attempt', retryCount + 1, '):', error)
-    
-    // Retry logic
-    if (retryCount < maxRetries) {
-      console.log('Retrying portfolio fetch in 2 seconds...')
-      setTimeout(() => {
-        fetchPortfolio(retryCount + 1)
-      }, 2000)
-      return // Don't set loading to false yet
-    } else {
-      console.error('Max retries reached for portfolio fetch')
-      portfolio.value = []
-    }
-  } finally {
-    portfolioLoading.value = false
-  }
-}
-
-const fetchPages = async () => {
-  try {
-    const response = await $fetch('/api/pages')
-    pages.value = response.data
-  } catch (error) {
-    console.error('Error fetching pages:', error)
-  }
-}
-
-const fetchVideos = async () => {
-  try {
-    const response = await $fetch('/api/videos')
-    if (response.success && response.data) {
-      videos.value = response.data
-      console.log('Videos loaded successfully:', response.data.length, 'items')
-    } else {
-      videos.value = []
-      console.warn('Videos API returned no data')
-    }
-  } catch (error) {
-    console.error('Error fetching videos:', error)
-    videos.value = []
-  }
-}
-
-const nextVideoPage = () => {
-  if (currentVideoPage.value < totalVideoPages.value) {
-    currentVideoPage.value++
-  }
-}
-
-const previousVideoPage = () => {
-  if (currentVideoPage.value > 1) {
-    currentVideoPage.value--
-  }
-}
-
-// Extract YouTube video ID from URL
-const getYouTubeVideoId = (url) => {
-  if (!url) return null
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
-  const match = url.match(regExp)
-  return (match && match[2].length === 11) ? match[2] : null
-}
-
-// Get YouTube embed URL
-const getYouTubeEmbedUrl = (url) => {
-  const videoId = getYouTubeVideoId(url)
-  return videoId ? `https://www.youtube.com/embed/${videoId}` : null
-}
-
-// Utility functions
-const getTags = (tagsString) => {
-  if (!tagsString) return []
-  return tagsString.split(',').filter(tag => tag.trim())
-}
-
-const DESCRIPTION_PREVIEW_LENGTH = 60
-
-const getDescriptionKey = (projectId: string | number) => String(projectId)
-
-const getPlainTextDescription = (description?: string | null) => {
-  if (!description) return ''
-  return description.replace(/<[^>]*>/g, '').trim()
-}
-
-const isDescriptionExpanded = (projectId: string | number) => {
-  return !!expandedDescriptions.value[getDescriptionKey(projectId)]
-}
-
-const isDescriptionTruncated = (description?: string | null) => {
-  return getPlainTextDescription(description).length > DESCRIPTION_PREVIEW_LENGTH
-}
-
-const getDescriptionPreview = (description: string, projectId: string | number) => {
-  const textOnly = getPlainTextDescription(description)
-  if (!textOnly) return ''
-  if (isDescriptionExpanded(projectId) || textOnly.length <= DESCRIPTION_PREVIEW_LENGTH) {
-    return textOnly
-  }
-  return `${textOnly.slice(0, DESCRIPTION_PREVIEW_LENGTH)}…`
-}
-
-const toggleDescription = (projectId: string | number) => {
-  const key = getDescriptionKey(projectId)
-  expandedDescriptions.value[key] = !expandedDescriptions.value[key]
-}
-
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
-const getProjectCardUrl = (item) => {
-  return item?.project_link || `/portfolio/${item.id}`
-}
-
-const getProjectCardTarget = (item) => {
-  return item?.project_link ? '_blank' : '_self'
-}
-
-const getProjectCardRel = (item) => {
-  return item?.project_link ? 'noopener noreferrer' : undefined
-}
-
-const getFontFamily = (design, fontType = 'primary') => {
-  if (!design) return 'inherit'
-  
-  let fontFamily = fontType === 'heading' ? design.heading_font : design.font_family
-  
-  // Use Google Fonts if available
-  if (design.google_fonts) {
-    try {
-      const googleFonts = JSON.parse(design.google_fonts)
-      if (fontType === 'heading' && googleFonts.heading) {
-        fontFamily = `"${googleFonts.heading}", ${design.heading_font}`
-      } else if (googleFonts.primary) {
-        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
-      }
-    } catch (e) {
-      console.error('Error parsing Google Fonts:', e)
-    }
-  }
-  
-  return fontFamily
-}
-
-const getHeadingStyle = (design, level = 'h1') => {
-  const fontSizeMap = {
-    h1: design?.font_size_h1 || '1.5rem',
-    h2: design?.font_size_h2 || '2rem',
-    h3: design?.font_size_h3 || '1.5rem',
-    h4: design?.font_size_h4 || '1.25rem'
-  }
-  
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'heading'),
-    fontSize: fontSizeMap[level]
-  }
-}
-
-const getBodyStyle = (design) => {
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'primary'),
-    fontSize: design?.font_size_base || '16px'
-  }
-}
-
-const getSiteDescriptionStyle = (design, device = 'desktop') => {
-  const fontSize = device === 'desktop' 
-    ? (design?.site_description_size_desktop || '1rem')
-    : (design?.site_description_size_mobile || '0.875rem')
-  
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'primary'),
-    fontSize: fontSize
-  }
-}
-
-const getBorderStyle = (design) => {
-  const thickness = design?.border_thickness || '1px'
-  const style = design?.border_style || 'solid'
-  const color = design?.primary_color || '#e5e7eb'
-  
-  return {
-    borderWidth: thickness,
-    borderStyle: style,
-    borderColor: color
-  }
-}
 </script>
-
-<style scoped>
-/* Dynamic styling will be applied via computed styles */
-.prose {
-  line-height: 1.6;
-}
-
-.prose p {
-  margin-bottom: 1rem;
-}
-
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.prose ul, .prose ol {
-  margin-bottom: 1rem;
-  padding-left: 1.5rem;
-}
-
-.prose li {
-  margin-bottom: 0.25rem;
-}
-
-.prose a {
-  text-decoration: underline;
-}
-
-.prose blockquote {
-  border-left: 4px solid #e5e7eb;
-  padding-left: 1rem;
-  margin: 1rem 0;
-  font-style: italic;
-}
-
-.prose code {
-  background-color: #f3f4f6;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.25rem;
-  font-family: monospace;
-}
-
-.prose pre {
-  background-color: #f3f4f6;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  overflow-x: auto;
-  margin: 1rem 0;
-}
-</style>

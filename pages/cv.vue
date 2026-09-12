@@ -1,228 +1,137 @@
 <template>
-  <div class="mx-auto px-4 sm:px-6 lg:px-8 py-12" :style="{ maxWidth: siteInfo?.design?.container_width || '1200px' }">
-    <article
-      class="overflow-hidden border rounded-2xl shadow-sm"
-      :style="{
-        ...getBorderStyle(siteInfo?.design),
-        borderRadius: siteInfo?.design?.border_radius || '16px',
-        backgroundColor: siteInfo?.design?.portfolio_card_background_color || '#ffffff'
-      }"
-    >
-      <header
-        class="px-6 py-10 sm:px-10 sm:py-12 border-b"
-        :style="{ borderColor: siteInfo?.design?.primary_color || '#e5e7eb' }"
-      >
-        <p
-          class="text-sm font-semibold uppercase tracking-[0.2em] mb-3"
-          :style="{ color: siteInfo?.design?.primary_color || '#2563eb', fontFamily: getFontFamily(siteInfo?.design, 'primary') }"
-        >
-          Curriculum Vitae 2026
-        </p>
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h1 class="font-bold mb-3" :style="getHeadingStyle(siteInfo?.design, 'h1')">
-              John Biddulph
-            </h1>
-            <p class="text-xl font-semibold" :style="getBodyStyle(siteInfo?.design)">
-              Full Stack Engineer
-            </p>
-            <p class="text-lg font-medium mt-2" :style="getBodyStyle(siteInfo?.design)">
-              07935085736
-            </p>
-          </div>
-          <dl class="grid gap-3 text-sm sm:grid-cols-2 lg:text-right">
+  <div>
+    <PageIntro eyebrow="Curriculum Vitae 2026" description="Senior Full Stack Developer · Worthing, West Sussex, UK">
+      <template #title>John Biddulph</template>
+      <a :href="cvPdfPath" download="john-biddulph-cv-2026.pdf" class="btn btn-primary">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
+        </svg>
+        Download PDF CV
+      </a>
+      <a href="tel:07935085736" class="btn btn-outline">07935 085736</a>
+    </PageIntro>
+
+    <div class="page-x section grid gap-10 lg:grid-cols-[minmax(17rem,20rem)_minmax(0,1fr)] xl:grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)] xl:gap-16">
+      <!-- Sidebar -->
+      <aside class="space-y-6 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start">
+        <section class="card p-6">
+          <h2 class="mb-4 font-heading text-sm font-semibold uppercase tracking-[0.18em] text-ink">Contact</h2>
+          <dl class="space-y-3 text-sm">
             <div>
-              <dt class="font-semibold" :style="getMutedStyle(siteInfo?.design)">Location</dt>
-              <dd :style="getBodyStyle(siteInfo?.design)">Worthing, West Sussex, UK</dd>
+              <dt class="text-xs uppercase tracking-wider text-muted">Location</dt>
+              <dd class="text-ink">Worthing, West Sussex, UK</dd>
             </div>
             <div>
-              <dt class="font-semibold" :style="getMutedStyle(siteInfo?.design)">Portfolio</dt>
+              <dt class="text-xs uppercase tracking-wider text-muted">Phone</dt>
+              <dd><a href="tel:07935085736" class="font-medium text-brand hover:underline">07935 085736</a></dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-wider text-muted">Portfolio</dt>
               <dd>
-                <a
-                  href="https://www.jbiddulph.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="font-medium hover:underline"
-                  :style="{ color: siteInfo?.design?.primary_color || '#2563eb', fontFamily: getFontFamily(siteInfo?.design, 'primary') }"
-                >
+                <a href="https://www.jbiddulph.com" target="_blank" rel="noopener noreferrer" class="font-medium text-brand hover:underline">
                   www.jbiddulph.com
                 </a>
               </dd>
             </div>
+            <div>
+              <dt class="text-xs uppercase tracking-wider text-muted">Availability</dt>
+              <dd class="text-ink">Remote or hybrid · Senior Full Stack, Senior Frontend &amp; Technical Lead roles</dd>
+            </div>
           </dl>
-        </div>
-        <div class="mt-8">
-          <a
-            :href="cvPdfPath"
-            download="john-biddulph-cv-2026.pdf"
-            class="inline-flex items-center rounded-md px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-90"
-            :style="{
-              backgroundColor: siteInfo?.design?.primary_color || '#2563eb',
-              color: '#ffffff',
-              fontFamily: getFontFamily(siteInfo?.design, 'primary')
-            }"
-          >
-            Download PDF CV
-          </a>
-        </div>
-      </header>
-
-      <div class="px-6 py-8 sm:px-10 sm:py-10">
-        <section class="mb-10">
-          <h2 class="font-bold mb-4" :style="getHeadingStyle(siteInfo?.design, 'h2')">
-            Professional Profile
-          </h2>
-          <div class="space-y-4 leading-relaxed" :style="getBodyStyle(siteInfo?.design)">
-            <p v-for="paragraph in profile" :key="paragraph">
-              {{ paragraph }}
-            </p>
-          </div>
         </section>
 
-        <section class="mb-10">
-          <h2 class="font-bold mb-4" :style="getHeadingStyle(siteInfo?.design, 'h2')">
-            Technical Skills
-          </h2>
-          <div class="grid gap-4 md:grid-cols-2">
-            <div
-              v-for="group in skillGroups"
-              :key="group.title"
-              class="rounded-xl border p-5"
-              :style="{
-                ...getBorderStyle(siteInfo?.design),
-                borderRadius: siteInfo?.design?.border_radius || '12px'
-              }"
-            >
-              <h3 class="font-semibold mb-2" :style="getHeadingStyle(siteInfo?.design, 'h3')">
-                {{ group.title }}
-              </h3>
-              <p class="leading-relaxed" :style="getBodyStyle(siteInfo?.design)">
-                {{ group.skills }}
-              </p>
+        <section class="card p-6">
+          <h2 class="mb-4 font-heading text-sm font-semibold uppercase tracking-[0.18em] text-ink">Technical skills</h2>
+          <div class="space-y-4">
+            <div v-for="group in skillGroups" :key="group.title">
+              <h3 class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted">{{ group.title }}</h3>
+              <div class="flex flex-wrap gap-1.5">
+                <span v-for="skill in group.skills" :key="skill" class="chip">{{ skill }}</span>
+              </div>
             </div>
           </div>
         </section>
 
-        <section class="mb-10">
-          <h2 class="font-bold mb-6" :style="getHeadingStyle(siteInfo?.design, 'h2')">
-            Professional Experience
-          </h2>
-          <div class="space-y-8">
-            <section
-              v-for="role in experience"
-              :key="`${role.company}-${role.dates}`"
-              class="border-l-4 pl-5"
-              :style="{ borderColor: siteInfo?.design?.primary_color || '#2563eb' }"
-            >
-              <div class="mb-3">
-                <h3 class="font-semibold" :style="getHeadingStyle(siteInfo?.design, 'h3')">
-                  {{ role.company }} | {{ role.title }}
-                </h3>
-                <p class="text-sm font-medium" :style="getMutedStyle(siteInfo?.design)">
-                  {{ role.dates }}
-                </p>
+        <section class="card p-6">
+          <h2 class="mb-4 font-heading text-sm font-semibold uppercase tracking-[0.18em] text-ink">Education</h2>
+          <p class="text-sm text-ink">Kings Manor High School, West Sussex</p>
+        </section>
+      </aside>
+
+      <!-- Main -->
+      <div class="min-w-0 space-y-14">
+        <section>
+          <p class="eyebrow mb-4">Profile</p>
+          <h2 class="fluid-h2 font-heading text-ink">Senior Full Stack Developer</h2>
+          <div class="mt-5 max-w-[75ch] space-y-4 text-[1.0625rem] leading-relaxed text-muted">
+            <p v-for="paragraph in profile" :key="paragraph">{{ paragraph }}</p>
+          </div>
+        </section>
+
+        <section>
+          <p class="eyebrow mb-4">Experience</p>
+          <h2 class="fluid-h2 font-heading text-ink">Professional experience</h2>
+          <ol class="mt-8 space-y-8 border-l border-line pl-6 sm:pl-8">
+            <li v-for="role in experience" :key="`${role.company}-${role.dates}`" class="relative">
+              <span class="absolute -left-[calc(1.5rem+5px)] top-2 h-2.5 w-2.5 rounded-full bg-brand ring-4 ring-surface sm:-left-[calc(2rem+5px)]" aria-hidden="true" />
+              <div class="card p-6 sm:p-7">
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                  <div>
+                    <h3 class="font-heading text-lg font-semibold text-ink">{{ role.company }}</h3>
+                    <p class="text-sm font-medium text-brand">{{ role.title }}</p>
+                  </div>
+                  <p class="shrink-0 text-sm text-muted">{{ role.dates }}</p>
+                </div>
+                <ul class="mt-4 space-y-2 text-sm leading-relaxed text-ink">
+                  <li v-for="item in role.items" :key="item" class="flex gap-3">
+                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+                    {{ item }}
+                  </li>
+                </ul>
               </div>
-              <ul class="list-disc space-y-2 pl-5 leading-relaxed" :style="getBodyStyle(siteInfo?.design)">
-                <li v-for="item in role.items" :key="item">
-                  {{ item }}
-                </li>
-              </ul>
-            </section>
+            </li>
+          </ol>
+        </section>
+
+        <section class="card relative overflow-hidden p-7 sm:p-8">
+          <div class="absolute inset-0 bg-hero-glow" aria-hidden="true" />
+          <div class="relative">
+            <p class="eyebrow mb-4">Contract work</p>
+            <h2 class="fluid-h3 font-heading text-ink">Additional contract experience</h2>
+            <p class="mt-3 max-w-[70ch] leading-relaxed text-muted">
+              Delivered solutions across healthcare, SaaS, eCommerce, and public sector projects using:
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <span v-for="item in additionalExperience.skills" :key="item" class="chip">{{ item }}</span>
+            </div>
+            <p class="mt-5 max-w-[70ch] leading-relaxed text-ink">{{ additionalExperience.summary }}</p>
           </div>
         </section>
 
-        <section class="mb-10">
-          <h2 class="font-bold mb-4" :style="getHeadingStyle(siteInfo?.design, 'h2')">
-            Additional Contract Experience
-          </h2>
-          <p class="mb-4 leading-relaxed" :style="getBodyStyle(siteInfo?.design)">
-            Delivered solutions across healthcare, SaaS, eCommerce, and public sector projects using:
-          </p>
-          <div class="flex flex-wrap gap-2 mb-5">
-            <span
-              v-for="item in additionalExperience.skills"
-              :key="item"
-              class="inline-flex rounded-full px-3 py-1 text-sm font-medium"
-              :style="{ backgroundColor: siteInfo?.design?.accent_color || '#3b82f6', color: '#ffffff' }"
-            >
-              {{ item }}
-            </span>
-          </div>
-          <p class="leading-relaxed" :style="getBodyStyle(siteInfo?.design)">
-            {{ additionalExperience.summary }}
-          </p>
-        </section>
-
-        <section class="mb-10">
-          <h2 class="font-bold mb-4" :style="getHeadingStyle(siteInfo?.design, 'h2')">
-            Key Achievements
-          </h2>
-          <ul class="grid gap-3 md:grid-cols-2" :style="getBodyStyle(siteInfo?.design)">
-            <li
-              v-for="achievement in achievements"
-              :key="achievement"
-              class="rounded-xl border p-4 leading-relaxed"
-              :style="{
-                ...getBorderStyle(siteInfo?.design),
-                borderRadius: siteInfo?.design?.border_radius || '12px'
-              }"
-            >
-              {{ achievement }}
+        <section>
+          <p class="eyebrow mb-4">Highlights</p>
+          <h2 class="fluid-h2 font-heading text-ink">Key achievements</h2>
+          <ul class="auto-grid mt-8 [--grid-min:16rem]">
+            <li v-for="(achievement, index) in achievements" :key="achievement" class="card flex gap-4 p-5">
+              <span class="font-heading text-2xl font-bold text-brand-soft [-webkit-text-stroke:1px_var(--color-primary)]" aria-hidden="true">
+                {{ String(index + 1).padStart(2, '0') }}
+              </span>
+              <p class="text-sm leading-relaxed text-ink">{{ achievement }}</p>
             </li>
           </ul>
         </section>
 
-        <div class="grid gap-8 lg:grid-cols-2">
-          <section>
-            <h2 class="font-bold mb-4" :style="getHeadingStyle(siteInfo?.design, 'h2')">
-              Education
-            </h2>
-            <p :style="getBodyStyle(siteInfo?.design)">Kings Manor High School, West Sussex</p>
-          </section>
-
-          <section>
-            <h2 class="font-bold mb-4" :style="getHeadingStyle(siteInfo?.design, 'h2')">
-              Additional Information
-            </h2>
-            <ul class="list-disc space-y-2 pl-5 leading-relaxed" :style="getBodyStyle(siteInfo?.design)">
-              <li>
-                Portfolio:
-                <a
-                  href="https://www.jbiddulph.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="font-medium hover:underline"
-                  :style="{ color: siteInfo?.design?.primary_color || '#2563eb' }"
-                >
-                  www.jbiddulph.com
-                </a>
-              </li>
-              <li>UK-based, open to remote or hybrid opportunities.</li>
-              <li>Available for Senior Full Stack Developer, Senior Frontend Developer, and Technical Lead positions.</li>
-            </ul>
-          </section>
+        <div class="flex flex-wrap gap-3 border-t border-line pt-8">
+          <a :href="cvPdfPath" download="john-biddulph-cv-2026.pdf" class="btn btn-primary">Download PDF CV</a>
+          <NuxtLink to="/portfolio" class="btn btn-outline">See my projects</NuxtLink>
+          <NuxtLink to="/services#enquire" class="btn btn-ghost">Get in touch</NuxtLink>
         </div>
       </div>
-    </article>
-
-    <div class="text-center mt-10">
-      <NuxtLink
-        to="/"
-        class="inline-flex items-center px-6 py-3 text-sm font-medium rounded-md border transition-colors"
-        :style="{
-          borderColor: siteInfo?.design?.primary_color || '#2563eb',
-          color: siteInfo?.design?.primary_color || '#2563eb'
-        }"
-      >
-        Back to Home
-      </NuxtLink>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-
 useSeoMeta({
   title: 'CV 2026 | John Michael Biddulph',
   ogTitle: 'CV 2026 | John Michael Biddulph',
@@ -230,8 +139,6 @@ useSeoMeta({
   ogDescription: 'View the 2026 CV for John Michael Biddulph, Senior Full Stack Developer based in Worthing, West Sussex.'
 })
 
-const siteInfo = ref<any>(null)
-const { userDesignId } = useUserDesign()
 const cvPdfPath = '/cv/john-biddulph-cv-2026.pdf'
 
 const profile = [
@@ -243,23 +150,23 @@ const profile = [
 const skillGroups = [
   {
     title: 'Frontend',
-    skills: 'JavaScript (ES6+), TypeScript, Vue.js, Nuxt.js, React, Next.js, Angular, HTML5, CSS3, Tailwind CSS'
+    skills: ['JavaScript (ES6+)', 'TypeScript', 'Vue.js', 'Nuxt.js', 'React', 'Next.js', 'Angular', 'HTML5', 'CSS3', 'Tailwind CSS']
   },
   {
     title: 'Backend',
-    skills: 'PHP, Laravel, Python, Node.js, Express, REST APIs, GraphQL'
+    skills: ['PHP', 'Laravel', 'Python', 'Node.js', 'Express', 'REST APIs', 'GraphQL']
   },
   {
     title: 'Databases',
-    skills: 'MySQL, PostgreSQL, MongoDB, Supabase'
+    skills: ['MySQL', 'PostgreSQL', 'MongoDB', 'Supabase']
   },
   {
     title: 'Cloud & DevOps',
-    skills: 'AWS, Docker, CI/CD, Vercel, Netlify, Heroku, GitHub Actions'
+    skills: ['AWS', 'Docker', 'CI/CD', 'Vercel', 'Netlify', 'Heroku', 'GitHub Actions']
   },
   {
     title: 'Platforms & Tools',
-    skills: 'Shopify, WordPress, Drupal, Mapbox, Git, Agile, Jira'
+    skills: ['Shopify', 'WordPress', 'Drupal', 'Mapbox', 'Git', 'Agile', 'Jira']
   }
 ]
 
@@ -332,104 +239,4 @@ const achievements = [
   'Proven ability to rapidly onboard and deliver value within contract and permanent environments.',
   'Experienced across the complete software development lifecycle from design through deployment.'
 ]
-
-onMounted(async () => {
-  await fetchSiteInfo()
-  window.addEventListener('theme-changed', handleThemeChange)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('theme-changed', handleThemeChange)
-})
-
-const handleThemeChange = async () => {
-  if (!process.client) return
-  await fetchUserDesign()
-}
-
-const fetchSiteInfo = async () => {
-  try {
-    const response: any = await $fetch('/api/site-info')
-    siteInfo.value = response.data
-
-    if (process.client && userDesignId.value) {
-      await fetchUserDesign()
-    }
-  } catch (error) {
-    console.error('Error fetching site info:', error)
-  }
-}
-
-const fetchUserDesign = async () => {
-  if (!process.client || !userDesignId.value) return
-
-  try {
-    const response: any = await $fetch(`/api/designs/${userDesignId.value}`)
-    if (response.success && siteInfo.value) {
-      siteInfo.value.design = response.data
-    }
-  } catch (error) {
-    console.error('Error fetching user design:', error)
-  }
-}
-
-const getFontFamily = (design: any, fontType = 'primary') => {
-  if (!design) return 'inherit'
-
-  let fontFamily = fontType === 'heading' ? design.heading_font : design.font_family
-
-  if (design.google_fonts) {
-    try {
-      const googleFonts = JSON.parse(design.google_fonts)
-      if (fontType === 'heading' && googleFonts.heading) {
-        fontFamily = `"${googleFonts.heading}", ${design.heading_font}`
-      } else if (googleFonts.primary) {
-        fontFamily = `"${googleFonts.primary}", ${design.font_family}`
-      }
-    } catch (error) {
-      console.error('Error parsing Google Fonts:', error)
-    }
-  }
-
-  return fontFamily
-}
-
-const getHeadingStyle = (design: any, level = 'h1') => {
-  const fontSizeMap: Record<string, string> = {
-    h1: design?.font_size_h1 || '2.25rem',
-    h2: design?.font_size_h2 || '1.75rem',
-    h3: design?.font_size_h3 || '1.25rem',
-    h4: design?.font_size_h4 || '1rem'
-  }
-
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'heading'),
-    fontSize: fontSizeMap[level]
-  }
-}
-
-const getBodyStyle = (design: any) => {
-  return {
-    color: design?.text_color || '#1f2937',
-    fontFamily: getFontFamily(design, 'primary'),
-    fontSize: design?.font_size_base || '16px'
-  }
-}
-
-const getMutedStyle = (design: any) => {
-  return {
-    color: design?.secondary_color || design?.text_color || '#4b5563',
-    fontFamily: getFontFamily(design, 'primary'),
-    fontSize: design?.font_size_base || '16px'
-  }
-}
-
-const getBorderStyle = (design: any) => {
-  return {
-    borderWidth: design?.border_thickness || '1px',
-    borderStyle: design?.border_style || 'solid',
-    borderColor: design?.primary_color || '#e5e7eb'
-  }
-}
 </script>
