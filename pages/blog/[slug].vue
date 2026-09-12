@@ -10,7 +10,7 @@
       </NuxtLink>
     </PageIntro>
 
-    <div class="page-x section grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] xl:gap-16">
+    <div class="page-x section grid gap-10 lg:grid-cols-[minmax(0,80ch)_minmax(16rem,20rem)] lg:justify-start xl:gap-16">
       <div class="min-w-0">
         <div class="mb-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
           <span v-if="data?.author" class="font-medium text-ink">{{ data.author }}</span>
