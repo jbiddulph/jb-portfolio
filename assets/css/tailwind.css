@@ -12,6 +12,9 @@
     --color-text: #1f2937;
     --color-card: var(--color-bg);
     --color-on-primary: #ffffff;
+    /* Brand colour as used for text and filled buttons. The active design
+       overrides this with a contrast-checked shade (see useSiteDesign). */
+    --color-primary-ink: var(--color-primary);
 
     --font-body: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
     --font-heading: var(--font-body);
@@ -43,13 +46,13 @@
 
   /* Derived tokens: computed from the active design so every theme stays coherent. */
   :root {
-    --color-primary-strong: color-mix(in srgb, var(--color-primary) 84%, black);
+    --color-primary-strong: color-mix(in srgb, var(--color-primary-ink) 84%, black);
     --color-primary-soft: color-mix(in srgb, var(--color-primary) 12%, transparent);
     --color-primary-softer: color-mix(in srgb, var(--color-primary) 6%, transparent);
     --color-primary-border: color-mix(in srgb, var(--color-primary) 35%, transparent);
     --color-accent-soft: color-mix(in srgb, var(--color-accent) 14%, transparent);
-    --color-accent-text: color-mix(in srgb, var(--color-accent) 65%, var(--color-text));
-    --color-muted: color-mix(in srgb, var(--color-text) 62%, var(--color-bg));
+    --color-accent-text: color-mix(in srgb, var(--color-accent) 45%, var(--color-text));
+    --color-muted: color-mix(in srgb, var(--color-text) 72%, var(--color-bg));
     --color-border: color-mix(in srgb, var(--color-text) 11%, transparent);
     --color-border-strong: color-mix(in srgb, var(--color-text) 22%, transparent);
     --color-surface-2: color-mix(in srgb, var(--color-text) 4%, var(--color-bg));
@@ -176,7 +179,7 @@
     font-weight: 600;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
   }
 
   .eyebrow::before {
@@ -207,7 +210,7 @@
   }
 
   .btn-primary {
-    background-color: var(--color-primary);
+    background-color: var(--color-primary-ink);
     color: var(--color-on-primary);
     box-shadow: var(--shadow-sm);
   }
@@ -226,12 +229,12 @@
 
   .btn-outline:hover:not(:disabled) {
     border-color: var(--color-primary);
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     background-color: var(--color-primary-softer);
   }
 
   .btn-ghost {
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
   }
 
   .btn-ghost:hover:not(:disabled) {
@@ -364,7 +367,7 @@
   }
 
   .prose-theme a {
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;

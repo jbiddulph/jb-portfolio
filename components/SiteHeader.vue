@@ -7,10 +7,13 @@
     <div class="page-x flex min-h-header items-center justify-between gap-4 py-2">
       <!-- Brand -->
       <NuxtLink to="/" class="group flex min-w-0 items-center gap-3" @click="closeMenu">
-        <img
+        <SmartImage
           v-if="siteInfo?.site_avatar"
           :src="siteInfo.site_avatar"
           :alt="siteName"
+          priority
+          width="40"
+          height="40"
           class="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-brand-soft transition group-hover:ring-brand"
         />
         <span
@@ -159,9 +162,10 @@ const { siteInfo, siteName } = useSiteDesign()
 const { navLinks } = useSiteLinks()
 const route = useRoute()
 
+const { user, refresh: refreshUser, signOut: signOutUser } = useAuthUser()
+
 const menuOpen = ref(false)
 const scrolled = ref(false)
-const user = ref<any>(null)
 
 const primaryLinks = [
   { label: 'Projects', to: '/portfolio' },
@@ -194,38 +198,8 @@ watch(menuOpen, (open) => {
   document.documentElement.classList.toggle('overflow-hidden', open && window.innerWidth < 1024)
 })
 
-const getSupabaseClient = () => {
-  if (!process.client) return null
-  try {
-    return useSupabaseClient()
-  } catch (error) {
-    console.warn('Failed to initialize Supabase client:', error)
-    return null
-  }
-}
-
-const fetchUser = async () => {
-  const client = getSupabaseClient()
-  if (!client) return
-  try {
-    const { data: { session } } = await client.auth.getSession()
-    if (!session) {
-      user.value = null
-      return
-    }
-    const { data: { user: authenticatedUser }, error } = await client.auth.getUser()
-    user.value = !error && authenticatedUser ? authenticatedUser : null
-  } catch (error) {
-    console.error('Error fetching user:', error)
-    user.value = null
-  }
-}
-
 const signOut = async () => {
-  const client = getSupabaseClient()
-  if (!client) return
-  await client.auth.signOut()
-  user.value = null
+  await signOutUser()
   closeMenu()
   await navigateTo('/login')
 }
@@ -239,7 +213,7 @@ const onKeydown = (event: KeyboardEvent) => {
 }
 
 onMounted(() => {
-  fetchUser()
+  refreshUser()
   onScroll()
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('keydown', onKeydown)

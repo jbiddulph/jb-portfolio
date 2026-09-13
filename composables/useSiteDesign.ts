@@ -1,4 +1,5 @@
 import { computed, onMounted, onUnmounted } from 'vue'
+import { mix, mutedColor, onColor, parseColor, readableColor } from '~/lib/colorContrast'
 
 export interface SiteDesign {
   [key: string]: any
@@ -77,12 +78,28 @@ export const buildDesignCssVars = (design: SiteDesign | null | undefined): Recor
     ? String(design.portfolio_card_background_color)
     : 'var(--color-bg)'
 
+  const primary = pick(design, 'primary_color')
+  const accent = pick(design, 'accent_color')
+  const background = pick(design, 'background_color')
+  const text = pick(design, 'text_color')
+  // Text sits on the page, on cards (which may have their own colour) and on
+  // tinted pills (~8% text over the page). Derived text colours are adjusted
+  // only when the chosen palette would fail WCAG AA on one of those surfaces.
+  const cardSurface = parseColor(cardBackground) ? cardBackground : background
+  const surfaces = [background, cardSurface, mix(text, background, 0.08)]
+  const chipSurfaces = [...surfaces, mix(accent, background, 0.14), mix(accent, cardSurface, 0.14)]
+  const primaryInk = readableColor(primary, surfaces, 4.5)
+
   return {
-    '--color-primary': pick(design, 'primary_color'),
+    '--color-primary': primary,
+    '--color-primary-ink': primaryInk,
+    '--color-on-primary': onColor(primaryInk),
     '--color-secondary': pick(design, 'secondary_color'),
-    '--color-accent': pick(design, 'accent_color'),
-    '--color-bg': pick(design, 'background_color'),
-    '--color-text': pick(design, 'text_color'),
+    '--color-accent': accent,
+    '--color-accent-text': readableColor(accent, chipSurfaces, 4.5),
+    '--color-bg': background,
+    '--color-text': text,
+    '--color-muted': mutedColor(text, background, surfaces),
     '--color-card': cardBackground,
     '--font-body': resolveFontFamily(design, 'primary'),
     '--font-heading': resolveFontFamily(design, 'heading'),
@@ -104,8 +121,6 @@ export const buildDesignCssVars = (design: SiteDesign | null | undefined): Recor
     '--shadow-lg': pick(design, 'shadow_large')
   }
 }
-
-let pendingLoad: Promise<void> | null = null
 
 /**
  * Shared, read-only access to the site info + active design.
@@ -173,37 +188,45 @@ export const useSiteDesignProvider = () => {
       : [])
   })
 
-  const fetchDesignOverride = async (base: SiteInfo | null) => {
-    if (!base || !userDesignId.value) return base
+  const dedupe = useInflight()
+
+  const fetchDesignOverride = async (): Promise<SiteDesign | null> => {
+    if (!userDesignId.value) return null
     try {
       const response: any = await $fetch(`/api/designs/${userDesignId.value}`)
-      if (response?.success && response.data) {
-        return { ...base, design: response.data }
-      }
+      return response?.success && response.data ? response.data : null
     } catch (error) {
       console.error('Error fetching user design:', error)
+      return null
     }
-    return base
   }
 
+  /**
+   * Runs during SSR (so the first HTML already carries the right colours,
+   * fonts and branding) and again on the client only if that did not finish
+   * within the SSR budget.
+   */
   const load = async (force = false) => {
-    if (!process.client) return
     if (loaded.value && !force) return
-    if (pendingLoad && !force) return pendingLoad
 
-    pendingLoad = (async () => {
+    return dedupe('site-info', async () => {
       try {
-        const response: any = await $fetch('/api/site-info')
-        siteInfo.value = await fetchDesignOverride(response?.data ?? null)
-      } catch (error) {
-        console.error('Error fetching site info:', error)
-      } finally {
+        const [response, designOverride] = await guarded(Promise.all([
+          $fetch('/api/site-info') as Promise<any>,
+          fetchDesignOverride()
+        ]))
+        const base: SiteInfo | null = response?.data ?? null
+        siteInfo.value = base && designOverride ? { ...base, design: designOverride } : base
         loaded.value = true
-        pendingLoad = null
+      } catch (error) {
+        if (import.meta.server) {
+          console.warn('Site info not ready during SSR, deferring to client:', (error as Error)?.message)
+        } else {
+          console.error('Error fetching site info:', error)
+          loaded.value = true
+        }
       }
-    })()
-
-    return pendingLoad
+    })
   }
 
   const handleThemeChange = () => {

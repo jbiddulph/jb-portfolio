@@ -1,5 +1,6 @@
 import { prisma } from '~/lib/prisma'
 import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
+import { projectSlug } from '~/lib/portfolioSlug'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -19,7 +20,7 @@ export default defineEventHandler(async (event) => {
     
     return {
       success: true,
-      data: portfolio
+      data: portfolio.map((item) => ({ ...item, slug: projectSlug(item) }))
     }
   } catch (error) {
     console.error('Portfolio API error:', error)
