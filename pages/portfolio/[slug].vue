@@ -41,28 +41,31 @@
 
       <div class="page-x section grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] xl:gap-14">
         <div class="min-w-0 space-y-12">
-          <figure v-if="project.project_image" class="card overflow-hidden">
+          <!-- Fixed aspect ratio reserves the space before the image arrives (no layout shift). -->
+          <figure class="card aspect-[16/10] overflow-hidden bg-surface-2" v-if="project.project_image">
             <a
               v-if="project.project_link"
               :href="project.project_link"
               target="_blank"
               rel="noopener noreferrer"
-              class="group block"
+              class="group block h-full"
               :aria-label="`Open ${project.project_name} live site`"
             >
-              <img
+              <SmartImage
                 :src="project.project_image"
                 :alt="project.project_name"
-                class="w-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.02]"
-                fetchpriority="high"
+                priority
+                sizes="xs:100vw lg:960px"
+                class="h-full w-full object-cover object-top transition-transform duration-700 ease-out-expo group-hover:scale-[1.02]"
               />
             </a>
-            <img
+            <SmartImage
               v-else
               :src="project.project_image"
               :alt="project.project_name"
-              class="w-full object-cover"
-              fetchpriority="high"
+              priority
+              sizes="xs:100vw lg:960px"
+              class="h-full w-full object-cover object-top"
             />
           </figure>
 
@@ -274,9 +277,48 @@ const { portfolio, load: loadPortfolio } = usePortfolioList()
 const { isAdmin, load: loadAuthUser } = useAuthUser()
 const { fetchAdminData } = useAdminFetch()
 
-const project = ref<PortfolioDetail | null>(null)
-const loading = ref(true)
-const error = ref<string | null>(null)
+const slugParam = computed(() => String(route.params.slug || ''))
+
+// Fetched during SSR so the hero, screenshot and meta tags are in the first
+// HTML; `watch` refetches when navigating between projects.
+const {
+  data: project,
+  status,
+  error: fetchError,
+  refresh
+} = await useAsyncData<PortfolioDetail | null>(
+  `portfolio:${slugParam.value}`,
+  async () => {
+    const response: any = await guarded($fetch(`/api/portfolio/${encodeURIComponent(slugParam.value)}`))
+    return response?.success && response.data ? response.data : null
+  },
+  { watch: [slugParam] }
+)
+
+const loading = computed(() => status.value === 'pending' || status.value === 'idle')
+const error = computed(() => {
+  if (loading.value) return null
+  if (fetchError.value) {
+    return (fetchError.value as any)?.statusCode === 404
+      ? 'This project could not be found.'
+      : `Failed to load project details: ${fetchError.value.message || 'Unknown error'}`
+  }
+  return project.value ? null : 'This project could not be found.'
+})
+
+if (import.meta.server) {
+  const event = useRequestEvent()
+  if (event && !loading.value && !project.value) {
+    setResponseStatus(event, (fetchError.value as any)?.statusCode === 404 || !fetchError.value ? 404 : 500)
+  }
+  // Canonicalise old numeric links (/portfolio/12) to the slug URL.
+  if (project.value && isNumericId(slugParam.value)) {
+    const slug = getProjectSlug(project.value)
+    if (slug !== slugParam.value) {
+      await navigateTo(`/portfolio/${slug}`, { replace: true, redirectCode: 301 })
+    }
+  }
+}
 
 const adminInfo = ref<PortfolioAdminInfo | null>(null)
 const adminLoading = ref(false)
@@ -333,35 +375,6 @@ useSeoMeta({
   ogImage: computed(() => project.value?.project_image || undefined)
 })
 
-const fetchProject = async () => {
-  const param = String(route.params.slug || '')
-  loading.value = true
-  error.value = null
-  adminInfo.value = null
-  showPasswords.value = false
-
-  try {
-    const response: any = await $fetch(`/api/portfolio/${encodeURIComponent(param)}`)
-    if (response?.success && response.data) {
-      project.value = response.data
-      // Canonicalise old numeric links (/portfolio/12) to the slug URL.
-      const slug = getProjectSlug(response.data)
-      if (isNumericId(param) && slug !== param) {
-        await navigateTo(`/portfolio/${slug}`, { replace: true })
-      }
-    } else {
-      error.value = 'This project could not be found.'
-    }
-  } catch (err: any) {
-    console.error('Error fetching project:', err)
-    error.value = err?.statusCode === 404
-      ? 'This project could not be found.'
-      : `Failed to load project details: ${err?.message || 'Unknown error'}`
-  } finally {
-    loading.value = false
-  }
-}
-
 const fetchAdminInfo = async () => {
   if (!isAdmin.value || !project.value) return
   adminLoading.value = true
@@ -379,25 +392,33 @@ const fetchAdminInfo = async () => {
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   loadPortfolio()
   loadAuthUser()
-  await fetchProject()
+  // SSR gave up within its time budget (or hit a transient error): retry here.
+  if (fetchError.value && (fetchError.value as any)?.statusCode !== 404) {
+    refresh()
+  }
 })
 
 watch([isAdmin, () => project.value?.id], ([admin, id]) => {
+  showPasswords.value = false
   if (admin && id) {
     fetchAdminInfo()
   } else {
     adminInfo.value = null
   }
+}, { immediate: true })
+
+watch(project, (next) => {
+  // Client-side canonicalisation of old numeric links.
+  if (import.meta.client && next && isNumericId(slugParam.value)) {
+    const slug = getProjectSlug(next)
+    if (slug !== slugParam.value) navigateTo(`/portfolio/${slug}`, { replace: true })
+  }
 })
 
-watch(() => route.params.slug, (next, prev) => {
-  if (next === prev || !route.name || !String(route.name).startsWith('portfolio-slug')) return
-  // Already showing this project (e.g. after the numeric-id redirect above).
-  if (project.value && getProjectSlug(project.value) === next) return
-  fetchProject()
-  if (process.client) window.scrollTo({ top: 0 })
+watch(slugParam, () => {
+  if (import.meta.client) window.scrollTo({ top: 0 })
 })
 </script>

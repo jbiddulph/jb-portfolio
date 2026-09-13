@@ -4,15 +4,15 @@ export const useUserDesign = () => {
   const loading = ref(false)
   const defaultDesignId = 5 // Newspaper theme
 
-  // Load user's saved design preference from cookie
+  // Load user's saved design preference from cookie (works during SSR too, so
+  // the first paint already uses the visitor's chosen theme)
   const loadUserDesign = () => {
-    if (process.client) {
-      const saved = useCookie('user-design-id', { 
-        default: () => defaultDesignId,
-        maxAge: 60 * 60 * 24 * 365 // 1 year
-      })
-      userDesignId.value = parseInt(saved.value.toString())
-    }
+    const saved = useCookie('user-design-id', { 
+      default: () => defaultDesignId,
+      maxAge: 60 * 60 * 24 * 365 // 1 year
+    })
+    const parsed = parseInt(String(saved.value ?? ''), 10)
+    userDesignId.value = Number.isFinite(parsed) ? parsed : defaultDesignId
   }
 
   // Save user's design preference to cookie
@@ -63,9 +63,11 @@ export const useUserDesign = () => {
     return userDesignId.value || defaultDesignId
   }
 
-  // Initialize on client side
-  if (process.client) {
+  // Initialize (needs a Nuxt context for the cookie; skip silently otherwise)
+  try {
     loadUserDesign()
+  } catch {
+    userDesignId.value = defaultDesignId
   }
 
   return {

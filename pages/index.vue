@@ -57,25 +57,28 @@
             aria-hidden="true"
           />
           <figure v-if="siteInfo?.site_image" class="card overflow-hidden">
-            <img
+            <SmartImage
               :src="siteInfo.site_image"
               :alt="siteName"
+              priority
+              sizes="xs:100vw lg:45vw xxl:800px"
               class="aspect-[4/3] w-full object-cover"
-              fetchpriority="high"
             />
           </figure>
           <div v-else-if="featured[0]" class="grid gap-4">
             <p class="eyebrow">Latest project</p>
-            <PortfolioCard :item="featured[0]" />
+            <PortfolioCard :item="featured[0]" priority />
           </div>
           <div v-else class="card aspect-[4/3] animate-pulse bg-surface-2" aria-hidden="true" />
         </div>
       </div>
 
       <figure v-if="!heroSplit && siteInfo?.site_image" class="page-x relative pb-[clamp(3rem,6vw,5rem)]">
-        <img
+        <SmartImage
           :src="siteInfo.site_image"
           :alt="siteName"
+          priority
+          sizes="xs:100vw xxl:1400px"
           class="card aspect-[21/9] w-full object-cover"
         />
       </figure>
@@ -107,7 +110,7 @@
 
       <template v-else>
         <div class="auto-grid [--grid-min:17rem]">
-          <PortfolioCard v-for="item in featured" :key="item.id" :item="item" />
+          <PortfolioCard v-for="(item, index) in featured" :key="item.id" :item="item" :priority="index === 0" />
         </div>
         <div v-if="remainingCount > 0" class="mt-10 text-center">
           <NuxtLink to="/portfolio" class="btn btn-primary btn-lg">
@@ -161,7 +164,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const FEATURED_LIMIT = 8
 const VIDEOS_PER_PAGE = 6
@@ -186,9 +189,8 @@ const paginatedVideos = computed(() => {
   return videos.value.slice(start, start + VIDEOS_PER_PAGE)
 })
 
-onMounted(() => {
-  loadPages()
-  loadPortfolio()
-  loadVideos()
-})
+// Rendered into the first HTML during SSR; in the browser these resolve
+// immediately from the payload (or fetch in the background after a timeout).
+const ready = Promise.all([loadPages(), loadPortfolio(), loadVideos()])
+if (import.meta.server) await ready
 </script>

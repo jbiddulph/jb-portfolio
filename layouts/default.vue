@@ -15,18 +15,30 @@
 
     <SiteFooter />
 
-    <ChatBox />
+    <LazyChatBox v-if="chatReady" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
-useSiteDesignProvider()
-
+const { load: loadSiteDesign } = useSiteDesignProvider()
 const { load: loadLinks } = useSiteLinks()
 
+// The chat widget is not part of the initial content; mount it (and load its
+// chunk) once the browser is idle so it does not compete with the first paint.
+const chatReady = ref(false)
+
 onMounted(() => {
-  loadLinks()
+  const start = () => { chatReady.value = true }
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(start, { timeout: 3000 })
+  } else {
+    setTimeout(start, 1500)
+  }
 })
+
+// Resolved during SSR so the first HTML carries the real theme, branding and
+// navigation. Each load is time-boxed and falls back to the client on timeout.
+await Promise.all([loadSiteDesign(), loadLinks()])
 </script>

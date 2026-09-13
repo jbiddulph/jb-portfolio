@@ -32,7 +32,7 @@
             @click="activeTag = null"
           >
             All
-            <span class="opacity-70">{{ portfolio.length }}</span>
+            <span class="opacity-90">{{ portfolio.length }}</span>
           </button>
           <button
             v-for="tag in topTags"
@@ -43,7 +43,7 @@
             @click="activeTag = activeTag === tag.name ? null : tag.name"
           >
             {{ tag.name }}
-            <span class="opacity-70">{{ tag.count }}</span>
+            <span class="opacity-90">{{ tag.count }}</span>
           </button>
         </div>
         <label class="relative block w-full lg:max-w-xs">
@@ -91,7 +91,7 @@
         </p>
 
         <div v-if="filtered.length" class="auto-grid [--grid-min:18rem]">
-          <PortfolioCard v-for="item in filtered" :key="item.id" :item="item" />
+          <PortfolioCard v-for="(item, index) in filtered" :key="item.id" :item="item" :priority="index < 2" heading-tag="h2" />
         </div>
 
         <div v-else class="card flex flex-col items-center gap-3 px-6 py-14 text-center">
@@ -104,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { splitTags, stripHtml } from '~/composables/useSiteContent'
 
 useSeoMeta({
@@ -149,8 +149,6 @@ const resetFilters = () => {
   query.value = ''
 }
 
-onMounted(() => {
-  loadPages()
-  load()
-})
+const ready = Promise.all([loadPages(), load()])
+if (import.meta.server) await ready
 </script>
