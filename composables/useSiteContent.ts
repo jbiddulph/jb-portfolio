@@ -121,7 +121,13 @@ export const usePortfolioList = () => {
 
   const fetchOnce = async () => {
     const response: any = await guarded($fetch('/api/portfolio'), 10000)
-    portfolio.value = response?.success && Array.isArray(response.data) ? response.data : []
+    // The API soft-fails with `{ success: false, data: [] }` on DB errors.
+    // Treat that as a hard failure so SSR leaves `loaded` false (client retries)
+    // and the UI shows "could not be loaded" instead of a fake empty portfolio.
+    if (!response?.success || !Array.isArray(response.data)) {
+      throw new Error(response?.error || 'Failed to fetch portfolio')
+    }
+    portfolio.value = response.data
   }
 
   const load = useSharedLoader('portfolio', async () => {

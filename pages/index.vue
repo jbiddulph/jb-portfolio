@@ -193,4 +193,5 @@ const paginatedVideos = computed(() => {
 // immediately from the payload (or fetch in the background after a timeout).
 const ready = Promise.all([loadPages(), loadPortfolio(), loadVideos()])
 if (import.meta.server) await ready
+else if (!portfolio.value.length) loadPortfolio()
 </script>

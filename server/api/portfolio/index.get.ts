@@ -22,14 +22,16 @@ export default defineEventHandler(async (event) => {
       success: true,
       data: portfolio.map((item) => ({ ...item, slug: projectSlug(item) }))
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Portfolio API error:', error)
-    
-    // Return empty array instead of throwing error to prevent page crashes
+    // Soft JSON body keeps the page from hard-crashing, but 503 lets clients
+    // distinguish a backend failure from a genuinely empty portfolio.
+    setResponseStatus(event, 503)
     return {
       success: false,
       data: [],
-      error: 'Failed to fetch portfolio'
+      error: 'Failed to fetch portfolio',
+      message: error?.message || 'Unknown database error'
     }
   }
 })
