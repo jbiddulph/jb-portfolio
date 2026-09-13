@@ -1,4 +1,5 @@
 import { prisma } from '~/lib/prisma'
+import { invalidateLivePublicPortfolioCache } from '~/lib/portfolioCache'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -23,6 +24,8 @@ export default defineEventHandler(async (event) => {
     await prisma.jbiddulph_portfolio.delete({
       where: { id }
     })
+
+    invalidateLivePublicPortfolioCache()
     
     console.log('Portfolio item deleted successfully')
     

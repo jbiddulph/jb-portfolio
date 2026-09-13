@@ -13,9 +13,22 @@
     <!-- Error -->
     <div v-else-if="error" class="page-x section">
       <div class="card mx-auto flex max-w-lg flex-col items-center gap-4 px-6 py-16 text-center">
-        <h1 class="fluid-h2 font-heading text-ink">Project not found</h1>
+        <h1 class="fluid-h2 font-heading text-ink">
+          {{ isNotFound ? 'Project not found' : 'Could not load project' }}
+        </h1>
         <p class="text-muted">{{ error }}</p>
-        <NuxtLink to="/portfolio" class="btn btn-primary">Back to all projects</NuxtLink>
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <button
+            v-if="!isNotFound"
+            type="button"
+            class="btn btn-primary"
+            :disabled="loading"
+            @click="refresh()"
+          >
+            Try again
+          </button>
+          <NuxtLink to="/portfolio" class="btn btn-outline">Back to all projects</NuxtLink>
+        </div>
       </div>
     </div>
 
@@ -330,12 +343,20 @@ const {
 )
 
 const loading = computed(() => status.value === 'pending' || status.value === 'idle')
+const fetchStatusCode = computed(() => Number((fetchError.value as any)?.statusCode) || 0)
+const isNotFound = computed(() => {
+  if (loading.value || project.value) return false
+  if (fetchError.value) return fetchStatusCode.value === 404
+  return true
+})
 const error = computed(() => {
   if (loading.value) return null
   if (fetchError.value) {
-    return (fetchError.value as any)?.statusCode === 404
-      ? 'This project could not be found.'
-      : `Failed to load project details: ${fetchError.value.message || 'Unknown error'}`
+    if (fetchStatusCode.value === 404) return 'This project could not be found.'
+    if (fetchStatusCode.value === 503) {
+      return 'The project is temporarily unavailable. Please try again in a moment.'
+    }
+    return `Failed to load project details: ${fetchError.value.message || 'Unknown error'}`
   }
   return project.value ? null : 'This project could not be found.'
 })
@@ -343,7 +364,8 @@ const error = computed(() => {
 if (import.meta.server) {
   const event = useRequestEvent()
   if (event && !loading.value && !project.value) {
-    setResponseStatus(event, (fetchError.value as any)?.statusCode === 404 || !fetchError.value ? 404 : 500)
+    const code = fetchStatusCode.value
+    setResponseStatus(event, code === 404 || !code ? 404 : code >= 500 ? code : 500)
   }
   // Canonicalise old numeric links (/portfolio/12) to the slug URL.
   if (project.value && isNumericId(slugParam.value)) {

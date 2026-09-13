@@ -1,26 +1,18 @@
-import { prisma } from '~/lib/prisma'
-import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
+import { getLivePublicPortfolio } from '~/lib/portfolioCache'
 import { projectSlug } from '~/lib/portfolioSlug'
 
 export default defineEventHandler(async (event) => {
   try {
-    console.log('Public portfolio API called')
-    
-    const portfolio = await prisma.jbiddulph_portfolio.findMany({
-      where: { live: true },
-      orderBy: [
-        { sort_order: 'asc' },
-        { project_date: 'desc' }
-      ],
-      select: PUBLIC_PORTFOLIO_SELECT,
-      take: 50 // Increased limit to show all portfolio items
-    })
-    
-    console.log('Found portfolio items:', portfolio.length)
-    
+    // Shared short-lived cache with the slug endpoint so list + detail traffic
+    // do not each burn a Supabase session-pool connection.
+    const portfolio = await getLivePublicPortfolio()
+
     return {
       success: true,
-      data: portfolio.map((item) => ({ ...item, slug: projectSlug(item) }))
+      data: portfolio.slice(0, 50).map((item) => {
+        const { live: _live, ...publicItem } = item
+        return { ...publicItem, slug: projectSlug(publicItem) }
+      })
     }
   } catch (error: any) {
     console.error('Portfolio API error:', error)

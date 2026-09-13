@@ -1,4 +1,5 @@
 import { prisma } from '~/lib/prisma'
+import { invalidateLivePublicPortfolioCache } from '~/lib/portfolioCache'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -29,6 +30,8 @@ export default defineEventHandler(async (event) => {
         })
       )
     )
+
+    invalidateLivePublicPortfolioCache()
 
     return {
       success: true,
