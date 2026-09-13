@@ -1,3 +1,5 @@
+import { getLivePublicPortfolio } from '~/lib/portfolioCache'
+import { withPrismaRetry } from '~/lib/prismaRetry'
 import { prisma } from '~/lib/prisma'
 import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
 import { isNumericId, projectSlug, slugify } from '~/lib/portfolioSlug'
@@ -8,6 +10,10 @@ const PUBLIC_SELECT = { ...PUBLIC_PORTFOLIO_SELECT, live: true } as const
 /**
  * Public project detail, addressed by slug (e.g. /api/portfolio/dog-healthy).
  * Numeric ids are still accepted so old /portfolio/12 links keep resolving.
+ *
+ * Live rows are served from a short in-memory cache shared with the list
+ * endpoint so slug pages do not open a fresh findMany on every request
+ * (that pattern was exhausting Supabase's session pool).
  */
 export default defineEventHandler(async (event) => {
   const param = (getRouterParam(event, 'slug') || '').trim()
@@ -17,22 +23,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    let project = null
-
-    if (isNumericId(param)) {
-      project = await prisma.jbiddulph_portfolio.findUnique({
-        where: { id: parseInt(param, 10) },
-        select: PUBLIC_SELECT
-      })
-    } else {
-      const wanted = slugify(param)
-      const candidates = await prisma.jbiddulph_portfolio.findMany({
-        where: { live: true },
-        select: PUBLIC_SELECT,
-        take: 200
-      })
-      project = candidates.find((item) => projectSlug(item) === wanted) || null
-    }
+    const project = await resolveProject(param)
 
     if (!project || !project.live) {
       throw createError({ statusCode: 404, statusMessage: 'Project not found' })
@@ -55,8 +46,28 @@ export default defineEventHandler(async (event) => {
 
     console.error('Error in portfolio/[slug] API:', error)
     throw createError({
-      statusCode: 500,
-      statusMessage: `Failed to fetch project: ${error?.message || 'Unknown error'}`
+      statusCode: 503,
+      statusMessage: 'Failed to fetch project details. Please try again.'
     })
   }
 })
+
+async function resolveProject (param: string) {
+  if (isNumericId(param)) {
+    const id = parseInt(param, 10)
+    const cached = await getLivePublicPortfolio().catch(() => null)
+    const fromCache = cached?.find((item) => item.id === id)
+    if (fromCache) return fromCache
+
+    return withPrismaRetry(() =>
+      prisma.jbiddulph_portfolio.findUnique({
+        where: { id },
+        select: PUBLIC_SELECT
+      })
+    )
+  }
+
+  const wanted = slugify(param)
+  const candidates = await getLivePublicPortfolio()
+  return candidates.find((item) => projectSlug(item) === wanted) || null
+}
