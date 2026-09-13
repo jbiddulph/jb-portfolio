@@ -12,7 +12,10 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: 'var(--color-primary)',
+          // Text/fill usage (text-brand, bg-brand) gets the contrast-checked shade;
+          // decorative tints below keep the raw palette colour.
+          DEFAULT: 'var(--color-primary-ink)',
+          raw: 'var(--color-primary)',
           strong: 'var(--color-primary-strong)',
           soft: 'var(--color-primary-soft)',
           softer: 'var(--color-primary-softer)',
