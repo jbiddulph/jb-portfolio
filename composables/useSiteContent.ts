@@ -1,4 +1,7 @@
 import { computed } from 'vue'
+import type { PortfolioAdminField } from '~/lib/portfolioFields'
+import { projectSlug } from '~/lib/portfolioSlug'
+import type { ProjectDetails } from '~/lib/projectDetails'
 
 export interface SiteLink {
   id: number
@@ -16,12 +19,26 @@ export interface SitePages {
 
 export interface PortfolioItem {
   id: number
+  slug?: string
   project_name: string
   project_date: string
   project_link?: string | null
   project_image?: string | null
   project_description?: string | null
   project_tags?: string | null
+}
+
+export interface PortfolioDetail extends PortfolioItem {
+  slug: string
+  details: ProjectDetails | null
+}
+
+export interface PortfolioAdminInfo extends Record<PortfolioAdminField, string> {
+  id: number
+  live?: boolean
+  sort_order?: number | null
+  created_at?: string | null
+  updated_at?: string | null
 }
 
 export interface VideoItem {
@@ -187,10 +204,15 @@ export const formatProjectDate = (value?: string | Date | null, options: Intl.Da
   return date.toLocaleDateString('en-GB', options)
 }
 
-export const getProjectHref = (item: Pick<PortfolioItem, 'id' | 'project_link'>) =>
-  item.project_link || `/portfolio/${item.id}`
+export const getProjectSlug = (item: Pick<PortfolioItem, 'id' | 'slug' | 'project_name'>) =>
+  item.slug || projectSlug(item)
 
-export const isExternalProject = (item: Pick<PortfolioItem, 'project_link'>) => !!item.project_link
+/** Internal detail page for a project. The live site is linked separately. */
+export const getProjectHref = (item: Pick<PortfolioItem, 'id' | 'slug' | 'project_name'>) =>
+  `/portfolio/${getProjectSlug(item)}`
+
+export const prettyUrl = (value?: string | null) =>
+  (value || '').replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '')
 
 export const getYouTubeEmbedUrl = (url?: string | null) => {
   if (!url) return null
