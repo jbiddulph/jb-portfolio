@@ -78,16 +78,33 @@
             <div class="prose-theme max-w-[75ch] text-[1.0625rem]" v-html="project.project_description" />
           </section>
 
-          <section v-if="details?.does">
-            <h2 class="fluid-h3 mb-5 font-heading text-ink">How it works</h2>
-            <p class="max-w-[75ch] text-[1.0625rem] leading-relaxed text-ink">{{ details.does }}</p>
+          <section v-if="details?.purpose">
+            <h2 class="fluid-h3 mb-5 font-heading text-ink">Purpose</h2>
+            <p class="max-w-[75ch] text-[1.0625rem] leading-relaxed text-ink">{{ details.purpose }}</p>
           </section>
 
-          <section v-if="details?.users?.length">
+          <section v-if="howItWorksParagraphs.length">
+            <h2 class="fluid-h3 mb-5 font-heading text-ink">How it works</h2>
+            <div class="max-w-[75ch] space-y-4 text-[1.0625rem] leading-relaxed text-ink">
+              <p v-for="(paragraph, index) in howItWorksParagraphs" :key="index">{{ paragraph }}</p>
+            </div>
+          </section>
+
+          <section v-if="details?.architecture?.length">
+            <h2 class="fluid-h3 mb-5 font-heading text-ink">Architecture</h2>
+            <ul class="max-w-[75ch] space-y-2 text-[1.0625rem] leading-relaxed text-ink">
+              <li v-for="(item, index) in details.architecture" :key="index" class="flex gap-3">
+                <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
+                <span>{{ item }}</span>
+              </li>
+            </ul>
+          </section>
+
+          <section v-if="capabilityList.length">
             <h2 class="fluid-h3 mb-5 font-heading text-ink">What you can do</h2>
             <ul class="grid max-w-[75ch] gap-3 sm:grid-cols-2">
               <li
-                v-for="(item, index) in details.users"
+                v-for="(item, index) in capabilityList"
                 :key="index"
                 class="card flex items-start gap-3 p-4 text-sm leading-relaxed text-ink"
               >
@@ -99,6 +116,23 @@
                 <span>{{ item }}</span>
               </li>
             </ul>
+          </section>
+
+          <section v-if="details?.dataAuth">
+            <h2 class="fluid-h3 mb-5 font-heading text-ink">Data &amp; access</h2>
+            <p class="max-w-[75ch] text-[1.0625rem] leading-relaxed text-ink">{{ details.dataAuth }}</p>
+          </section>
+
+          <section v-if="details?.integrations?.length">
+            <h2 class="fluid-h3 mb-5 font-heading text-ink">Integrations</h2>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="item in details.integrations" :key="item" class="chip">{{ item }}</span>
+            </div>
+          </section>
+
+          <section v-if="details?.deployment">
+            <h2 class="fluid-h3 mb-5 font-heading text-ink">Deployment</h2>
+            <p class="max-w-[75ch] text-[1.0625rem] leading-relaxed text-ink">{{ details.deployment }}</p>
           </section>
 
           <section v-if="project.project_link" class="card relative overflow-hidden p-6 sm:p-8">
@@ -327,6 +361,15 @@ const showPasswords = ref(false)
 
 const details = computed(() => project.value?.details || null)
 const tags = computed(() => splitTags(project.value?.project_tags))
+
+const howItWorksParagraphs = computed(() => {
+  const text = details.value?.howItWorks || details.value?.does || ''
+  return text.split(/\n\n+/).map((part) => part.trim()).filter(Boolean)
+})
+
+const capabilityList = computed(() =>
+  details.value?.features?.length ? details.value.features : (details.value?.users || [])
+)
 
 const summary = computed(() => {
   if (details.value?.summary) return details.value.summary
