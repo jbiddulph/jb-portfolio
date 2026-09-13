@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Forward request to n8n webhook (server-side to avoid CORS)
-    const webhookUrl = 'https://n8n.neurohub.uk/webhook/jbiddulph/a0fe2042-ef3d-4911-a488-42343d8bf39b'
+    const webhookUrl = 'https://n8njb-6378e565ae08.herokuapp.com/webhook/e985d15f-b2f6-456d-be15-97e0b1544a40'
     
       console.log('=== Chat API Request ===')
       console.log('Webhook URL:', webhookUrl)
