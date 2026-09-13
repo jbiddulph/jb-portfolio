@@ -151,4 +151,6 @@ const resetFilters = () => {
 
 const ready = Promise.all([loadPages(), load()])
 if (import.meta.server) await ready
+// After a soft SSR miss (DB timeout / 503), `loaded` stays false so hydrate retries.
+else if (!portfolio.value.length) load()
 </script>
