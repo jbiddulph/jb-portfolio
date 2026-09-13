@@ -7,10 +7,13 @@
     <div class="page-x flex min-h-header items-center justify-between gap-4 py-2">
       <!-- Brand -->
       <NuxtLink to="/" class="group flex min-w-0 items-center gap-3" @click="closeMenu">
-        <img
+        <SmartImage
           v-if="siteInfo?.site_avatar"
           :src="siteInfo.site_avatar"
           :alt="siteName"
+          priority
+          width="40"
+          height="40"
           class="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-brand-soft transition group-hover:ring-brand"
         />
         <span

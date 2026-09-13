@@ -3,10 +3,12 @@
     <div class="page-x section-tight grid gap-10 md:grid-cols-2 xl:grid-cols-[1.6fr_1fr_1fr_1fr]">
       <div class="max-w-md">
         <NuxtLink to="/" class="inline-flex items-center gap-3">
-          <img
+          <SmartImage
             v-if="siteInfo?.site_avatar"
             :src="siteInfo.site_avatar"
             :alt="siteName"
+            width="40"
+            height="40"
             class="h-10 w-10 rounded-full object-cover"
           />
           <span class="font-heading text-lg font-bold text-ink">{{ siteName }}</span>

@@ -9,11 +9,11 @@
       class="relative shrink-0 overflow-hidden bg-surface-3"
       :class="variant === 'row' ? 'w-28 sm:w-36' : 'aspect-[4/3] w-full'"
     >
-      <img
+      <SmartImage
         :src="item.project_image"
         :alt="item.project_name"
-        loading="lazy"
-        decoding="async"
+        :priority="priority"
+        :sizes="variant === 'row' ? 'xs:144px' : 'xs:100vw sm:50vw lg:33vw xxl:25vw'"
         class="h-full w-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]"
       />
       <span
@@ -37,7 +37,7 @@
     <!-- Body -->
     <div class="flex min-w-0 flex-1 flex-col gap-3" :class="variant === 'row' ? 'p-4' : 'p-5'">
       <div class="flex items-start justify-between gap-3">
-        <h3 class="font-heading font-semibold leading-snug text-ink" :class="variant === 'row' ? 'text-base' : 'text-lg'">
+        <component :is="headingTag" class="font-heading font-semibold leading-snug text-ink" :class="variant === 'row' ? 'text-base' : 'text-lg'">
           <!-- Stretched link: covers the whole card so any click opens the details page. -->
           <NuxtLink
             :to="detailHref"
@@ -46,7 +46,7 @@
           >
             {{ item.project_name }}
           </NuxtLink>
-        </h3>
+        </component>
         <time
           v-if="dateLabel"
           :datetime="item.project_date"
@@ -120,10 +120,16 @@ const props = withDefaults(defineProps<{
   variant?: 'grid' | 'row'
   previewLength?: number
   maxTags?: number
+  /** Above-the-fold card (e.g. the hero's featured project): load its image eagerly. */
+  priority?: boolean
+  /** Heading level so the card fits the page outline (h2 directly under a page h1, h3 under a section h2). */
+  headingTag?: 'h2' | 'h3' | 'h4'
 }>(), {
   variant: 'grid',
   previewLength: 110,
-  maxTags: 4
+  maxTags: 4,
+  priority: false,
+  headingTag: 'h3'
 })
 
 const expanded = ref(false)
