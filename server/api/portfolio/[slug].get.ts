@@ -1,5 +1,6 @@
-import { prisma } from '~/lib/prisma'
+import { getLivePublicPortfolio } from '~/lib/portfolioCache'
 import { withPrismaRetry } from '~/lib/prismaRetry'
+import { prisma } from '~/lib/prisma'
 import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
 import { isNumericId, projectSlug, slugify } from '~/lib/portfolioSlug'
 import { findProjectDetails } from '~/lib/projectDetails'
@@ -9,6 +10,10 @@ const PUBLIC_SELECT = { ...PUBLIC_PORTFOLIO_SELECT, live: true } as const
 /**
  * Public project detail, addressed by slug (e.g. /api/portfolio/dog-healthy).
  * Numeric ids are still accepted so old /portfolio/12 links keep resolving.
+ *
+ * Live rows are served from a short in-memory cache shared with the list
+ * endpoint so slug pages do not open a fresh findMany on every request
+ * (that pattern was exhausting Supabase's session pool).
  */
 export default defineEventHandler(async (event) => {
   const param = (getRouterParam(event, 'slug') || '').trim()
@@ -18,7 +23,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const project = await withPrismaRetry(() => resolveProject(param))
+    const project = await resolveProject(param)
 
     if (!project || !project.live) {
       throw createError({ statusCode: 404, statusMessage: 'Project not found' })
@@ -49,19 +54,20 @@ export default defineEventHandler(async (event) => {
 
 async function resolveProject (param: string) {
   if (isNumericId(param)) {
-    return prisma.jbiddulph_portfolio.findUnique({
-      where: { id: parseInt(param, 10) },
-      select: PUBLIC_SELECT
-    })
+    const id = parseInt(param, 10)
+    const cached = await getLivePublicPortfolio().catch(() => null)
+    const fromCache = cached?.find((item) => item.id === id)
+    if (fromCache) return fromCache
+
+    return withPrismaRetry(() =>
+      prisma.jbiddulph_portfolio.findUnique({
+        where: { id },
+        select: PUBLIC_SELECT
+      })
+    )
   }
 
   const wanted = slugify(param)
-  // One round-trip: load live public rows and match the slug in memory.
-  // (There is no persisted slug column yet.)
-  const candidates = await prisma.jbiddulph_portfolio.findMany({
-    where: { live: true },
-    select: PUBLIC_SELECT,
-    take: 200
-  })
+  const candidates = await getLivePublicPortfolio()
   return candidates.find((item) => projectSlug(item) === wanted) || null
 }

@@ -24,8 +24,8 @@ const ensureDatabaseUrl = () => {
     }
   }
 
-  // Vercel/serverless: a single connection per isolate avoids Supabase
-  // "too many connections" blips that were returning intermittent 500s.
+  // Cap each serverless isolate at one connection so concurrent slug page
+  // renders do not exhaust Supabase's session-mode pool (pool_size ≈ 15).
   if (process.env.DATABASE_URL) {
     process.env.DATABASE_URL = withServerlessConnectionLimit(process.env.DATABASE_URL)
   }
@@ -37,4 +37,5 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
 })
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+// Reuse the client across warm isolates in production as well as in dev.
+globalForPrisma.prisma = prisma

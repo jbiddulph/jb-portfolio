@@ -1,4 +1,5 @@
 import { prisma } from '~/lib/prisma'
+import { invalidateLivePublicPortfolioCache } from '~/lib/portfolioCache'
 import { pickAdminPortfolioFields } from '~/lib/portfolioFields'
 
 export default defineEventHandler(async (event) => {
@@ -24,6 +25,8 @@ export default defineEventHandler(async (event) => {
         passwords: encryptSecret(adminFields.passwords)
       }
     })
+
+    invalidateLivePublicPortfolioCache()
     
     return {
       success: true,

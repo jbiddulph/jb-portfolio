@@ -1,9 +1,11 @@
 /**
- * Small Prisma helpers for serverless: keep the pool tiny and retry transient
- * connection blips that otherwise surface as intermittent /api/portfolio 500s.
+ * Serverless Prisma helpers: keep each isolate to one DB connection and retry
+ * transient pool/connection blips (including Supabase session-mode exhaustion)
+ * that otherwise surface as intermittent /api/portfolio/[slug] 500s.
  */
 
-const TRANSIENT_PRISMA_RE = /P1001|P1002|P1017|P2024|Can't reach database|Connection reset|ECONNRESET|ETIMEDOUT|timed out|Server has closed the connection|too many connections/i
+const TRANSIENT_PRISMA_RE =
+  /P1001|P1002|P1017|P2024|Can't reach database|Connection reset|ECONNRESET|ETIMEDOUT|timed out|Server has closed the connection|too many connections|EMAXCONNSESSION|max clients reached|max clients are limited|pool_size|session mode|remaining connection slots/i
 
 export const isTransientPrismaError = (error: unknown) => {
   const message = error instanceof Error ? error.message : String(error || '')
@@ -13,7 +15,7 @@ export const isTransientPrismaError = (error: unknown) => {
 
 export const withPrismaRetry = async <T>(
   run: () => Promise<T>,
-  { attempts = 3, delayMs = 150 }: { attempts?: number, delayMs?: number } = {}
+  { attempts = 3, delayMs = 200 }: { attempts?: number, delayMs?: number } = {}
 ): Promise<T> => {
   let lastError: unknown
   for (let attempt = 1; attempt <= attempts; attempt++) {
@@ -30,7 +32,7 @@ export const withPrismaRetry = async <T>(
   throw lastError
 }
 
-/** Serverless-friendly: one connection per function instance unless already set. */
+/** One connection per serverless isolate unless the URL already sets a limit. */
 export const withServerlessConnectionLimit = (url?: string | null) => {
   if (!url?.trim()) return url || undefined
   try {
