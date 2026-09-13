@@ -1,9 +1,11 @@
 import { prisma } from '~/lib/prisma'
+import { withPrismaRetry } from '~/lib/prismaRetry'
 import { PUBLIC_PORTFOLIO_SELECT } from '~/lib/portfolioFields'
 import { isNumericId, projectSlug, slugify } from '~/lib/portfolioSlug'
 import { findProjectDetails } from '~/lib/projectDetails'
 
 const PUBLIC_SELECT = { ...PUBLIC_PORTFOLIO_SELECT, live: true } as const
+const SLUG_LOOKUP_SELECT = { id: true, project_name: true, live: true } as const
 
 /**
  * Public project detail, addressed by slug (e.g. /api/portfolio/dog-healthy).
@@ -17,22 +19,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    let project = null
-
-    if (isNumericId(param)) {
-      project = await prisma.jbiddulph_portfolio.findUnique({
-        where: { id: parseInt(param, 10) },
-        select: PUBLIC_SELECT
-      })
-    } else {
-      const wanted = slugify(param)
-      const candidates = await prisma.jbiddulph_portfolio.findMany({
-        where: { live: true },
-        select: PUBLIC_SELECT,
-        take: 200
-      })
-      project = candidates.find((item) => projectSlug(item) === wanted) || null
-    }
+    const project = await withPrismaRetry(() => resolveProject(param))
 
     if (!project || !project.live) {
       throw createError({ statusCode: 404, statusMessage: 'Project not found' })
@@ -55,8 +42,34 @@ export default defineEventHandler(async (event) => {
 
     console.error('Error in portfolio/[slug] API:', error)
     throw createError({
-      statusCode: 500,
-      statusMessage: `Failed to fetch project: ${error?.message || 'Unknown error'}`
+      statusCode: 503,
+      statusMessage: 'Failed to fetch project details. Please try again.'
     })
   }
 })
+
+async function resolveProject (param: string) {
+  if (isNumericId(param)) {
+    return prisma.jbiddulph_portfolio.findUnique({
+      where: { id: parseInt(param, 10) },
+      select: PUBLIC_SELECT
+    })
+  }
+
+  const wanted = slugify(param)
+
+  // Light first pass (id + name only) so slug matching does not pull full rows
+  // for every live project on each detail request.
+  const candidates = await prisma.jbiddulph_portfolio.findMany({
+    where: { live: true },
+    select: SLUG_LOOKUP_SELECT,
+    take: 200
+  })
+  const match = candidates.find((item) => projectSlug(item) === wanted)
+  if (!match) return null
+
+  return prisma.jbiddulph_portfolio.findUnique({
+    where: { id: match.id },
+    select: PUBLIC_SELECT
+  })
+}

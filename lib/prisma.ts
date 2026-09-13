@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { withServerlessConnectionLimit } from '~/lib/prismaRetry'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -15,17 +16,19 @@ const DATABASE_URL_FALLBACK_KEYS = [
 ] as const
 
 const ensureDatabaseUrl = () => {
-  if (process.env.DATABASE_URL?.trim()) {
-    return
+  if (!process.env.DATABASE_URL?.trim()) {
+    const fallbackKey = DATABASE_URL_FALLBACK_KEYS.find((key) => process.env[key]?.trim())
+    if (fallbackKey) {
+      process.env.DATABASE_URL = process.env[fallbackKey]
+      console.warn(`[prisma] Using ${fallbackKey} as DATABASE_URL fallback`)
+    }
   }
 
-  const fallbackKey = DATABASE_URL_FALLBACK_KEYS.find((key) => process.env[key]?.trim())
-  if (!fallbackKey) {
-    return
+  // Vercel/serverless: a single connection per isolate avoids Supabase
+  // "too many connections" blips that were returning intermittent 500s.
+  if (process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = withServerlessConnectionLimit(process.env.DATABASE_URL)
   }
-
-  process.env.DATABASE_URL = process.env[fallbackKey]
-  console.warn(`[prisma] Using ${fallbackKey} as DATABASE_URL fallback`)
 }
 
 ensureDatabaseUrl()
