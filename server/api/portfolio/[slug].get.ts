@@ -5,7 +5,6 @@ import { isNumericId, projectSlug, slugify } from '~/lib/portfolioSlug'
 import { findProjectDetails } from '~/lib/projectDetails'
 
 const PUBLIC_SELECT = { ...PUBLIC_PORTFOLIO_SELECT, live: true } as const
-const SLUG_LOOKUP_SELECT = { id: true, project_name: true, live: true } as const
 
 /**
  * Public project detail, addressed by slug (e.g. /api/portfolio/dog-healthy).
@@ -57,19 +56,12 @@ async function resolveProject (param: string) {
   }
 
   const wanted = slugify(param)
-
-  // Light first pass (id + name only) so slug matching does not pull full rows
-  // for every live project on each detail request.
+  // One round-trip: load live public rows and match the slug in memory.
+  // (There is no persisted slug column yet.)
   const candidates = await prisma.jbiddulph_portfolio.findMany({
     where: { live: true },
-    select: SLUG_LOOKUP_SELECT,
+    select: PUBLIC_SELECT,
     take: 200
   })
-  const match = candidates.find((item) => projectSlug(item) === wanted)
-  if (!match) return null
-
-  return prisma.jbiddulph_portfolio.findUnique({
-    where: { id: match.id },
-    select: PUBLIC_SELECT
-  })
+  return candidates.find((item) => projectSlug(item) === wanted) || null
 }
