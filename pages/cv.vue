@@ -13,7 +13,7 @@
 
     <div class="page-x section grid gap-10 lg:grid-cols-[minmax(17rem,20rem)_minmax(0,1fr)] xl:grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)] xl:gap-16">
       <!-- Sidebar -->
-      <aside class="space-y-6 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start">
+      <aside class="order-2 space-y-6 lg:order-1 lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start">
         <section class="card p-6">
           <h2 class="mb-4 font-heading text-sm font-semibold uppercase tracking-[0.18em] text-ink">Contact</h2>
           <dl class="space-y-3 text-sm">
@@ -59,7 +59,7 @@
       </aside>
 
       <!-- Main -->
-      <div class="min-w-0 space-y-14">
+      <div class="order-1 min-w-0 space-y-14 lg:order-2">
         <section>
           <p class="eyebrow mb-4">Profile</p>
           <h2 class="fluid-h2 font-heading text-ink">Senior Full Stack Developer</h2>

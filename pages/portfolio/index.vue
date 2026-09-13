@@ -20,7 +20,11 @@
     <section class="page-x section">
       <!-- Toolbar -->
       <div v-if="portfolio.length" class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by technology">
+        <div
+          class="scrollbar-thin -mx-gutter flex items-center gap-2 overflow-x-auto px-gutter pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+          role="group"
+          aria-label="Filter by technology"
+        >
           <button
             type="button"
             class="btn btn-sm"
