@@ -1,0 +1,1338 @@
+[
+  {
+    "name": "Lucidity",
+    "period": "August 2026",
+    "url": "https://lucidity-lac.vercel.app",
+    "stack": [
+      "Nuxt",
+      "Supabase",
+      "Prisma",
+      "API keys",
+      "Headless CMS"
+    ],
+    "summary": "A headless content management system for sites built in Nuxt, Next.js, React, Vue, or Svelte.",
+    "purpose": "Gives developers and content teams a CMS layer they can plug into any modern frontend without hard-coding copy. Authors manage schemas and documents; consuming sites read published content over an API.",
+    "howItWorks": "An editor signs up, defines content types (authors, pages, posts, or custom schemas), and creates documents. Drafts stay unpublished until explicitly released, so unfinished work never reaches a live site.\n\nWhen a document is published, Lucidity stores it in Postgres via Prisma and exposes it through a query API gated by API keys. A consuming Nuxt or Next app lists schema types, fetches pages for navigation, and pulls collections such as blog posts onto a page.\n\nThe product surface is the CMS itself — sign-up, sign-in, docs, and the API — not a marketing brochure. Sites that only need to demonstrate consumption can point at the Lucidity Demo consumer app.",
+    "architecture": [
+      "Nuxt application for authoring UI, auth, and docs",
+      "Supabase-hosted Postgres with Prisma ORM",
+      "Draft vs published document lifecycle in the data model",
+      "API-key protected query endpoints for headless reads",
+      "Schema/type registry so consumers discover content shapes",
+      "Optional consumer sites (e.g. Lucidity Demo) as reference integrations"
+    ],
+    "features": [
+      "Create and edit content types and documents",
+      "Keep drafts separate from published documents",
+      "Issue and rotate API keys for frontend consumers",
+      "Query schema types, pages, and collections over the API",
+      "Sign up / sign in for CMS operators",
+      "In-app documentation for integrating a frontend",
+      "Support Nuxt, Next.js, React, Vue, and Svelte consumers"
+    ],
+    "dataAuth": "Operator accounts authenticate to the CMS UI. Published content is readable by clients that present a valid API key. Document drafts, schemas, and key metadata are stored in Postgres; no end-user passwords for consumer sites are stored by Lucidity itself.",
+    "integrations": [
+      "Supabase",
+      "Prisma",
+      "Vercel hosting"
+    ],
+    "deployment": "Hosted on Vercel with Supabase as the database/backend. Public docs and API live at lucidity-lac.vercel.app. A separate demo consumer is at lucidity-demo.vercel.app.",
+    "related": [
+      {
+        "label": "Lucidity Demo",
+        "url": "https://lucidity-demo.vercel.app"
+      }
+    ],
+    "aliases": [
+      "lucidity-app",
+      "lucidity-cms"
+    ]
+  },
+  {
+    "name": "ProbeWord",
+    "period": "August 2026",
+    "url": "https://probeword.vercel.app/",
+    "stack": [
+      "Nuxt",
+      "OpenAI",
+      "n8n"
+    ],
+    "summary": "An AI SEO brief generator: enter a keyword and optional competitor URLs, and receive work you can put on a page.",
+    "purpose": "Helps developers and copywriters produce implementable SEO briefs (titles, metas, structure, gaps) instead of historical rank dashboards.",
+    "howItWorks": "A user types a search term, optionally adds up to five competitor sites, and picks a market (UK, US, AU, or IE). The form submits to an n8n workflow that calls OpenAI with that context.\n\nThe model returns keyword ideas (seed, long-tail, question, comparison), SERP-ready titles, meta descriptions, H1s, slugs, competitor gaps, and on-page recommendations.\n\nThe user copies the brief into a CMS or codebase. ProbeWord is not a rank tracker and does not store long historical ranking series as its primary job.",
+    "architecture": [
+      "Nuxt frontend for keyword/competitor input and brief display",
+      "n8n workflow orchestration for the research pipeline",
+      "OpenAI for keyword clustering and SERP-oriented copy",
+      "Market selector (UK, US, AU, IE) passed into the prompt context",
+      "Stateless brief generation oriented toward implementable output"
+    ],
+    "features": [
+      "Run keyword research for a page you intend to publish",
+      "Name rival URLs and get a plan to outrank them",
+      "Generate titles, meta descriptions, H1s, and slugs",
+      "Receive long-tail, question, and comparison keyword ideas",
+      "See competitor gaps and on-page recommendations",
+      "Choose target market (UK, US, AU, IE)"
+    ],
+    "dataAuth": "Brief generation is driven by the submitted keyword, competitors, and market. Session or form input may be held long enough to return a result; there is no public claim of a full account/password store for rank history.",
+    "integrations": [
+      "OpenAI",
+      "n8n",
+      "Vercel"
+    ],
+    "deployment": "Deployed on Vercel at probeword.vercel.app. n8n runs the OpenAI workflow used to assemble each brief.",
+    "aliases": [
+      "probe-word"
+    ]
+  },
+  {
+    "name": "BonsAI",
+    "period": "July 2026",
+    "url": "https://jbonsai.netlify.app/",
+    "stack": [
+      "Next.js",
+      "TypeScript",
+      "Neon Postgres",
+      "Drizzle",
+      "OpenAI",
+      "Stripe",
+      "Netlify"
+    ],
+    "summary": "An AI plant-based food assistant that builds a week of meals, a grocery list, and leftover ideas in about 30 seconds.",
+    "purpose": "Helps people eating plant-based food plan a week of meals, shop efficiently, check labels, and reduce waste — with optional premium billing.",
+    "howItWorks": "A visitor answers preferences, budget, and time constraints. OpenAI returns a 7-day plant-based plan. The app then produces a shopping list with estimated cost, organised by category.\n\nExtra tools include a label/menu scanner to flag animal ingredients and pantry/leftover suggestions to cut waste. Stripe handles billing: a free tier of five plans a month and premium from £7.99.\n\nAuth and persistent data sit on Neon Postgres via Drizzle. This is a meal-planning product, not a recipe blog.",
+    "architecture": [
+      "Next.js + TypeScript app on Netlify",
+      "Neon Postgres with Drizzle ORM for plans, users, and usage",
+      "OpenAI for meal plans, leftover ideas, and label analysis",
+      "Stripe Checkout/billing for free vs premium tiers",
+      "Client flows for preference intake, plan generation, and shopping lists"
+    ],
+    "features": [
+      "Generate a personalised 7-day vegan/vegetarian plan",
+      "Build a grocery list with cost estimates by category",
+      "Scan a packet or menu and check it is plant-based",
+      "Turn leftovers into another meal",
+      "Free tier with a monthly plan allowance",
+      "Upgrade to premium via Stripe",
+      "Save preferences for faster regenerations"
+    ],
+    "dataAuth": "User accounts and plan history live in Neon. Stripe customer/subscription references are stored for billing state. Preference answers and generated plans are associated with the signed-in user; payment card details stay with Stripe.",
+    "integrations": [
+      "OpenAI",
+      "Stripe",
+      "Neon",
+      "Netlify",
+      "Drizzle"
+    ],
+    "deployment": "Hosted on Netlify (jbonsai.netlify.app) with Neon Postgres. Stripe manages subscriptions in live/test modes configured for the project.",
+    "aliases": [
+      "bonsai",
+      "bons-ai"
+    ]
+  },
+  {
+    "name": "TagFlow",
+    "period": "July 2026",
+    "url": "https://www.tagflow.co.uk",
+    "stack": [
+      "Django",
+      "Python",
+      "REST API",
+      "Payments"
+    ],
+    "summary": "A B2B ordering layer so pet apps, hotels, events, and brands can sell NFC tags on their own sites without running a factory.",
+    "purpose": "Lets partners sell NFC tags as an add-on without manufacturing hardware themselves. TagFlow sits between the partner storefront and a manufacturer for payment and fulfilment status.",
+    "howItWorks": "Partners sign up free, then either embed an iframe checkout or call an API from their own form. A customer on the partner site places a tag order through that surface.\n\nTagFlow takes payment and order status in the middle, then routes fulfilment jobs to a manufacturer. Partners do not need to run a factory or build their own NFC commerce stack.\n\nTypical buyers are pet products, hotels, events, and branded apps that want NFC hardware as an add-on.",
+    "architecture": [
+      "Django / Python backend with REST API",
+      "Partner onboarding and free sign-up",
+      "Iframe checkout embed for partner sites",
+      "API form integration for custom storefronts",
+      "Payment and order-status tracking layer",
+      "Manufacturer fulfilment hand-off"
+    ],
+    "features": [
+      "Partner free sign-up",
+      "Embed tag ordering via iframe",
+      "Call ordering API from a partner form",
+      "Track payment and fulfilment status",
+      "Route jobs to a manufacturer",
+      "Sell NFC tags without owning a factory",
+      "Target pet, hotel, event, and brand use cases"
+    ],
+    "dataAuth": "Partner accounts and order records (line items, status, payment references) are stored in the Django app. Manufacturer fulfilment status updates the same order model. Card data is handled by the payment provider, not stored as raw PANs in TagFlow docs.",
+    "integrations": [
+      "Payment provider",
+      "Manufacturer fulfilment",
+      "Partner embed/API"
+    ],
+    "deployment": "Public site at tagflow.co.uk. Django application serves partner portal, API, and checkout embed.",
+    "aliases": [
+      "tag-flow"
+    ]
+  },
+  {
+    "name": "UKPubs",
+    "period": "September 2025 (actively maintained 2026)",
+    "url": "https://ukpubs.co.uk/",
+    "stack": [
+      "Nuxt",
+      "Supabase",
+      "Prisma",
+      "Location services"
+    ],
+    "summary": "A UK-wide pubs and venues directory with search, news, events, and location-based lists.",
+    "purpose": "Helps people find pubs by town, coast, or football ground, and stay informed about venue news and events across the UK.",
+    "howItWorks": "Visitors search by town, county, or pub name. The live site ranks towns and counties by listing count (London has thousands of pubs), lists seaside towns, and shows pubs within a mile of every Premier League stadium.\n\nAlongside directory results, UKPubs publishes pub-industry news and upcoming gigs/comedy at venues. Location services power near-me and stadium-radius lists.\n\nThe stack has moved over the years from PHP and Laravel through Python/Nuxt to Nuxt with Supabase and Prisma.",
+    "architecture": [
+      "Nuxt frontend for search, listings, news, and events",
+      "Supabase Postgres with Prisma",
+      "Location/geo queries for town, coast, and stadium radii",
+      "Content modules for industry news and venue events",
+      "Historical migration path from PHP/Laravel toward Nuxt"
+    ],
+    "features": [
+      "Search by town, county, or pub name",
+      "Browse towns and counties ranked by listing count",
+      "Find pubs near Premier League stadiums",
+      "Explore seaside town lists",
+      "Read openings, closures, and industry news",
+      "See venues with upcoming gigs or comedy",
+      "Use location-based discovery"
+    ],
+    "dataAuth": "Pub listings, news, and event records live in Supabase/Postgres. Public browse does not require an account; any admin or contributor roles (if enabled) authenticate separately from anonymous visitors.",
+    "integrations": [
+      "Supabase",
+      "Prisma",
+      "Location/geocoding services"
+    ],
+    "deployment": "Live at ukpubs.co.uk on the Nuxt + Supabase + Prisma stack.",
+    "aliases": [
+      "uk-pubs",
+      "ukpubs-co-uk"
+    ]
+  },
+  {
+    "name": "Zap Task",
+    "period": "September 2025",
+    "url": "https://www.zaptask.co.uk",
+    "stack": [
+      "Laravel",
+      "Vue 3",
+      "TypeScript",
+      "Tailwind",
+      "Supabase realtime"
+    ],
+    "summary": "A simplified Jira-style task manager: Kanban boards, projects, assignees, and workflow without enterprise complexity.",
+    "purpose": "Gives small teams a lighter alternative to Jira for multi-project Kanban work, with optional subdomain-per-tenant isolation.",
+    "howItWorks": "A user creates isolated project boards (keys, colours, descriptions). Inside a board, cards move across To Do / In Progress / Done with drag and drop.\n\nCards carry priority, type (bug, feature, story, epic), tags, assignee, due dates, story points, search, and filters. A stats strip shows total, in progress, done, and overdue counts. Dark mode is available.\n\nRealtime updates use Supabase. Multi-tenant hosting can put each team on its own subdomain while the marketing/core app stays at zaptask.co.uk.",
+    "architecture": [
+      "Laravel API and auth",
+      "Vue 3 + TypeScript + Tailwind Kanban UI",
+      "Supabase realtime for live board updates",
+      "Multi-project boards with card metadata model",
+      "Subdomain-per-tenant routing pattern",
+      "Stats aggregation for board health"
+    ],
+    "features": [
+      "Create project boards with keys and colours",
+      "Drag cards across To Do / In Progress / Done",
+      "Assign, tag, estimate, and set due dates",
+      "Filter by person, type, or priority",
+      "Track story points and card types",
+      "View stats for total, in progress, done, overdue",
+      "Toggle dark mode",
+      "Work in a tenant subdomain workspace"
+    ],
+    "dataAuth": "User accounts own projects and boards. Cards, assignees, and membership are scoped per tenant/workspace so one team does not see another’s board. Auth is handled by the Laravel app; realtime channels follow tenant membership.",
+    "integrations": [
+      "Supabase realtime",
+      "Laravel mail/auth as configured"
+    ],
+    "deployment": "Core app at www.zaptask.co.uk. Example tenant dashboard at johnb.zaptask.co.uk.",
+    "related": [
+      {
+        "label": "ZapTask — subdomain dashboard",
+        "url": "https://johnb.zaptask.co.uk"
+      }
+    ],
+    "aliases": [
+      "zaptask",
+      "taskit"
+    ]
+  },
+  {
+    "name": "ZapTask — subdomain dashboard",
+    "period": "July 2026",
+    "url": "https://johnb.zaptask.co.uk",
+    "stack": [
+      "Zap Task platform",
+      "Tenant subdomain"
+    ],
+    "summary": "A live tenant of Zap Task, showing how each customer gets their own dashboard on a subdomain.",
+    "purpose": "Demonstrates Zap Task’s multi-tenant subdomain pattern: a team works at its own URL while the core product remains at zaptask.co.uk.",
+    "howItWorks": "johnb.zaptask.co.uk is not a separate product. It is an example workspace on the Zap Task multi-tenant setup.\n\nA user signs into that host and gets the same Kanban/task shell, cookie consent, and board tools, scoped to that tenant. Work stays isolated from other tenants’ boards.\n\nMarketing and signup still point at the main Zap Task site.",
+    "architecture": [
+      "Same Laravel/Vue Zap Task codebase",
+      "Host-based tenant resolution on *.zaptask.co.uk",
+      "Shared UI shell with tenant-scoped data",
+      "Cookie consent and auth on the tenant host",
+      "Supabase realtime channels scoped to the tenant",
+      "Marketing/signup remains on the core zaptask.co.uk host"
+    ],
+    "features": [
+      "Sign into a personal or team workspace at a dedicated subdomain",
+      "Use Kanban/task tools without sharing another tenant’s board",
+      "Same product features as Zap Task core",
+      "Demonstrate multi-tenant URL pattern to prospects",
+      "Carry cookie consent and shell branding on the tenant host",
+      "Keep board data isolated per subdomain tenant"
+    ],
+    "dataAuth": "Authentication and project data are scoped to the tenant resolved from the subdomain. Other tenants’ boards are not visible from this host.",
+    "integrations": [
+      "Zap Task platform",
+      "Supabase realtime"
+    ],
+    "deployment": "Tenant host johnb.zaptask.co.uk on the Zap Task multi-tenant deployment.",
+    "related": [
+      {
+        "label": "Zap Task",
+        "url": "https://www.zaptask.co.uk"
+      }
+    ],
+    "aliases": [
+      "zaptask-dashboard",
+      "zap-task-dashboard",
+      "johnb-zaptask"
+    ]
+  },
+  {
+    "name": "Old Skool Vibe Dev",
+    "period": "July 2026",
+    "url": "https://www.oldskoolvibe.dev/",
+    "stack": [
+      "React",
+      "Vite",
+      "Supabase",
+      "Resend"
+    ],
+    "summary": "A services site advertising freelance work: React, Vue, Nuxt, Laravel, Python, and AI-assisted development.",
+    "purpose": "Lead-generation site for contract and freelance buyers who need a specific stack (frontend, backend, Postgres/Supabase, UI/UX, SEO, vibe coding).",
+    "howItWorks": "Each advert page is written for a buyer who needs a specific skill. The visitor reads the service pitch and submits an enquiry form.\n\nSubmissions are stored in a database table and emailed to John via Resend. There are no end-customer SaaS accounts — the site exists to generate project leads.\n\nStacks advertised include React, Vue, Nuxt, Laravel, Python, and AI-assisted development.",
+    "architecture": [
+      "React + Vite static/SPA front",
+      "Supabase table for service enquiries",
+      "Resend transactional email on form submit",
+      "Per-skill service landing pages"
+    ],
+    "features": [
+      "Browse service pages by stack or skill",
+      "Send a project enquiry",
+      "Store enquiries in the database",
+      "Email notification via Resend",
+      "Position freelance/contract availability"
+    ],
+    "dataAuth": "Enquiry form fields (name, contact, project notes) are stored in Supabase. There is no multi-tenant end-user account system for customers on this site.",
+    "integrations": [
+      "Supabase",
+      "Resend"
+    ],
+    "deployment": "Live at www.oldskoolvibe.dev.",
+    "aliases": [
+      "oldskoolvibe",
+      "old-skool-vibe",
+      "oldskoolvibe-dev"
+    ]
+  },
+  {
+    "name": "Dog Healthy",
+    "period": "October 2025",
+    "url": "https://doghealthy.co.uk",
+    "stack": [
+      "Nuxt",
+      "Supabase",
+      "Prisma",
+      "NFC/QR",
+      "SMS alerts",
+      "Affiliate food data"
+    ],
+    "summary": "A UK dog-owner hub: health records, vaccinations, food matching, walks, and NFC/QR tags if a dog is lost.",
+    "purpose": "Gives UK dog owners one place for health logs, food matching, walks, and lost-dog alerts via NFC/QR collar tags.",
+    "howItWorks": "Owners create dog profiles (breed, photos, microchip). They log medical history, vaccinations with reminders, medications, vet appointments, vet contacts, and weight charts.\n\nA food quiz recommends products by breed, age, diet, and budget, with affiliate comparison. Newer NFC/QR tags encode the DogHealthy profile: a finder or sitter can start a GPS walk, check in/out, or report a lost dog so the owner gets an SMS with contact and location.\n\nThe service is UK-only and free to start.",
+    "architecture": [
+      "Nuxt app with Supabase + Prisma",
+      "Dog profile and medical/weight history models",
+      "Vaccination reminder scheduling",
+      "Food quiz + affiliate product matching",
+      "NFC/QR profile URLs for collar tags",
+      "SMS alert path for lost-dog reports"
+    ],
+    "features": [
+      "Create dog profiles with photos and microchip IDs",
+      "Log jabs, meds, weight, and vet details",
+      "Receive vaccination reminders",
+      "Run a food match quiz with affiliate options",
+      "Start GPS walks and check in/out via tag",
+      "Report a lost dog and notify the owner by SMS",
+      "Use the service free to start (UK)"
+    ],
+    "dataAuth": "Owner accounts hold dog profiles, medical records, vet contacts, and walk/check-in events. Public NFC/QR links expose only the safety/finder flows intended for that tag. SMS delivery uses owner contact numbers stored for alerts.",
+    "integrations": [
+      "Supabase",
+      "Prisma",
+      "SMS provider",
+      "Affiliate food data",
+      "NFC/QR"
+    ],
+    "deployment": "Live at doghealthy.co.uk on Nuxt + Supabase.",
+    "aliases": [
+      "doghealthy",
+      "dog-healthy-co-uk"
+    ]
+  },
+  {
+    "name": "Trailsz (iOS)",
+    "period": "May 2026",
+    "url": "https://apps.apple.com/gb/app/trailsz/id6763732208",
+    "stack": [
+      "iOS",
+      "Maps",
+      "Navigation"
+    ],
+    "summary": "An iPhone app for discovering, creating, and sharing walking, cycling, and driving trails.",
+    "purpose": "Helps walkers, cyclists, and drivers follow shared or homemade routes with notes, mystery stops, and community reports — not just static map bookmarks.",
+    "howItWorks": "Users find existing trails or plot their own on the map. They drop map notes, add mystery stops, and read community reports along the way.\n\nThe app covers walking, cycling, and driving. Navigation gets someone from A to B along a shared or homemade route with points of interest.\n\nDistribution is through the App Store listing for Trailsz.",
+    "architecture": [
+      "Native iOS client",
+      "Map/navigation layer for trail following",
+      "User-authored routes with notes and stops",
+      "Community report feed on trails",
+      "App Store distribution"
+    ],
+    "features": [
+      "Discover existing trails",
+      "Plot and publish your own routes",
+      "Drop map notes and mystery stops",
+      "Read community trail reports",
+      "Support walking, cycling, and driving",
+      "Navigate A to B with POIs on the route"
+    ],
+    "dataAuth": "Trails, notes, and reports are associated with the signed-in Apple/app user. Published routes are shareable with other Trailsz users; private drafts remain with the author.",
+    "integrations": [
+      "Apple Maps / map services",
+      "App Store"
+    ],
+    "deployment": "Distributed via the Apple App Store (UK listing). No separate public web dashboard is required to use the app.",
+    "aliases": [
+      "trailsz"
+    ]
+  },
+  {
+    "name": "ScanAJoke",
+    "period": "June–July 2026",
+    "url": "https://scanajoke-9g4j.vercel.app/",
+    "stack": [
+      "Vite",
+      "TypeScript",
+      "In-browser OCR",
+      "OpenAI"
+    ],
+    "summary": "Point a camera at real-world text; the browser reads it and OpenAI turns it into a pun.",
+    "purpose": "A lightweight three-step toy: capture text from the real world, review OCR output, and get a one-off joke or pun.",
+    "howItWorks": "The user scans a receipt, sign, page, note, or screenshot (or uploads an image). OCR runs locally in the browser.\n\nExtracted text is shown for review and optional edits, then sent to OpenAI for a short joke or pun. Example text is available if the camera is not used.\n\nThere is no account system on the landing flow.",
+    "architecture": [
+      "Vite + TypeScript SPA",
+      "In-browser OCR pipeline",
+      "Optional camera or file upload input",
+      "OpenAI call for pun generation",
+      "Stateless landing flow without accounts"
+    ],
+    "features": [
+      "Photograph a menu, sign, or receipt",
+      "Upload an image instead of using the camera",
+      "Edit OCR text before generating",
+      "Get a one-off pun from the text",
+      "Try example text without a camera"
+    ],
+    "dataAuth": "No account system on the primary flow. Image/text is processed for the current session to produce a joke; OCR stays in-browser until the text is submitted to OpenAI.",
+    "integrations": [
+      "OpenAI",
+      "Vercel"
+    ],
+    "deployment": "Hosted on Vercel at scanajoke-9g4j.vercel.app.",
+    "aliases": [
+      "scan-a-joke",
+      "scanajoke"
+    ]
+  },
+  {
+    "name": "Ball-Z (SiteForge)",
+    "period": "July 2026",
+    "url": "https://ball-z-phi.vercel.app/",
+    "stack": [
+      "Next.js",
+      "Supabase Auth",
+      "AI code generation"
+    ],
+    "summary": "A chat-driven website builder: describe a site, then keep asking for changes until the live preview and generated Next.js code look right.",
+    "purpose": "Lets someone draft and iterate a landing page in chat, inspect a preview, and export Next.js source — a generator, not a hosted CMS for the finished business.",
+    "howItWorks": "After optional sign-in (Supabase, so projects stay private), the user talks to the SiteForge builder chat. It drafts a landing page (default demo: fitness studio Pulse House), shows desktop/mobile preview, and emits real files: layout.tsx, page.tsx, CSS, and a client component.\n\nFollow-up messages can restyle the theme, rewrite copy, or move sections (pricing, testimonials, services). The user inspects and exports the generated source.\n\nThe application generates code; it does not permanently host the customer’s finished production site as a CMS.",
+    "architecture": [
+      "Next.js app branded Ball-Z / SiteForge",
+      "Supabase Auth for private projects",
+      "Chat-driven AI code generation loop",
+      "Live desktop/mobile preview pane",
+      "Emitted Next.js file set (layout, page, CSS, client)"
+    ],
+    "features": [
+      "Describe a business and get a landing-page draft",
+      "Iterate in chat (theme, copy, section order)",
+      "Preview desktop and mobile layouts",
+      "Inspect generated Next.js source",
+      "Optional sign-in to keep projects private",
+      "Export generated files"
+    ],
+    "dataAuth": "Optional Supabase Auth accounts own private generation projects and chat history. Anonymous demos may run without persistence. No claim of hosting customer production credentials.",
+    "integrations": [
+      "Supabase Auth",
+      "AI code generation provider",
+      "Vercel"
+    ],
+    "deployment": "Deployed on Vercel at ball-z-phi.vercel.app.",
+    "aliases": [
+      "ball-z",
+      "ballz",
+      "siteforge"
+    ]
+  },
+  {
+    "name": "HelloJ",
+    "period": "May 2026",
+    "url": "https://helloj.vercel.app/",
+    "stack": [
+      "Node.js",
+      "JavaScript",
+      "Image generation",
+      "Vinted browse"
+    ],
+    "summary": "An AI virtual try-on tool: your photo plus a garment (upload, camera, or Vinted) produces a styled preview.",
+    "purpose": "Fashion visualisation — see how a garment might look on your photo without a shop checkout.",
+    "howItWorks": "You supply a person photo and a reference outfit. Outfits can come from an upload, a live camera, or a Vinted category browse (shirts, hats, trousers, dresses).\n\nControls include item type, output aspect ratio, how strictly to keep the original background, and garment-change strength. The server returns a generated image, a download, and a history of previous results.\n\nThis is a try-on visualisation app, not an ecommerce checkout.",
+    "architecture": [
+      "Node/JavaScript web app on Vercel",
+      "Image generation backend for try-on composites",
+      "Upload, camera, and Vinted browse inputs",
+      "Generation parameter controls (aspect, strength, background)",
+      "Result history for recent outputs"
+    ],
+    "features": [
+      "Upload a person photo",
+      "Choose a garment via upload, camera, or Vinted",
+      "Tune aspect ratio and garment-change strength",
+      "Preserve or relax the original background",
+      "Download the generated try-on image",
+      "Browse history of previous results"
+    ],
+    "dataAuth": "Uploaded photos and generated images are processed to produce try-on outputs and may be kept in a short history for the session/user. There is no shop payment vault; Vinted browse is read-only reference clothing.",
+    "integrations": [
+      "Image generation API",
+      "Vinted browse",
+      "Vercel"
+    ],
+    "deployment": "Hosted on Vercel at helloj.vercel.app.",
+    "aliases": [
+      "hello-j"
+    ]
+  },
+  {
+    "name": "hangn.art",
+    "period": "2026",
+    "url": "https://www.hangn.art/",
+    "stack": [
+      "Realtime collaborative canvas",
+      "Gallery"
+    ],
+    "summary": "A live shared sketchbook: up to four people draw on one sheet at the same time, then save it to a gallery.",
+    "purpose": "Realtime collaborative drawing for small groups, with a public gallery of finished sketches — not a static art portfolio alone.",
+    "howItWorks": "Open a new sketch, give your name, share the URL. Everyone on that sheet sees strokes as they happen (capped at four people).\n\nTools include ten pens (ink, pencil, marker, brush, spray, and more) plus shapes and text that can be moved and restyled. When the group agrees, the drawing is saved to a public gallery shelf.\n\nBrowsers can open finished sketches from the gallery without joining a live room.",
+    "architecture": [
+      "Realtime collaborative canvas transport",
+      "Shared sketch rooms with participant cap",
+      "Pen, shape, and text toolset",
+      "Public gallery persistence for finished sheets",
+      "Link-based room sharing"
+    ],
+    "features": [
+      "Start a sheet and invite friends with a link",
+      "Draw together live (up to four people)",
+      "Use multiple pen styles, shapes, and text",
+      "Move and restyle objects",
+      "Save finished sketches to the gallery",
+      "Browse the public gallery"
+    ],
+    "dataAuth": "Live rooms identify participants by display name on the shared sheet. Saved gallery pieces are public. Room URLs act as the join capability for collaborators.",
+    "integrations": [
+      "Realtime messaging/canvas backend"
+    ],
+    "deployment": "Live at www.hangn.art.",
+    "aliases": [
+      "hangn-art",
+      "hangnart"
+    ]
+  },
+  {
+    "name": "Coastrz",
+    "period": "May 2025",
+    "url": "https://www.coastrz.com",
+    "stack": [
+      "Ecommerce",
+      "Custom design",
+      "TypeScript",
+      "Python"
+    ],
+    "summary": "An online shop for drinks coasters, including custom and branded designs.",
+    "purpose": "Sell physical coasters (wood, ceramic, and similar) and offer custom/branded sets to customers and businesses.",
+    "howItWorks": "Customers browse ready-made coaster designs on the storefront and place orders for physical products.\n\nA custom/branded service lets buyers request bespoke sets. Related experiments include hanging album-cover coasters (a six-cover set) wired to Spotify for a music-themed product experience.\n\nThe customer-facing job is product browsing and ordering, not a content magazine.",
+    "architecture": [
+      "Ecommerce storefront",
+      "Custom/branded order path",
+      "TypeScript and Python supporting services/repos",
+      "Product catalogue for wood, ceramic, and similar coasters",
+      "Optional Spotify-linked album-cover coaster experiment",
+      "Payment and fulfilment hand-off for physical goods"
+    ],
+    "features": [
+      "Browse ready-made coaster designs",
+      "Order physical coasters",
+      "Request custom or branded sets",
+      "Explore album-cover / Spotify-linked product experiments",
+      "View material options such as wood and ceramic",
+      "Complete checkout for fulfilment"
+    ],
+    "dataAuth": "Order and customer contact details are stored for fulfilment. Payment processing uses the shop’s payment provider; card PANs are not documented as stored in-app.",
+    "integrations": [
+      "Ecommerce/payments",
+      "Spotify (experiment)",
+      "Fulfilment"
+    ],
+    "deployment": "Live storefront at www.coastrz.com."
+  },
+  {
+    "name": "Tripz (iOS)",
+    "period": "July 2025",
+    "url": "https://apps.apple.com/gb/app/tripz/id6745882589",
+    "stack": [
+      "iOS",
+      "Maps",
+      "Earnings & expense logs"
+    ],
+    "summary": "An iPhone app for logging trips with live maps, earnings, and spending — aimed at drivers who need income and expense records.",
+    "purpose": "Operational log for work travel (private hire / similar): journeys, map plots, earnings versus costs — not a consumer holiday planner.",
+    "howItWorks": "A driver starts a trip and sees it on a live map. Earnings and spending are logged against that journey.\n\nReports and per-journey controls support operational review. Dark mode is part of the product pitch.\n\nA browser counterpart (Tripz web / Ridez) exists for laptop use with Mapbox.",
+    "architecture": [
+      "Native iOS client",
+      "Map plotting for active and past trips",
+      "Earnings and expense ledger per journey",
+      "Reports and journey management",
+      "App Store distribution"
+    ],
+    "features": [
+      "Start a trip and see it on a live map",
+      "Log earnings and spending",
+      "Review or export activity reports",
+      "Control each journey’s details",
+      "Use dark mode"
+    ],
+    "dataAuth": "Trip logs, earnings, and expense figures are stored for the signed-in driver. Location trails are associated with those journeys for map display.",
+    "integrations": [
+      "Maps",
+      "App Store"
+    ],
+    "deployment": "Distributed via the Apple App Store. Related web app hosted on Heroku.",
+    "related": [
+      {
+        "label": "Tripz (web)",
+        "url": "https://ridez-66c2d14c6c66.herokuapp.com/"
+      }
+    ],
+    "aliases": [
+      "tripz"
+    ]
+  },
+  {
+    "name": "Tripz (web)",
+    "period": "July 2025",
+    "url": "https://ridez-66c2d14c6c66.herokuapp.com/",
+    "stack": [
+      "Nuxt",
+      "Tailwind",
+      "Supabase",
+      "Mapbox"
+    ],
+    "summary": "The browser version of Tripz: same idea as the iPhone app, on the web with Mapbox.",
+    "purpose": "Let drivers who prefer a laptop log trips, earnings, and expenditure against a map without installing the iOS app.",
+    "howItWorks": "A driver signs into the Nuxt web app and logs trips against a Mapbox map.\n\nEarnings and expenditure are recorded alongside routes, matching the purpose of Tripz on the App Store.\n\nThe historical Ridez Heroku URL is the public web entry for this product.",
+    "architecture": [
+      "Nuxt + Tailwind frontend",
+      "Supabase for auth/data",
+      "Mapbox map layer",
+      "Earnings and expense logging against journeys",
+      "Shared product purpose with Tripz iOS",
+      "Heroku-hosted web deployment"
+    ],
+    "features": [
+      "Log trips from a desktop browser",
+      "See routes on a Mapbox map",
+      "Record earnings and spending",
+      "Work without installing the iOS app",
+      "Review journey history on the web",
+      "Sign in via Supabase-backed auth"
+    ],
+    "dataAuth": "Supabase holds driver accounts and trip/money records. Map positions are stored with journeys for display.",
+    "integrations": [
+      "Supabase",
+      "Mapbox",
+      "Heroku"
+    ],
+    "deployment": "Hosted on Heroku at ridez-66c2d14c6c66.herokuapp.com.",
+    "related": [
+      {
+        "label": "Tripz (iOS)",
+        "url": "https://apps.apple.com/gb/app/tripz/id6745882589"
+      }
+    ],
+    "aliases": [
+      "ridez",
+      "tripz-web-app"
+    ]
+  },
+  {
+    "name": "Schools (iOS)",
+    "period": "July 2025",
+    "url": "https://apps.apple.com/gb/app/schools/id6746278412",
+    "stack": [
+      "iOS",
+      "Maps",
+      "School directory"
+    ],
+    "summary": "An iPhone directory to discover, search, and review schools near you.",
+    "purpose": "Helps parents look up local schools, read information, and leave reviews — a local information/map app, not a school MIS or homework platform.",
+    "howItWorks": "Parents search schools by area and view them on a map. Each listing shows information useful for choosing a place for their children.\n\nUsers can read and write reviews to share experience with other parents.\n\nThe app is distributed through the App Store.",
+    "architecture": [
+      "Native iOS client",
+      "Map-based school directory",
+      "Search by area",
+      "Review read/write model",
+      "App Store distribution"
+    ],
+    "features": [
+      "Search schools by area",
+      "Compare options on a map",
+      "Read school information",
+      "Write and read reviews",
+      "Discover schools near your location",
+      "Use the App Store distribution build"
+    ],
+    "dataAuth": "Reviews and any saved preferences are tied to the app user. School directory content is shared publicly inside the app.",
+    "integrations": [
+      "Maps",
+      "App Store"
+    ],
+    "deployment": "Distributed via the Apple App Store (UK listing).",
+    "aliases": [
+      "schools"
+    ]
+  },
+  {
+    "name": "CarScan",
+    "period": "January 2026",
+    "url": "https://carscan-zeta.vercel.app/",
+    "stack": [
+      "Next.js",
+      "Supabase",
+      "In-browser OCR",
+      "DVLA VES"
+    ],
+    "summary": "Point the camera at a number plate; the app reads it locally and looks the vehicle up with DVLA.",
+    "purpose": "UK vehicle lookup/save tool using plate OCR and DVLA Vehicle Enquiry Service — not an ANPR enforcement system.",
+    "howItWorks": "The rear camera (or a manual registration field) captures a UK plate. OCR runs in the browser and validates format.\n\nThe app then calls DVLA Vehicle Enquiry Service. Results can be saved and shared with location.\n\nSupabase backs persistence for saved scans when the user stores them.",
+    "architecture": [
+      "Next.js app on Vercel",
+      "In-browser OCR for UK plates",
+      "DVLA VES lookup API integration",
+      "Supabase for saved scans/auth as configured",
+      "Optional location attach on save/share"
+    ],
+    "features": [
+      "Frame a plate with the camera",
+      "Enter a registration manually",
+      "Confirm OCR’d registration",
+      "See DVLA vehicle data",
+      "Save or share a scan with location"
+    ],
+    "dataAuth": "Saved scans (registration, DVLA result snapshot, optional location) are stored for the user when they choose to save. OCR happens in-browser before the DVLA call.",
+    "integrations": [
+      "DVLA Vehicle Enquiry Service",
+      "Supabase",
+      "Vercel"
+    ],
+    "deployment": "Hosted on Vercel at carscan-zeta.vercel.app.",
+    "aliases": [
+      "car-scan"
+    ]
+  },
+  {
+    "name": "onTrack",
+    "period": "October 2025",
+    "url": "https://mappingme.netlify.app/",
+    "stack": [
+      "Next.js",
+      "Mapbox",
+      "TfL data",
+      "GeoJSON",
+      "Geocoding"
+    ],
+    "summary": "A London movement map: plan public-transport journeys and overlay nearby pubs, restaurants, and events.",
+    "purpose": "Combine TfL-oriented journey planning with “what is around me” overlays — pubs, restaurants, events — rather than cloning TfL alone.",
+    "howItWorks": "After sign-in, the map layers TfL stations, entrances, platforms, accessible paths, tube, rail, and UK venues.\n\nUsers plan journeys across London and explore nearby pubs, restaurants, or events along the route.\n\nLocation tracking requires authentication.",
+    "architecture": [
+      "Next.js app on Netlify",
+      "Mapbox map rendering",
+      "TfL open data / transport layers",
+      "GeoJSON venue and infrastructure overlays",
+      "Geocoding for place search",
+      "Auth gate for location tracking"
+    ],
+    "features": [
+      "See tube/rail infrastructure on a live map",
+      "Plan a journey across London",
+      "Find pubs, restaurants, or events near the route",
+      "View accessible paths and station detail layers",
+      "Sign in to enable location tracking"
+    ],
+    "dataAuth": "Authenticated users may store preferences and location-tracking consent. Map layers combine public TfL/venue data with the user’s session.",
+    "integrations": [
+      "Mapbox",
+      "TfL data",
+      "Geocoding",
+      "Netlify"
+    ],
+    "deployment": "Hosted on Netlify at mappingme.netlify.app.",
+    "aliases": [
+      "on-track",
+      "mappingme",
+      "mapping-me"
+    ]
+  },
+  {
+    "name": "Worthing Roads",
+    "period": "September 2025",
+    "url": "https://worthingroads.netlify.app",
+    "stack": [
+      "Next.js",
+      "TypeScript",
+      "Maps",
+      "Local knowledge bank"
+    ],
+    "summary": "A revision quiz for the Worthing District private-hire knowledge test: junctions, roads, and points of interest.",
+    "purpose": "Help private-hire candidates revise the real Worthing licensing exam (junctions and POIs), not general trivia.",
+    "howItWorks": "Learners pick exam-style parts covering junction questions (hundreds of items across parts 1–7) or a POI quiz (67 questions about where local landmarks sit).\n\nTown can come from search, geolocation, or a map test. Each quiz is timed and scored, with confetti on completion.\n\nThe knowledge bank includes 640+ questions about local road junctions.",
+    "architecture": [
+      "Next.js + TypeScript quiz app",
+      "Multi-part junction question bank",
+      "POI quiz module",
+      "Map test / geolocation / search for town context",
+      "Timed scoring and completion feedback"
+    ],
+    "features": [
+      "Drill Worthing junction knowledge in exam-style parts",
+      "Take a POI quiz for landmarks and road locations",
+      "Use the map test to find roads in Worthing",
+      "Timed quizzes with scoring",
+      "Confetti on completion"
+    ],
+    "dataAuth": "Primarily a client-side/local revision tool over a static or bundled question bank. Any optional progress persistence is for the learner’s session/device; no admin password material is exposed.",
+    "integrations": [
+      "Maps",
+      "Netlify",
+      "Geolocation"
+    ],
+    "deployment": "Hosted on Netlify at worthingroads.netlify.app.",
+    "aliases": [
+      "worthingroads"
+    ]
+  },
+  {
+    "name": "PRD Generator",
+    "period": "July 2025",
+    "url": "https://prds.netlify.app",
+    "stack": [
+      "Next.js",
+      "AI document generation"
+    ],
+    "summary": "Type a product idea (or pick a template) and generate a Product Requirements Document with features, specs, and user flows.",
+    "purpose": "Planning tool for teams that would otherwise write a PRD by hand — output is a requirements document, not working software.",
+    "howItWorks": "You describe an app idea in plain language or request a custom template / regenerate template ideas.\n\nThe model produces structured documentation aimed at web and mobile products: features, specs, and user flows.\n\nYou share the PRD with developers or stakeholders. The generator does not deploy an application from the document.",
+    "architecture": [
+      "Next.js front end on Netlify",
+      "AI document generation pipeline",
+      "Template catalogue and custom template requests",
+      "Structured PRD output for web/mobile products",
+      "Plain-language idea intake form",
+      "Shareable document result view"
+    ],
+    "features": [
+      "Describe an app idea in plain language",
+      "Pick or regenerate PRD templates",
+      "Receive structured features, specs, and flows",
+      "Share the document with a team",
+      "Target web and mobile product briefs",
+      "Iterate by regenerating template ideas"
+    ],
+    "dataAuth": "Prompt text and generated documents exist for the generation session; there is no requirement of a long-lived multi-tenant CMS of PRDs in the public pitch.",
+    "integrations": [
+      "AI document generation",
+      "Netlify"
+    ],
+    "deployment": "Hosted on Netlify at prds.netlify.app.",
+    "aliases": [
+      "prds",
+      "prd"
+    ]
+  },
+  {
+    "name": "Street Party",
+    "period": "May 2025",
+    "url": "https://street-party.uk",
+    "stack": [
+      "Next.js",
+      "Maps"
+    ],
+    "summary": "A neighbourhood tool for organising a street party: draw the houses involved, set a passcode, and let residents join.",
+    "purpose": "Make contact between neighbours easy for one event by mapping houses and joining with a passcode — not a general social network.",
+    "howItWorks": "An organiser creates an event by drawing around the buildings on a map, naming it, setting start/end, uploading a picture, and choosing a passcode.\n\nResidents pick that party from a list, enter the passcode, select their building, and add household members.\n\nThe result is a shared register of who is in for that street party.",
+    "architecture": [
+      "Next.js app",
+      "Map drawing for involved houses",
+      "Passcode-gated resident join flow",
+      "Household member registration per building",
+      "Event metadata (name, times, image)"
+    ],
+    "features": [
+      "Organisers map which houses are in the party",
+      "Set event name, times, image, and passcode",
+      "Residents join with a passcode",
+      "Register household members per building",
+      "List nearby/available parties"
+    ],
+    "dataAuth": "Event records store the passcode hash/value used for joining, mapped buildings, and household member names. Access to an event’s join flow is gated by that passcode rather than a full social graph.",
+    "integrations": [
+      "Maps"
+    ],
+    "deployment": "Live at street-party.uk.",
+    "aliases": [
+      "streetparty",
+      "street-party-uk"
+    ]
+  },
+  {
+    "name": "Pin Spots",
+    "period": "September 2024",
+    "url": "https://pinspots.co.uk",
+    "stack": [
+      "Next.js",
+      "Maps"
+    ],
+    "summary": "A simple map where people drop pins on places that matter to them.",
+    "purpose": "Personal/geo bookmarking experiment — mark somewhere and see it on the map — rather than a full listings directory like UKPubs.",
+    "howItWorks": "The live homepage is intentionally small: pin a spot of interest on the map.\n\nPins appear for the user (and, where enabled, others) to browse.\n\nThere is no heavy directory, news, or events layer.",
+    "architecture": [
+      "Next.js map UI",
+      "Pin create/browse model",
+      "Lightweight geo bookmarking",
+      "Public map homepage focused on a single action",
+      "Location markers without a full listings directory"
+    ],
+    "features": [
+      "Drop a pin on a location",
+      "Browse spots other people have marked",
+      "Keep the interaction map-first and minimal",
+      "Mark places that matter personally",
+      "See pins on a shared map surface"
+    ],
+    "dataAuth": "Pinned locations and any optional labels are stored for display on the map. Public browse may show community pins depending on the live configuration.",
+    "integrations": [
+      "Maps"
+    ],
+    "deployment": "Live at pinspots.co.uk.",
+    "aliases": [
+      "pinspots"
+    ]
+  },
+  {
+    "name": "Stop Charge",
+    "period": "July 2024",
+    "url": "https://stopcharge.co.uk/map",
+    "stack": [
+      "Nuxt 3",
+      "Mapbox",
+      "Supabase",
+      "Prisma",
+      "Geolocation"
+    ],
+    "summary": "A UK EV charging map: find chargers near you and measure distance between two points.",
+    "purpose": "Locator/distance tool for UK EV charge points — not a booking or payment network for charging sessions.",
+    "howItWorks": "The map shows electric charging locations across the UK. You can use current location to find the nearest point.\n\nPick two points to see distance in km or miles.\n\nNo session booking or charger payment is part of the documented product job.",
+    "architecture": [
+      "Nuxt 3 frontend",
+      "Mapbox map rendering",
+      "Supabase + Prisma for charger/geo data",
+      "Browser geolocation for nearest-point search",
+      "Client-side distance measurement between selected points"
+    ],
+    "features": [
+      "See chargers on a national map",
+      "Find the nearest point from current location",
+      "Measure distance between two selected points",
+      "Toggle km/miles distance units",
+      "Browse UK EV charging locations",
+      "Use geolocation for nearest-point search"
+    ],
+    "dataAuth": "Charger location data is stored for map display. Geolocation is used in the browser for nearest search and is not an account password store.",
+    "integrations": [
+      "Mapbox",
+      "Supabase",
+      "Prisma",
+      "Geolocation"
+    ],
+    "deployment": "Map available at stopcharge.co.uk/map.",
+    "aliases": [
+      "stopcharge"
+    ]
+  },
+  {
+    "name": "Melvyn Biddulph",
+    "period": "March 2023 (maintained)",
+    "url": "https://melvbiddulph.art",
+    "stack": [
+      "Art gallery",
+      "Portfolio site"
+    ],
+    "summary": "An online gallery for paintings and biography of Melvyn Biddulph (Rochdale / St Martins), with enquiries handled by John.",
+    "purpose": "Family artist archive and sales enquiry front for Melvyn Biddulph’s work — not a social art network.",
+    "howItWorks": "Visitors read Melvyn’s story (Rochdale College of Art, St Martins 1968–71, later textile design, 2018 solo show “Back from the Dead”) and browse listed works.\n\nEnquiries quote a piece ID to John for follow-up.\n\nThe site is maintained as a long-running gallery/biography presence.",
+    "architecture": [
+      "Static/content art gallery site",
+      "Biography and interview material",
+      "Work listing with piece IDs",
+      "Enquiry path to John",
+      "Exhibition history content including “Back from the Dead”"
+    ],
+    "features": [
+      "Read the artist biography and interview material",
+      "Browse works by piece ID",
+      "Enquire about a specific work",
+      "Learn exhibition history including “Back from the Dead”",
+      "View paintings in an online gallery format"
+    ],
+    "dataAuth": "Public biography and artwork listings. Enquiry messages go to John; no multi-user social accounts.",
+    "integrations": [
+      "Enquiry contact channel"
+    ],
+    "deployment": "Live at melvbiddulph.art.",
+    "aliases": [
+      "melvbiddulph",
+      "melvyn-biddulph-art"
+    ]
+  },
+  {
+    "name": "jbiddulph.com",
+    "period": "Ongoing, 2024–2026",
+    "url": "https://www.jbiddulph.com",
+    "stack": [
+      "Nuxt 3",
+      "Vue",
+      "Tailwind",
+      "Prisma",
+      "Supabase",
+      "Pinia"
+    ],
+    "summary": "Personal site, CV, services, docs, blog, and the CMS that publishes this portfolio.",
+    "purpose": "Public portfolio and professional presence for John Biddulph, plus an admin CMS to manage projects, designs, and site content without a deploy for every copy change.",
+    "howItWorks": "Public pages include home, portfolio grid, project detail, CV (with PDF download), services with enquiry form, docs, and blog.\n\nAdmin covers portfolio CRUD and reorder, designs/themes (colours, fonts, layout), site info, pages copy, videos, links, and uploads. Designs can be switched per visitor.\n\nChat and enquiry APIs sit alongside the content CMS. The portfolio table is the live project list; long-form write-ups can be matched from shared project documentation.",
+    "architecture": [
+      "Nuxt 3 + Vue + Tailwind frontend",
+      "Prisma + Supabase data layer",
+      "Pinia client state",
+      "Admin CMS for portfolio, designs, pages, media",
+      "Public APIs for portfolio, chat, and enquiries",
+      "Per-visitor design/theme switching"
+    ],
+    "features": [
+      "Browse live projects and open each product URL",
+      "Open slug-based project detail pages",
+      "Read the CV or download the CV PDF",
+      "Send a services enquiry",
+      "Read docs and blog posts",
+      "Admin CRUD for portfolio and site content",
+      "Switch visual designs/themes"
+    ],
+    "dataAuth": "Admin authentication gates CMS and operational APIs. Public visitors read live portfolio and content. Enquiry and chat submissions are stored for follow-up. Design preferences may be stored per visitor session.",
+    "integrations": [
+      "Supabase",
+      "Prisma",
+      "Chat/RAG webhook (n8n)",
+      "Vercel or host of record"
+    ],
+    "deployment": "Production site at www.jbiddulph.com. Admin at /admin. Recent-projects PDF available under /public.",
+    "aliases": [
+      "jbiddulph",
+      "jbiddulph-com",
+      "john-biddulph"
+    ]
+  },
+  {
+    "name": "Exhibitionist / Camme",
+    "period": "2026",
+    "url": "https://www.exhibitionist.me",
+    "stack": [
+      "FastAPI",
+      "Go",
+      "LiveKit video",
+      "Redis",
+      "Stripe / IAP"
+    ],
+    "summary": "A live broadcast and chat platform: the public-facing direction of the Camme social cam foundation.",
+    "purpose": "Enable live broadcast and realtime chat with tipping/purchases. exhibitionist.me is the public product direction of the Camme social cam and chat foundation.",
+    "howItWorks": "Built on the Camme social cam and chat foundation — a FastAPI + Go web app with LiveKit video, Redis, Stripe and in-app purchases.\n\nViewers watch or join a live broadcast with realtime chat. Broadcasters can receive support through tips and purchases; Lovense tip-to-toy hooks are part of the Camme foundation experiments.\n\nexhibitionist.me is the public-facing live broadcast/chat product of that same codebase/idea; Camme remains the underlying social-cam foundation.",
+    "architecture": [
+      "FastAPI + Go services",
+      "LiveKit realtime video",
+      "Redis for realtime/session state",
+      "Stripe and in-app purchases for monetisation",
+      "Camme foundation (social cam/chat) underlying exhibitionist.me",
+      "Optional Lovense tip-to-toy hooks in the foundation"
+    ],
+    "features": [
+      "Watch or run a live broadcast",
+      "Realtime chat during streams",
+      "Tip or purchase to support a broadcaster",
+      "Use Camme foundation social-cam capabilities",
+      "Experiment with tip-to-toy hardware hooks"
+    ],
+    "dataAuth": "Broadcaster and viewer accounts authenticate to the platform. Chat, session, and purchase records are stored server-side. Payment details are handled by Stripe/IAP providers. Redis holds ephemeral realtime state.",
+    "integrations": [
+      "LiveKit",
+      "Redis",
+      "Stripe",
+      "In-app purchases",
+      "Lovense (foundation)"
+    ],
+    "deployment": "Public product at www.exhibitionist.me. Camme foundation also referenced via camme.vercel.app in related experiments.",
+    "related": [
+      {
+        "label": "Camme foundation",
+        "url": "https://camme.vercel.app"
+      }
+    ],
+    "aliases": [
+      "exhibitionist-me",
+      "camme",
+      "exhibitionist"
+    ]
+  },
+  {
+    "name": "LocalSEO",
+    "period": "2026",
+    "url": "https://localseo-ten.vercel.app",
+    "stack": [
+      "Next.js",
+      "Maps",
+      "SEO analytics"
+    ],
+    "summary": "Google Maps ranking intelligence by postcode, not city averages — for local operators who need actionable geo SEO.",
+    "purpose": "Help multi-location and local businesses see Maps ranking heat and competitor movement at postcode granularity, with shareable reports.",
+    "howItWorks": "An operator selects locations/postcodes rather than relying on city-wide averages. The app builds heatmaps and tracks competitor movement for those areas.\n\nWeekly alerts and shareable reports summarise multi-location performance so teams can act on local ranking changes.",
+    "architecture": [
+      "Vercel-hosted web app",
+      "Postcode-level ranking views",
+      "Heatmap visualisation",
+      "Competitor movement tracking",
+      "Alert and report sharing layer"
+    ],
+    "features": [
+      "View Maps ranking by postcode",
+      "Inspect heatmaps for local visibility",
+      "Track competitor movement",
+      "Monitor multiple locations",
+      "Receive weekly alerts",
+      "Share reports with stakeholders"
+    ],
+    "dataAuth": "Location configurations and ranking snapshots are stored for the signed-in operator account. Shared reports expose the selected metrics without publishing credentials.",
+    "integrations": [
+      "Google Maps ranking data sources",
+      "Vercel"
+    ],
+    "deployment": "Hosted on Vercel at localseo-ten.vercel.app.",
+    "aliases": [
+      "local-seo",
+      "localseo"
+    ]
+  },
+  {
+    "name": "Lucidity Demo",
+    "period": "2026",
+    "url": "https://lucidity-demo.vercel.app",
+    "stack": [
+      "Nuxt",
+      "Lucidity query API"
+    ],
+    "summary": "A Nuxt consumer of Lucidity that proves headless reads: schemas, pages, and collections.",
+    "purpose": "Reference frontend showing how a site consumes Lucidity’s query API for navigation and collections.",
+    "howItWorks": "The demo reads schema types from Lucidity, builds navigation from Pages, and loops included collections (for example posts on a Blog page) through the Lucidity query API.\n\nIt is a consumer, not the CMS authoring UI — that lives on the main Lucidity app.",
+    "architecture": [
+      "Nuxt consumer application",
+      "Lucidity query API client",
+      "Navigation built from Pages content",
+      "Collection loops (e.g. posts) on composed pages",
+      "Reference integration for headless CMS consumption"
+    ],
+    "features": [
+      "List Lucidity schema types",
+      "Build nav from Pages",
+      "Render included collections such as blog posts",
+      "Demonstrate headless CMS consumption",
+      "Show how a Nuxt site pulls published Lucidity content"
+    ],
+    "dataAuth": "Uses Lucidity API keys/configuration to read published content. Does not replace CMS operator auth on the main Lucidity app.",
+    "integrations": [
+      "Lucidity API",
+      "Vercel"
+    ],
+    "deployment": "Hosted on Vercel at lucidity-demo.vercel.app.",
+    "related": [
+      {
+        "label": "Lucidity",
+        "url": "https://lucidity-lac.vercel.app"
+      }
+    ],
+    "aliases": [
+      "lucidity-demo"
+    ]
+  },
+  {
+    "name": "Air Charter Broker CRM",
+    "period": "2026",
+    "url": "https://air-charter-broker-crm.vercel.app",
+    "stack": [
+      "Next.js",
+      "Supabase",
+      "RLS",
+      "ShadCN UI"
+    ],
+    "summary": "A Next.js + Supabase CRM for air-charter brokers: companies, contacts, and inquiries behind sign-in.",
+    "purpose": "Give air-charter brokers a signed-in workspace to manage companies, contacts, and inbound inquiries with row-level security.",
+    "howItWorks": "A broker signs in and works with companies, contacts, and inquiries in a ShadCN-based UI.\n\nSupabase RLS keeps each broker’s CRM rows scoped to authorised users so inquiry data is not globally public.",
+    "architecture": [
+      "Next.js app on Vercel",
+      "Supabase Auth + Postgres",
+      "Row Level Security on CRM tables",
+      "ShadCN UI components"
+    ],
+    "features": [
+      "Sign in to a broker workspace",
+      "Manage companies",
+      "Manage contacts",
+      "Track inquiries",
+      "Rely on RLS for data isolation"
+    ],
+    "dataAuth": "Supabase Auth identifies brokers. RLS policies restrict companies, contacts, and inquiries to authorised users. No public anonymous write access to CRM records.",
+    "integrations": [
+      "Supabase",
+      "ShadCN UI",
+      "Vercel"
+    ],
+    "deployment": "Hosted on Vercel at air-charter-broker-crm.vercel.app.",
+    "aliases": [
+      "air-charter-crm",
+      "air-charter-broker-crm"
+    ]
+  },
+  {
+    "name": "TalkToMe",
+    "period": "2026",
+    "url": "https://github.com/jbiddulph/talktome",
+    "stack": [
+      "Next.js",
+      "Capacitor",
+      "Whisper",
+      "iOS"
+    ],
+    "summary": "AI meeting notes: record audio, transcribe with Whisper, summarise, file meetings in folders, and download an ICS event.",
+    "purpose": "Turn spoken meetings into organised notes and calendar events for people who want capture → transcript → summary without a heavy enterprise suite.",
+    "howItWorks": "Record meeting audio in the app. Whisper produces a transcript, then an AI summary is generated.\n\nMeetings are filed in folders for later retrieval. An ICS download creates a calendar event from the meeting.\n\nNext.js powers the web app; Capacitor wraps an iOS build.",
+    "architecture": [
+      "Next.js application",
+      "Capacitor iOS shell",
+      "Whisper transcription",
+      "AI summarisation step",
+      "Folder organisation + ICS export"
+    ],
+    "features": [
+      "Record meeting audio",
+      "Transcribe with Whisper",
+      "Generate a meeting summary",
+      "File meetings in folders",
+      "Download an ICS calendar event",
+      "Use on web or iOS via Capacitor"
+    ],
+    "dataAuth": "Meeting audio, transcripts, summaries, and folder organisation are stored for the signed-in user. Calendar ICS is generated for download rather than forcing a cloud calendar credential into the docs.",
+    "integrations": [
+      "Whisper",
+      "Capacitor",
+      "OpenAI or summarisation provider as configured"
+    ],
+    "deployment": "Source on GitHub (jbiddulph/talktome). Next.js + Capacitor for web/iOS builds.",
+    "aliases": [
+      "talktome",
+      "talk-to-me"
+    ]
+  },
+  {
+    "name": "Ask Midwife",
+    "period": "2026",
+    "url": "https://askmidwife.vercel.app",
+    "stack": [
+      "Next.js",
+      "Vercel"
+    ],
+    "summary": "A Next.js app for maternity questions — a 2026 consumer experiment on Vercel.",
+    "purpose": "Give people a place to ask maternity-related questions in a lightweight web experience, alongside John’s other consumer experiments.",
+    "howItWorks": "A visitor opens Ask Midwife and submits or browses maternity questions in the app UI.\n\nResponses are produced within the Next.js application flow (consumer Q&A experience). It is positioned as a companion experiment to other 2026 Vercel apps, not a clinical records system.",
+    "architecture": [
+      "Next.js app",
+      "Vercel hosting",
+      "Maternity Q&A consumer UI",
+      "Lightweight experiment alongside other 2026 Vercel apps",
+      "Question intake and response presentation flow"
+    ],
+    "features": [
+      "Ask maternity-related questions",
+      "Use a focused consumer Q&A interface",
+      "Access the live Vercel deployment",
+      "Browse or submit questions in-app",
+      "Companion experiment to other 2026 consumer apps"
+    ],
+    "dataAuth": "Questions/interactions may be processed for the session to return answers. Not a hospital EHR; no clinical staff roster or patient medical-record passwords are part of the public product description.",
+    "integrations": [
+      "Vercel"
+    ],
+    "deployment": "Hosted on Vercel at askmidwife.vercel.app.",
+    "aliases": [
+      "ask-midwife",
+      "askmidwife"
+    ]
+  }
+]
