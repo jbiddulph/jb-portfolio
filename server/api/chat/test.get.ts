@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const webhookUrl = 'https://n8njb-6378e565ae08.herokuapp.com/webhook-test/e985d15f-b2f6-456d-be15-97e0b1544a40'
+  const webhookUrl = 'https://n8njb-6378e565ae08.herokuapp.com/webhook-test/e104e40e-6134-4825-a6f0-8a646d882662/chat'
   const testMessage = 'Hello, this is a test message'
   
   try {
