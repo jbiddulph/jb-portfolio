@@ -36,7 +36,6 @@
             </span>
             <div class="leading-tight">
               <p class="text-sm font-semibold">Ask me anything</p>
-              <p class="text-xs opacity-80">About my CV, experience or projects</p>
             </div>
           </div>
           <button type="button" class="rounded-full p-1.5 transition hover:bg-white/15" aria-label="Close chat" @click="toggleChat">
