@@ -15,7 +15,11 @@ export default defineEventHandler(async (event) => {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: JSON.stringify({ text: testMessage }),
+      body: JSON.stringify({
+        action: 'sendMessage',
+        sessionId: 'webhook-test',
+        chatInput: testMessage
+      }),
     })
     
     const responseInfo = {
@@ -48,7 +52,11 @@ export default defineEventHandler(async (event) => {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: { text: testMessage },
+        body: {
+          action: 'sendMessage',
+          sessionId: 'webhook-test',
+          chatInput: testMessage
+        },
       },
       response: responseInfo,
       responseBody,

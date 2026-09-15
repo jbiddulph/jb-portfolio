@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const { text } = body
+    const { text, sessionId: clientSessionId } = body
 
     if (!text || typeof text !== 'string') {
       throw createError({
@@ -12,17 +12,28 @@ export default defineEventHandler(async (event) => {
 
     // Forward request to n8n webhook (server-side to avoid CORS)
     const webhookUrl = 'https://n8njb-6378e565ae08.herokuapp.com/webhook/e104e40e-6134-4825-a6f0-8a646d882662/chat'
+
+    // n8n Chat Trigger expects action + sessionId + chatInput (not { text }).
+    // Sending only { text } makes the workflow fail with "Error in workflow".
+    const sessionId =
+      (typeof clientSessionId === 'string' && clientSessionId.trim()) ||
+      `web-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+    const webhookBody = {
+      action: 'sendMessage',
+      sessionId,
+      chatInput: text
+    }
     
       console.log('=== Chat API Request ===')
       console.log('Webhook URL:', webhookUrl)
       console.log('Message text:', text)
       console.log('Request method: POST')
-      console.log('Request body:', JSON.stringify({ text }))
+      console.log('Request body:', JSON.stringify(webhookBody))
       
       try {
-        // Add timeout to prevent hanging requests
+        // Add timeout to prevent hanging requests (RAG replies can be slow)
         const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 60000)
         
         const response = await fetch(webhookUrl, {
           method: 'POST',
@@ -30,7 +41,7 @@ export default defineEventHandler(async (event) => {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify(webhookBody),
           signal: controller.signal,
         })
         

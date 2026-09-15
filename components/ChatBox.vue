@@ -164,11 +164,13 @@ const sendMessage = async () => {
   }
 }
 
+const chatSessionId = `web-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+
 const sendToWebhook = async (text: string): Promise<string> => {
   try {
     const response: any = await $fetch('/api/chat', {
       method: 'POST',
-      body: { text }
+      body: { text, sessionId: chatSessionId }
     })
 
     if (response.success) {
