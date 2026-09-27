@@ -17,6 +17,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     servicesEnquiryWebhookUrl: process.env.SERVICES_ENQUIRY_WEBHOOK_URL || '',
+    // Override the public chat → n8n webhook without a code change.
+    chatWebhookUrl: process.env.CHAT_WEBHOOK_URL || process.env.NUXT_CHAT_WEBHOOK_URL || '',
     portfolioSecretsKey: process.env.PORTFOLIO_SECRETS_KEY || '',
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
