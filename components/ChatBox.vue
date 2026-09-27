@@ -146,12 +146,22 @@ const sendMessage = async () => {
     console.error('Error sending message:', error)
 
     let errorMessage = 'Sorry, there was an error processing your message. Please try again.'
-    if (error.message?.includes('404')) {
+    if (error.message?.includes('404') || error.statusCode === 404) {
       errorMessage = 'The webhook endpoint was not found (404). Please check that the webhook is active in n8n.'
+    } else if (error.statusCode === 503 || error.message?.includes('503')) {
+      errorMessage =
+        error.statusMessage ||
+        'Chat is temporarily unavailable — the n8n server on Heroku could not be reached. Wait a few seconds and try again.'
+    } else if (error.statusCode === 504 || error.message?.includes('504')) {
+      errorMessage =
+        error.statusMessage ||
+        'The chat webhook timed out. The n8n dyno may still be waking up — try again.'
     } else if (error.message?.includes('CORS')) {
       errorMessage = 'CORS error: The webhook server is not allowing requests from this domain.'
     } else if (error.message?.includes('Network error')) {
       errorMessage = 'Network error: Unable to connect to the webhook server.'
+    } else if (error.statusMessage) {
+      errorMessage = error.statusMessage
     } else if (error.message) {
       errorMessage = `Error: ${error.message}`
     }
@@ -181,13 +191,14 @@ const sendToWebhook = async (text: string): Promise<string> => {
 
     if (error.statusCode === 404) {
       throw new Error('Webhook not found (404). Please check that the webhook is active in n8n.')
-    } else if (error.statusCode === 500) {
-      throw new Error('Server error. Please try again later.')
-    } else if (error.message) {
-      throw new Error(error.message)
     }
 
-    throw new Error('Failed to send message. Please try again.')
+    // Prefer the server statusMessage over ofetch's opaque "[POST] /api/chat: 503".
+    const detail = error.statusMessage || error.data?.statusMessage || error.message
+    const wrapped: any = new Error(detail || 'Failed to send message. Please try again.')
+    wrapped.statusCode = error.statusCode
+    wrapped.statusMessage = error.statusMessage || error.data?.statusMessage
+    throw wrapped
   }
 }
 

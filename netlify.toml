@@ -1,0 +1,7 @@
+# Keep the Nuxt server function alive long enough for n8n RAG replies
+# (and one Heroku cold-start retry). Requires Netlify Pro for >10s.
+[functions]
+  node_bundler = "esbuild"
+
+[functions."server"]
+  timeout = 26
