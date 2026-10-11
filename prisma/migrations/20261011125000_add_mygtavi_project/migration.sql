@@ -15,7 +15,7 @@ SELECT
     'myGTAVI',
     TIMESTAMP '2026-10-11 00:00:00',
     'https://www.mygtavi.com/',
-    'https://qemafehpoknkbejlbksa.supabase.co/storage/v1/object/public/jbiddulph/portfolio/1791723101956_mygtavi.png',
+    'https://qemafehpoknkbejlbksa.supabase.co/storage/v1/object/public/jbiddulph/portfolio/1791723612250_mygtavi.jpg',
     'Unofficial GTA VI Leonida companion: interactive fan map with collectible pins, personal progress tracking, crew profiles, community board, and a countdown to launch night. Fan-made — not affiliated with Rockstar Games.',
     'Next.js, Supabase, Maps, Community, Collectibles',
     true,

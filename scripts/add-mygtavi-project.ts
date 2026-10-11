@@ -32,7 +32,7 @@ async function addMyGtaviProject() {
           'Unofficial GTA VI Leonida companion: interactive fan map with collectible pins, personal progress tracking, crew profiles, community board, and a countdown to launch night. Fan-made — not affiliated with Rockstar Games.',
         project_date: new Date('2026-10-11'),
         project_link: 'https://www.mygtavi.com/',
-        project_image: 'https://qemafehpoknkbejlbksa.supabase.co/storage/v1/object/public/jbiddulph/portfolio/1791723101956_mygtavi.png',
+        project_image: 'https://qemafehpoknkbejlbksa.supabase.co/storage/v1/object/public/jbiddulph/portfolio/1791723612250_mygtavi.jpg',
         project_tags: 'Next.js, Supabase, Maps, Community, Collectibles',
         live: true,
         sort_order: 0
