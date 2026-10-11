@@ -1,5 +1,53 @@
 [
   {
+    "name": "myGTAVI",
+    "period": "October 2026",
+    "url": "https://www.mygtavi.com/",
+    "stack": [
+      "Next.js",
+      "Supabase",
+      "interactive map",
+      "community board"
+    ],
+    "summary": "An unofficial GTA VI Leonida companion: fan map pins, collectible tracking, crew notes, and a community board while you wait for launch.",
+    "purpose": "Give GTA VI fans one place to pin trailer landmarks, track what they want to hunt first, share finds with a crew, and count down to Leonida.",
+    "howItWorks": "Visitors explore an interactive Leonida map, drop markers for landmarks, shops, missions, and easter eggs, and mark collected, found, or wishlist status. Straight-line measure tools help plan runs across the map grid. A community board and crew profiles keep notes in one place, alongside news and a countdown to midnight on 18 November 2026.\n\nThe site is fan-made and independent — not affiliated with, endorsed by, or sponsored by Rockstar Games or Take-Two Interactive.",
+    "architecture": [
+      "Next.js app on Vercel for the public companion site",
+      "Supabase for profiles, map locations, progress, community posts, and news",
+      "Interactive map UI with pins, measure tools, and deep links",
+      "Countdown and news surfaces for the pre-launch wait"
+    ],
+    "features": [
+      "Browse an interactive unofficial Leonida map",
+      "Drop and share pins for landmarks and collectibles",
+      "Track collected, found, or wishlist progress",
+      "Measure straight-line runs across the map",
+      "Use the community board and crew profiles",
+      "Follow fan news and the launch countdown"
+    ],
+    "dataAuth": "Public browsing of the companion site; signed-in progress, profiles, and board activity are scoped to the user’s Supabase account where authentication is used.",
+    "integrations": [
+      "Supabase Auth and Postgres",
+      "Vercel hosting"
+    ],
+    "deployment": "Public site at mygtavi.com.",
+    "related": [],
+    "aliases": [
+      "my-gtavi",
+      "mygtavi",
+      "GTAVI",
+      "Leonida"
+    ],
+    "does": "Visitors explore an interactive Leonida map, drop markers for landmarks and collectibles, track personal progress, measure routes, and share finds on a community board while counting down to launch night.",
+    "users": [
+      "Pin landmarks and collectibles on the Leonida map.",
+      "Mark what you have found or want to hunt first.",
+      "Share finds with a crew on the board.",
+      "Watch the countdown to 18 November 2026."
+    ]
+  },
+  {
     "name": "Lucidity",
     "period": "August 2026",
     "url": "https://lucidity-lac.vercel.app",
