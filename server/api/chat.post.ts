@@ -1,3 +1,81 @@
+const DEFAULT_WEBHOOK_URL =
+  'https://n8njb-6378e565ae08.herokuapp.com/webhook/e104e40e-6134-4825-a6f0-8a646d882662/chat'
+
+// Keep under typical Netlify Function limits (10s free / 26s Pro) so we can
+// still retry a Heroku cold-start once before the platform kills the request.
+const REQUEST_TIMEOUT_MS = 20_000
+const MAX_ATTEMPTS = 3
+const RETRY_BASE_DELAY_MS = 1_500
+
+function isRetryableNetworkError(error: any): boolean {
+  // Do not treat AbortError (our request timeout) as retryable — that usually
+  // means n8n accepted the call but the workflow is slow, and another full
+  // attempt would exceed the serverless time budget.
+  if (error?.name === 'AbortError') return false
+
+  const message = String(error?.message || '')
+  const causeCode = String(error?.cause?.code || error?.code || '')
+  const causeMessage = String(error?.cause?.message || '')
+  const haystack = `${message} ${causeCode} ${causeMessage}`.toLowerCase()
+
+  return (
+    haystack.includes('fetch failed') ||
+    haystack.includes('econnrefused') ||
+    haystack.includes('enotfound') ||
+    haystack.includes('econnreset') ||
+    haystack.includes('etimedout') ||
+    haystack.includes('socket') ||
+    haystack.includes('network') ||
+    haystack.includes('connect timeout') ||
+    haystack.includes('und_err_connect_timeout')
+  )
+}
+
+function isRetryableHttpStatus(status: number): boolean {
+  // Heroku dyno cold-starts / transient router errors often surface as these.
+  return status === 502 || status === 503 || status === 504 || status === 520 || status === 521 || status === 522
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function extractReply(data: any): string {
+  let reply =
+    data?.reply ||
+    data?.message ||
+    data?.text ||
+    data?.response ||
+    data?.output ||
+    data?.data?.reply ||
+    data?.data?.message ||
+    data?.data?.text ||
+    data?.data?.output ||
+    (data?.body && (data.body.reply || data.body.message || data.body.text || data.body.output)) ||
+    (Array.isArray(data) &&
+      data[0] &&
+      (data[0].reply ||
+        data[0].message ||
+        data[0].text ||
+        data[0].output ||
+        data[0].json?.reply ||
+        data[0].json?.message)) ||
+    (data?.json && (data.json.reply || data.json.message || data.json.text || data.json.output)) ||
+    (typeof data === 'string' ? data : null) ||
+    'No reply received'
+
+  if (reply === 'Workflow was started' || reply?.includes?.('Workflow was started')) {
+    reply =
+      data?.output ||
+      data?.result ||
+      data?.data ||
+      (data?.body && typeof data.body === 'string' ? data.body : null) ||
+      'Workflow started successfully. Waiting for response...'
+  }
+
+  return typeof reply === 'string' ? reply : JSON.stringify(reply)
+}
+
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
@@ -10,11 +88,12 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Forward request to n8n webhook (server-side to avoid CORS)
-    const webhookUrl = 'https://n8njb-6378e565ae08.herokuapp.com/webhook/e104e40e-6134-4825-a6f0-8a646d882662/chat'
+    const config = useRuntimeConfig(event)
+    const webhookUrl =
+      (typeof config.chatWebhookUrl === 'string' && config.chatWebhookUrl.trim()) ||
+      DEFAULT_WEBHOOK_URL
 
     // n8n Chat Trigger expects action + sessionId + chatInput (not { text }).
-    // Sending only { text } makes the workflow fail with "Error in workflow".
     const sessionId =
       (typeof clientSessionId === 'string' && clientSessionId.trim()) ||
       `web-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
@@ -23,193 +102,161 @@ export default defineEventHandler(async (event) => {
       sessionId,
       chatInput: text
     }
-    
-      console.log('=== Chat API Request ===')
-      console.log('Webhook URL:', webhookUrl)
-      console.log('Message text:', text)
-      console.log('Request method: POST')
-      console.log('Request body:', JSON.stringify(webhookBody))
-      
+
+    console.log('=== Chat API Request ===')
+    console.log('Webhook URL:', webhookUrl)
+    console.log('Message text:', text)
+    console.log('Request body:', JSON.stringify(webhookBody))
+
+    let lastError: any = null
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
       try {
-        // Add timeout to prevent hanging requests (RAG replies can be slow)
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 60000)
-        
         const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            Accept: 'application/json'
           },
           body: JSON.stringify(webhookBody),
-          signal: controller.signal,
+          signal: controller.signal
         })
-        
+
         clearTimeout(timeoutId)
-      
-      console.log('Response status:', response.status, response.statusText)
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
-      console.log('Response URL:', response.url)
-      
-      if (!response.ok) {
-        let errorText = ''
-        let errorData = null
-        try {
-          errorText = await response.text()
-          console.error('Error response body:', errorText)
-          // Try to parse as JSON
+
+        console.log(`Response status (attempt ${attempt}):`, response.status, response.statusText)
+
+        if (!response.ok) {
+          let errorText = ''
+          let errorData: any = null
           try {
-            errorData = JSON.parse(errorText)
-            console.error('Parsed error data:', errorData)
+            errorText = await response.text()
+            try {
+              errorData = JSON.parse(errorText)
+            } catch {
+              // not JSON
+            }
           } catch {
-            // Not JSON, use as text
+            // ignore body read failures
           }
-        } catch (e) {
-          console.error('Could not read error response body')
-        }
-        
-        // Provide more helpful error messages
-        if (response.status === 404) {
-          throw createError({
-            statusCode: 404,
-            statusMessage: `Webhook not found (404). Please verify:
-1. The webhook URL is correct: ${webhookUrl}
-2. The webhook is active in n8n
-3. The workflow containing the webhook is activated
-4. The webhook path matches exactly (case-sensitive)`
-          })
-        }
-        
-        // Handle n8n-specific errors
-        if (response.status === 500 && errorData?.message) {
-          if (errorData.message.includes('Unused Respond to Webhook node')) {
+
+          if (isRetryableHttpStatus(response.status) && attempt < MAX_ATTEMPTS) {
+            console.warn(
+              `Retryable webhook HTTP ${response.status} on attempt ${attempt}; retrying…`
+            )
+            await sleep(RETRY_BASE_DELAY_MS * attempt)
+            continue
+          }
+
+          if (response.status === 404) {
             throw createError({
-              statusCode: 500,
-              statusMessage: `n8n Workflow Error: Unused "Respond to Webhook" node found. 
-              
-To fix this in n8n:
-1. Remove any unused "Respond to Webhook" nodes from your workflow
-2. OR connect the "Respond to Webhook" node properly in the workflow
-3. Make sure only ONE "Respond to Webhook" node is connected and active
-4. The node should be at the end of your workflow execution path`
+              statusCode: 404,
+              statusMessage: `Webhook not found (404). Please verify the webhook is active in n8n: ${webhookUrl}`
             })
           }
-          
-          // Other n8n errors
+
+          if (response.status === 500 && errorData?.message) {
+            if (String(errorData.message).includes('Unused Respond to Webhook node')) {
+              throw createError({
+                statusCode: 500,
+                statusMessage:
+                  'n8n Workflow Error: Unused "Respond to Webhook" node found. Remove or correctly connect that node.'
+              })
+            }
+
+            throw createError({
+              statusCode: 500,
+              statusMessage: `n8n Workflow Error: ${errorData.message}`
+            })
+          }
+
           throw createError({
-            statusCode: 500,
-            statusMessage: `n8n Workflow Error: ${errorData.message}`
+            statusCode: response.status,
+            statusMessage: `Webhook error (${response.status}): ${errorText || response.statusText}`
           })
         }
-        
-        throw createError({
-          statusCode: response.status,
-          statusMessage: `Webhook error (${response.status}): ${errorText || response.statusText}`
-        })
-      }
 
-      // Try to parse as JSON
-      const contentType = response.headers.get('content-type') || ''
-      console.log('Content-Type:', contentType)
-      
-      let data
-      if (contentType.includes('application/json')) {
-        data = await response.json()
-        console.log('Parsed JSON response:', JSON.stringify(data, null, 2))
-      } else {
-        // If not JSON, try to get text
-        const textResponse = await response.text()
-        console.log('Text response:', textResponse)
-        // Try to parse as JSON anyway
-        try {
-          data = JSON.parse(textResponse)
-          console.log('Parsed text as JSON:', JSON.stringify(data, null, 2))
-        } catch {
-          // If not JSON, return the text as reply
-          data = { reply: textResponse || 'Response received' }
-          console.log('Using text as reply:', data)
+        const contentType = response.headers.get('content-type') || ''
+        let data: any
+        if (contentType.includes('application/json')) {
+          data = await response.json()
+        } else {
+          const textResponse = await response.text()
+          try {
+            data = JSON.parse(textResponse)
+          } catch {
+            data = { reply: textResponse || 'Response received' }
+          }
         }
-      }
-      
-      // n8n workflow responses can be in various formats
-      // Try multiple possible response structures
-      let reply = 
-        data.reply || 
-        data.message || 
-        data.text || 
-        data.response || 
-        data.output || 
-        data.data?.reply ||
-        data.data?.message ||
-        data.data?.text ||
-        data.data?.output ||
-        // n8n might return the workflow output directly
-        (data.body && (data.body.reply || data.body.message || data.body.text || data.body.output)) ||
-        // Check if it's an array (n8n sometimes returns arrays)
-        (Array.isArray(data) && data[0] && (data[0].reply || data[0].message || data[0].text || data[0].output || data[0].json?.reply || data[0].json?.message)) ||
-        // Check for n8n's standard output format
-        (data.json && (data.json.reply || data.json.message || data.json.text || data.json.output)) ||
-        // If data is a string, use it directly
-        (typeof data === 'string' ? data : null) ||
-        'No reply received'
-      
-      // If we got "Workflow was started", the workflow might be async
-      // In that case, we should check if there's actual output data
-      if (reply === 'Workflow was started' || reply?.includes('Workflow was started')) {
-        console.log('Got workflow start confirmation, checking for actual output...')
-        // Try to find the actual output in the response
-        reply = 
-          data.output ||
-          data.result ||
-          data.data ||
-          (data.body && typeof data.body === 'string' ? data.body : null) ||
-          (typeof data === 'object' && JSON.stringify(data).replace(/Workflow was started/g, '').trim() ? JSON.stringify(data) : null) ||
-          'Workflow started successfully. Waiting for response...'
-      }
-      
-      console.log('Final reply:', reply)
-      
-      return {
-        success: true,
-        reply: reply
-      }
-    } catch (fetchError: any) {
-      console.error('=== Chat API Error ===')
-      console.error('Error type:', fetchError.constructor.name)
-      console.error('Error message:', fetchError.message)
-      console.error('Error stack:', fetchError.stack)
-      
-      // If it's already a createError, re-throw it
-      if (fetchError.statusCode) {
-        throw fetchError
-      }
-      
-      // Handle network errors
-      if (fetchError.name === 'AbortError') {
+
+        const reply = extractReply(data)
+        console.log('Final reply:', reply)
+
+        return {
+          success: true,
+          reply
+        }
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId)
+        lastError = fetchError
+
+        // Already a shaped API error from createError above.
+        if (fetchError?.statusCode) {
+          throw fetchError
+        }
+
+        const timedOut = fetchError?.name === 'AbortError'
+        const retryable = isRetryableNetworkError(fetchError)
+
+        console.error(`=== Chat API attempt ${attempt} failed ===`)
+        console.error('Error:', fetchError?.message || fetchError)
+        if (fetchError?.cause) {
+          console.error('Cause:', fetchError.cause)
+        }
+
+        if (retryable && attempt < MAX_ATTEMPTS) {
+          // Give a sleeping Heroku dyno time to wake before retrying.
+          await sleep(RETRY_BASE_DELAY_MS * attempt)
+          continue
+        }
+
+        if (timedOut) {
+          throw createError({
+            statusCode: 504,
+            statusMessage:
+              'Request timeout. The n8n webhook took too long to respond (Heroku dyno may be waking up — try again).'
+          })
+        }
+
+        if (retryable) {
+          throw createError({
+            statusCode: 503,
+            statusMessage:
+              'Unable to reach the n8n chat webhook on Heroku. The dyno may be asleep or restarting — wait a few seconds and try again. Confirm the n8n app is running and the workflow is active.'
+          })
+        }
+
         throw createError({
-          statusCode: 504,
-          statusMessage: 'Request timeout. The webhook took too long to respond.'
+          statusCode: fetchError?.statusCode || 500,
+          statusMessage: fetchError?.statusMessage || fetchError?.message || 'Failed to process chat message'
         })
       }
-      
-      if (fetchError.message?.includes('fetch failed') || fetchError.message?.includes('ECONNREFUSED') || fetchError.message?.includes('ENOTFOUND')) {
-        throw createError({
-          statusCode: 503,
-          statusMessage: 'Unable to connect to webhook server. Please check if the n8n server is running and accessible.'
-        })
-      }
-      
-      throw createError({
-        statusCode: fetchError.statusCode || 500,
-        statusMessage: fetchError.message || 'Failed to process chat message'
-      })
     }
+
+    throw createError({
+      statusCode: 503,
+      statusMessage:
+        lastError?.message ||
+        'Unable to reach the n8n chat webhook after retries. Check that the Heroku n8n app is running.'
+    })
   } catch (error: any) {
     console.error('Chat API error:', error)
     throw createError({
       statusCode: error.statusCode || 500,
-      statusMessage: error.message || 'Failed to process chat message'
+      statusMessage: error.statusMessage || error.message || 'Failed to process chat message'
     })
   }
 })
-
