@@ -93,6 +93,15 @@
           </ol>
         </section>
 
+        <section class="card p-7 sm:p-8">
+          <p class="eyebrow mb-4">AI &amp; automation</p>
+          <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+            <h2 class="fluid-h3 font-heading text-ink">{{ aiExperience.title }}</h2>
+            <p class="shrink-0 text-sm font-medium text-brand">{{ aiExperience.duration }}</p>
+          </div>
+          <p class="mt-4 max-w-[70ch] leading-relaxed text-ink">{{ aiExperience.description }}</p>
+        </section>
+
         <section class="card relative overflow-hidden p-7 sm:p-8">
           <div class="absolute inset-0 bg-hero-glow" aria-hidden="true" />
           <div class="relative">
@@ -217,6 +226,13 @@ const experience = [
     ]
   }
 ]
+
+const aiExperience = {
+  title: 'AI Prompt Engineering & Automation',
+  duration: '1+ year\u2019s experience',
+  description:
+    'Designing and refining prompts, building AI workflows with OpenAI APIs and n8n, and developing multi-agent systems for content generation, document processing and application development.'
+}
 
 const additionalExperience = {
   skills: [
